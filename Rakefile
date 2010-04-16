@@ -10,7 +10,13 @@ begin
     gem.email = "matt.zumwalt@yourmediashelf.com"
     gem.homepage = "http://github.com/mediashelf/opinionated-xml"
     gem.authors = ["Matt Zumwalt"]
+    
+    gem.add_dependency('nokogiri')
+    
     gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "mocha", ">= 0.9.8"
+    gem.add_development_dependency "ruby-debug"
+    
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

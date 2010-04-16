@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.loc.gov/mods/v3" xmlns:ns2="http://www.w3.org/1999/xlink">
+    <ns3:titleInfo>
+        <ns3:title>Brandenburg concerto no. 1 in F major</ns3:title>
+    </ns3:titleInfo>
+    <ns3:language>
+        <ns3:languageTerm type="code" authority="iso639-2b">No_linguistic_content</ns3:languageTerm>
+        <ns3:languageTerm type="text">No linguistic content</ns3:languageTerm>
+    </ns3:language>
+    <ns3:typeOfResource>sound recording-musical</ns3:typeOfResource>
+    <ns3:originInfo>
+        <ns3:dateCreated>07/23/1962</ns3:dateCreated>
+    </ns3:originInfo>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Bach, Johann Sebastian, 1685-1750</ns3:namePart>
+        <ns3:displayForm>Bach, Johann Sebastian, 1685-1750</ns3:displayForm>
+    </ns3:name>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Bergstone, Fred</ns3:namePart>
+        <ns3:displayForm>Bergstone, Fred</ns3:displayForm>
+    </ns3:name>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Dust\u00E9, Raymond</ns3:namePart>
+        <ns3:displayForm>Dust\u00E9, Raymond</ns3:displayForm>
+    </ns3:name>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Kates, Philip</ns3:namePart>
+        <ns3:displayForm>Kates, Philip</ns3:displayForm>
+    </ns3:name>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Price, Charles Gower, 1939-</ns3:namePart>
+        <ns3:displayForm>Price, Charles Gower, 1939-</ns3:displayForm>
+    </ns3:name>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Taylor, Ross, arranger</ns3:namePart>
+        <ns3:displayForm>Taylor, Ross, arranger</ns3:displayForm>
+    </ns3:name>
+    <ns3:name type="personal" authority="ingest">
+        <ns3:role>
+            <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+            <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+        </ns3:role>
+        <ns3:namePart type="family">Waller, Rosemary</ns3:namePart>
+        <ns3:displayForm>Waller, Rosemary</ns3:displayForm>
+    </ns3:name>
+    <ns3:subject authority="lcsh">
+        <ns3:topic>Concerti grossi</ns3:topic>
+    </ns3:subject>
+    <ns3:note displayLabel="Uniform title">Bach, Johann Sebastian, 1685-1750. Brandenburgische Konzerte. Nr. 1
+
+</ns3:note>
+    <ns3:physicalDescription>
+        <ns3:note displayLabel="General Physical Description note">1 7 in. open reel audio tape</ns3:note>
+    </ns3:physicalDescription>
+    <ns3:relatedItem type="host">
+        <ns3:titleInfo>
+            <ns3:title>Carmel Bach Festival Tape Collection</ns3:title>
+        </ns3:titleInfo>
+        <ns3:originInfo>
+            <ns3:dateCreated>1962-1982</ns3:dateCreated>
+            <ns3:dateCreated point="start">1962</ns3:dateCreated>
+            <ns3:dateCreated point="end">1982</ns3:dateCreated>
+        </ns3:originInfo>
+        <ns3:identifier type="local">ARS.0025</ns3:identifier>
+    </ns3:relatedItem>
+    <ns3:note displayLabel="Digital object made available by ">Archive of Recorded Sound, Braun Music Center, 541 Lasuen Mall, Stanford University, Stanford, California, 94305-3076, USA, (http://library.stanford.edu/depts/ars)</ns3:note>
+    <ns3:identifier displayLabel="Audio-Streaming">ARS0025_016_a_sl.mp3</ns3:identifier>
+    <ns3:identifier displayLabel="Audio-Service">ARS0025_016_a_sh.wav</ns3:identifier>
+    <ns3:identifier displayLabel="Audio-Master">ARS0025_016_a_pm.wav</ns3:identifier>
+</ns3:mods>
