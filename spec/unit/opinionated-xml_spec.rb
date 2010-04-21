@@ -99,12 +99,12 @@ describe "OpinionatedXml" do
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains(oxns:namePart[@type="date"], "2010") ]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, :date=>"2010")
           
-      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath].should == '//oxns:name[@type="person" and contains(oxns:role/oxns:roleterm, "#{lookup_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleterm, "#{constraint_value}")]'
       
-      @fakemods.expects(:xpath).with('//oxns:name[contains(oxns:role/oxns:roleterm, "donor") and @type="person"]', @fakemods.ox_namespaces)
+      @fakemods.expects(:xpath).with('//oxns:name[contains(oxns:role/oxns:roleterm, "donor") and @type="personal"]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, :role=>"donor")
 
-      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath].should == '//oxns:name[@type="person" and contains(oxns:role/oxns:roleterm, "#{lookup_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleterm, "#{constraint_value}")]'
     
     end
   

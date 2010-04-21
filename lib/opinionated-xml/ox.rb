@@ -29,6 +29,9 @@ module OX
       if prop_hash.has_key?(:variant_of)
         properties[prop_hash[:ref]] = properties[prop_hash[:variant_of]].merge(prop_hash)
       end
+      if !prop_hash.has_key?(:convenience_methods)
+        prop_hash[:convenience_methods] = {}
+      end
     end
     
     def configure_paths(prop_hash=root_config)
@@ -40,9 +43,32 @@ module OX
       
       xpath_constrained_opts = xpath_opts.merge({:constraints=>:default})
       
-      
       prop_hash[:xpath] = generate_xpath(prop_hash, xpath_opts)
       prop_hash[:xpath_constrained] = generate_xpath(prop_hash, xpath_constrained_opts)
+      
+      prop_hash[:convenience_methods].each_pair do |cm_name, cm_props|
+        cm_xpath_opts = xpath_opts.merge(:constraints => cm_props)
+        prop_hash[:convenience_methods][cm_name][:xpath] = generate_xpath(prop_hash, cm_xpath_opts)
+      end
+      
+      if prop_hash.has_key?(:subelements) 
+        prop_hash[:subelements].each do |se|
+          unless prop_hash[:convenience_methods].has_key?(se)
+            cm_xpath_opts = xpath_opts
+            if se.instance_of?(String)
+              se_props = prop_hash.merge(:name=>[ prop_hash[:name], se])
+              se_xpath = generate_xpath(se_props, xpath_opts)
+            elsif se.instance_of?(Symbol) && properties.has_key?(se)
+              se_props = properties[se]
+              se_xpath = generate_xpath(se_props, xpath_opts)
+            else
+              puts "failed to generate path"
+              se_xpath = ""
+            end
+            prop_hash[:convenience_methods][se] = {:xpath=>se_xpath}
+          end
+        end
+      end
 
     end
     
