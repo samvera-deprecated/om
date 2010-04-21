@@ -30,19 +30,58 @@ module OX
     def generate_xpath( property_info, opts={})
       prefix = "oxns"
       path = property_info[:path]
-      if opts.has_key?(:constraints)
-        if opts[:constraints] == :default
-          if property_info.has_key?(:default_content_path)
-            default_content_path = property_info[:default_content_path]
-            result = "//#{prefix}:#{path}[contains(#{prefix}:#{default_content_path}, \":::constraint_value:::\")]"
-          else
-            result = "//#{prefix}:#{path}[contains(\":::constraint_value:::\")]"
+      template = "//#{prefix}:#{path}"
+      predicates = []   
+      default_content_path = property_info.has_key?(:default_content_path) ? property_info[:default_content_path] : ""
+        
+      # Skip everything if a template was provided
+      if opts.has_key?(:template)
+        template = eval('"' + opts[:template] + '"')
+      else
+        # Apply variations
+        if opts.has_key?(:variations)
+          opts[:variations][:attributes].each_pair do |attr_name, attr_value|
+            predicates << "@#{attr_name}=\"#{attr_value}\""
           end
         end
-      else
-        result = "//#{prefix}:#{path}"
+      
+        # Apply constraints
+        if opts.has_key?(:constraints)  
+          arguments_for_contains_function = []
+          if opts[:constraints] == :default
+            if property_info.has_key?(:default_content_path)
+              default_content_path = property_info[:default_content_path]
+              arguments_for_contains_function << "#{prefix}:#{default_content_path}"
+            end
+          elsif opts[:constraints].has_key?(:path)
+            constraint_predicates = []
+            constraint_path = opts[:constraints][:path]
+            arguments_for_contains_function << "#{prefix}:#{constraint_path}"
+          
+            opts[:constraints][:attributes].each_pair do |attr_name, attr_value|
+              constraint_predicates << "@#{attr_name}=\"#{attr_value}\""
+            end
+          
+            unless constraint_predicates.empty?
+              arguments_for_contains_function.last << "[#{delimited_list(constraint_predicates)}]"
+            end
+          
+          end
+          arguments_for_contains_function << "\":::constraint_value:::\""
+        
+          predicates << "contains(#{delimited_list(arguments_for_contains_function)})"
+        
+        end
+            
+        unless predicates.empty? 
+          template << "["
+          template << delimited_list(predicates, " and ")
+          template << "]"
+        end
       end
-      return result.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
+      
+      # result = eval( '"' + template + '"' )
+      return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
     end
     
     ##
@@ -83,6 +122,10 @@ module OX
       rescue Exception => e  
         raise "Could not retrieve file from #{url}. Error: #{e}"
       end
+    end
+    
+    def delimited_list( values_array, delimiter=", ")
+      result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
     end
     
     private :file_from_url

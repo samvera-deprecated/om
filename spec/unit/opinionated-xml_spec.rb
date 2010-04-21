@@ -87,9 +87,7 @@ describe "OpinionatedXml" do
     end
   
     it "constructs xpath queries for you" do
-      
-      pending
-    
+                
       FakeOxMods.properties[:person][:xpath].should == '//oxns:name[@type="person"]'
       
       @fakemods.expects(:xpath).with('//oxns:name[@type="person"]', @fakemods.ox_namespaces)
@@ -145,17 +143,16 @@ describe "OpinionatedXml" do
       FakeOxMods.generate_xpath( opts1, :constraints=>:default ).should == '//oxns:name[contains(oxns:namePart, "#{constraint_value}")]'
       FakeOxMods.generate_xpath( opts2, :constraints=>:default ).should == '//oxns:originInfo[contains("#{constraint_value}")]'
 
-      #             
-      #       FakeOxMods.generate_xpath( opts, :variations=>{:attributes=>{:type=>"personal"}} ).should == '//oxns:name[@type="personal"]'
-      #       FakeOxMods.generate_xpath( opts, :variations=>{:attributes=>{:type=>"personal"}}, :type=>:constrained ).should == '//oxns:name[@type="personal" and contains("#{lookup_value}")]'
-      #       
-      #       FakeOxMods.generate_xpath( opts, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}} ).should == '//oxns:name[contains(oxns:namePart[@type="date"], "2010") ]'
-      #       FakeOxMods.generate_xpath( opts, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}}, :variations=>{:attributes=>{:type=>"personal"}} ).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010") ]'
+      FakeOxMods.generate_xpath( opts1, :variations=>{:attributes=>{:type=>"personal"}} ).should == '//oxns:name[@type="personal"]'
+      FakeOxMods.generate_xpath( opts1, :variations=>{:attributes=>{:type=>"personal"}}, :constraints=>:default ).should == '//oxns:name[@type="personal" and contains(oxns:namePart, "#{constraint_value}")]'
+             
+      FakeOxMods.generate_xpath( opts1, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}} ).should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
+      FakeOxMods.generate_xpath( opts1, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}}, :variations=>{:attributes=>{:type=>"personal"}} ).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
     end
     
     it "should support custom templates" do
       opts = {:path=>"name", :default_content_path=>"namePart"}
-      FakeOxMods.generate_xpath( opts, :template=>'/#{prefix}:sampleNode/#{prefix}:#{path}[contains(${default_content_path}, ":::constraint_value:::")]' ).should == '/oxns:sampleNode/oxns:name[contains(namePart, "#{constraint_value}")]'      
+      FakeOxMods.generate_xpath( opts, :template=>'/#{prefix}:sampleNode/#{prefix}:#{path}[contains(#{default_content_path}, \":::constraint_value:::\")]' ).should == '/oxns:sampleNode/oxns:name[contains(namePart, "#{constraint_value}")]'      
     end
   end
   
