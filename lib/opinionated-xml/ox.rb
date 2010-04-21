@@ -21,9 +21,17 @@ module OX
     def property( property_ref, opts={})
       @properties ||= {}
       @properties[property_ref] = opts.merge({:ref=>property_ref})
+      configure_property @properties[property_ref]
+      configure_paths @properties[property_ref]
     end
     
-    def configure_paths(config=root_config)
+    def configure_property(prop_hash=root_config)
+      if prop_hash.has_key?(:variant_of)
+        properties[prop_hash[:ref]] = properties[prop_hash[:variant_of]].merge(prop_hash)
+      end
+    end
+    
+    def configure_paths(prop_hash=root_config)
       
     end
     

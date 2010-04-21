@@ -77,10 +77,6 @@ describe "OpinionatedXml" do
   end
   
   describe "#property" do
-  
-    it "tracks configured properties in the #properties hash" do
-      FakeOxMods.properties.should == {:name_=>{:path=>"name", :subelements=>["namePart", "displayForm", "affiliation", :role, "description"], :ref=>:name_, :default_content_path=>"namePart", :attributes=>[:xlink, :lang, "xml:lang", :script, :transliteration, {:type=>["personal", "enumerated", "corporate"]}], :convenience_methods=>{:date=>{:path=>"namePart", :attributes=>{:type=>"date"}}, :family_name=>{:path=>"namePart", :attributes=>{:type=>"family"}}, :given_name=>{:path=>"namePart", :attributes=>{:type=>"given"}}, :terms_of_address=>{:path=>"namePart", :attributes=>{:type=>"termsOfAddress"}}}}, :role=>{:path=>[:name_, "role"], :ref=>:role, :default_content_path=>"roleTerm", :attributes=>[{"type"=>["text", "code"]}, "authority"]}, :person=>{:ref=>:person, :attributes=>{:type=>"personal"}, :variant_of=>:name_}}
-    end
     
     it "fails gracefully if you try to look up nodes for an undefined property" do
       @fakemods.lookup(:nobody_home).should == []
