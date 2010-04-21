@@ -94,7 +94,6 @@ describe "OpinionatedXml" do
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains("#Beethoven, Ludwig van")]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, "Beethoven, Ludwig van")
       
-      puts FakeOxMods.properties[:person][:convenience_methods].inspect
       FakeOxMods.properties[:person][:convenience_methods][:date][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
     
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains(oxns:namePart[@type="date"], "2010") ]', @fakemods.ox_namespaces)

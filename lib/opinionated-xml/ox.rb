@@ -32,7 +32,18 @@ module OX
     end
     
     def configure_paths(prop_hash=root_config)
+      xpath_opts = {}
       
+      if prop_hash.has_key?(:variant_of)
+        xpath_opts[:variations] = prop_hash
+      end
+      
+      xpath_constrained_opts = xpath_opts.merge({:constraints=>:default})
+      
+      
+      prop_hash[:xpath] = generate_xpath(prop_hash, xpath_opts)
+      prop_hash[:xpath_constrained] = generate_xpath(prop_hash, xpath_constrained_opts)
+
     end
     
     def generate_xpath( property_info, opts={})
