@@ -87,26 +87,29 @@ describe "OpinionatedXml" do
     end
   
     it "constructs xpath queries for you" do
-                
-      FakeOxMods.properties[:person][:xpath].should == '//oxns:name[@type="person"]'
+      FakeOxMods.properties[:name_][:xpath].should == '//oxns:name'                
+      FakeOxMods.properties[:person][:xpath].should == '//oxns:name[@type="personal"]'
       
-      @fakemods.expects(:xpath).with('//oxns:name[@type="person"]', @fakemods.ox_namespaces)
+      @fakemods.expects(:xpath).with('//oxns:name[@type="personal"]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person)
     
-      FakeOxMods.properties[:person][:xpath].should == '//oxns:name[@type="person" and contains("#{lookup_value}")]'
+      FakeOxMods.properties[:person][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:namePart, "#{constraint_value}")]'
       
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains("#Beethoven, Ludwig van")]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, "Beethoven, Ludwig van")
       
-      FakeOxMods.properties[:person][:convenience_methods][:date][:xpath].should == '//oxns:name[@type="person" and contains(oxns:namePart[@type="date"], "#{lookup_value}") ]'
+      puts FakeOxMods.properties[:person][:convenience_methods].inspect
+      FakeOxMods.properties[:person][:convenience_methods][:date][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
     
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains(oxns:namePart[@type="date"], "2010") ]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, :date=>"2010")
           
-      FakeOxMods.properties[:person][:subelements][:role][:xpath].should == '//oxns:name[@type="person" and contains(oxns:role/oxns:roleterm, "#{lookup_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath].should == '//oxns:name[@type="person" and contains(oxns:role/oxns:roleterm, "#{lookup_value}")]'
       
       @fakemods.expects(:xpath).with('//oxns:name[contains(oxns:role/oxns:roleterm, "donor") and @type="person"]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, :role=>"donor")
+
+      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath].should == '//oxns:name[@type="person" and contains(oxns:role/oxns:roleterm, "#{lookup_value}")]'
     
     end
   
@@ -148,6 +151,7 @@ describe "OpinionatedXml" do
              
       FakeOxMods.generate_xpath( opts1, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}} ).should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
       FakeOxMods.generate_xpath( opts1, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}}, :variations=>{:attributes=>{:type=>"personal"}} ).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
+      FakeOxMods.generate_xpath(FakeOxMods.properties[:person],:variations=>FakeOxMods.properties[:person]).should == "//oxns:name[@type=\"personal\"]"
     end
     
     it "should support custom templates" do
