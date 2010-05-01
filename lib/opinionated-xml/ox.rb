@@ -1,4 +1,5 @@
 require "open-uri"
+require "logger"
 
 module OX
   
@@ -27,13 +28,16 @@ module OX
     
     def configure_property(prop_hash=root_config)
       if prop_hash.has_key?(:variant_of)
-        properties[prop_hash[:ref]] = properties[prop_hash[:variant_of]].merge(prop_hash)
+        properties[prop_hash[:ref]] = properties[prop_hash[:variant_of]].deep_copy.merge(prop_hash)
       end
       if !prop_hash.has_key?(:convenience_methods)
         prop_hash[:convenience_methods] = {}
       end
     end
     
+    # Generates appropriate xpath queries for a property described by the given hash
+    # putting the results into the hash under keys like :xpath and :xpath_constrained
+    # This is also done recursively for all subelements and convenience methods described in the hash.
     def configure_paths(prop_hash=root_config)
       xpath_opts = {}
       
@@ -53,22 +57,66 @@ module OX
       
       if prop_hash.has_key?(:subelements) 
         prop_hash[:subelements].each do |se|
-          unless prop_hash[:convenience_methods].has_key?(se)
-            cm_xpath_opts = xpath_opts
-            if se.instance_of?(String)
-              se_props = prop_hash.merge(:name=>[ prop_hash[:name], se])
-              se_xpath = generate_xpath(se_props, xpath_opts)
-            elsif se.instance_of?(Symbol) && properties.has_key?(se)
-              se_props = properties[se]
-              se_xpath = generate_xpath(se_props, xpath_opts)
-            else
-              puts "failed to generate path"
-              se_xpath = ""
-            end
-            prop_hash[:convenience_methods][se] = {:xpath=>se_xpath}
-          end
+          # unless prop_hash[:convenience_methods].has_key?(se) && !se.instance_of?(Symbol)
+            configure_subelement_paths(se, prop_hash, xpath_opts)
+          # end
         end
       end
+      
+      if properties[:unresolved].has_key?(prop_hash[:ref])
+        ref = prop_hash[:ref]
+        properties[:unresolved][ref].each do |parent_prop_hash|
+          logger.debug "Resolving #{ref} subelement for #{parent_prop_hash[:ref]} property"
+          configure_subelement_paths(ref, parent_prop_hash, xpath_opts)
+        end
+        properties[:unresolved].delete(ref)
+      end
+
+    end
+    
+    def configure_subelement_paths(se, parent_prop_hash, parent_xpath_opts)
+      # se_xpath_opts = parent_xpath_opts.merge(:subelement_of => parent_prop_hash[:ref])
+      se_xpath_opts = parent_xpath_opts
+      
+      if parent_prop_hash.has_key?(:variant_of)
+        se_xpath_opts[:variations] = parent_prop_hash
+      end
+      
+      if se.instance_of?(String)
+        se_props = parent_prop_hash #.merge(:variations=>[:path=>se])
+        if se_xpath_opts.has_key?(:variations)
+          se_xpath_opts[:variations].merge!(:subelement_path=>se)
+        else
+          se_xpath_opts[:variations] = {:subelement_path=>se}
+        end
+        se_xpath = generate_xpath(se_props, se_xpath_opts)
+        se_xpath_opts[:variations].delete(:subelement_path)
+        
+        se_xpath_constrained_opts = se_xpath_opts.merge({:constraints=>{:path=>se}})
+        se_xpath_constrained = generate_xpath(se_props, se_xpath_constrained_opts)
+        
+      elsif se.instance_of?(Symbol) 
+        if properties.has_key?(se)
+          se_props = properties[se]
+          se_xpath_opts = parent_xpath_opts.merge(:constraints => se_props)
+          
+          se_xpath_opts[:subelement_of] = parent_prop_hash[:ref]
+
+          se_xpath = generate_xpath(parent_prop_hash, se_xpath_opts)
+          se_xpath_constrained_opts = se_xpath_opts#.merge({:constraints=>:default})
+          se_xpath_constrained = generate_xpath(se_props, se_xpath_constrained_opts)
+        else
+          properties[:unresolved] ||= {}
+          properties[:unresolved][se] ||= []
+          properties[:unresolved][se] << parent_prop_hash
+          logger.debug("Added #{se.inspect} to unresolved properties with parent #{parent_prop_hash[:ref]}")
+        end
+      else
+        logger.info("failed to generate path for #{se.inspect}")
+        se_xpath = ""
+      end
+
+      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained}  
 
     end
     
@@ -78,15 +126,21 @@ module OX
       template = "//#{prefix}:#{path}"
       predicates = []   
       default_content_path = property_info.has_key?(:default_content_path) ? property_info[:default_content_path] : ""
-        
+      subelement_path_parts = []
+      
       # Skip everything if a template was provided
       if opts.has_key?(:template)
         template = eval('"' + opts[:template] + '"')
       else
         # Apply variations
         if opts.has_key?(:variations)
-          opts[:variations][:attributes].each_pair do |attr_name, attr_value|
-            predicates << "@#{attr_name}=\"#{attr_value}\""
+          if opts[:variations].has_key?(:attributes)
+            opts[:variations][:attributes].each_pair do |attr_name, attr_value|
+              predicates << "@#{attr_name}=\"#{attr_value}\""
+            end
+          end
+          if opts[:variations].has_key?(:subelement_path) 
+            subelement_path_parts << "#{prefix}:#{opts[:variations][:subelement_path]}"  
           end
         end
       
@@ -100,11 +154,20 @@ module OX
             end
           elsif opts[:constraints].has_key?(:path)
             constraint_predicates = []
-            constraint_path = opts[:constraints][:path]
-            arguments_for_contains_function << "#{prefix}:#{constraint_path}"
-          
-            opts[:constraints][:attributes].each_pair do |attr_name, attr_value|
-              constraint_predicates << "@#{attr_name}=\"#{attr_value}\""
+            if opts.has_key?(:subelement_of)
+              constraint_path = "#{prefix}:#{opts[:constraints][:path]}"
+              if opts[:constraints].has_key?(:default_content_path)
+                constraint_path << "/#{prefix}:#{opts[:constraints][:default_content_path]}"
+              end 
+            else
+             constraint_path = "#{prefix}:#{opts[:constraints][:path]}"
+            end
+            arguments_for_contains_function << constraint_path
+            
+            if opts[:constraints].has_key?(:attributes) && opts[:constraints][:attributes].kind_of?(Hash)
+              opts[:constraints][:attributes].each_pair do |attr_name, attr_value|
+                constraint_predicates << "@#{attr_name}=\"#{attr_value}\""
+              end
             end
           
             unless constraint_predicates.empty?
@@ -122,6 +185,10 @@ module OX
           template << "["
           template << delimited_list(predicates, " and ")
           template << "]"
+        end
+        
+        unless subelement_path_parts.empty?
+          subelement_path_parts.each {|path_part| template << "/#{path_part}"}
         end
       end
       
@@ -171,6 +238,10 @@ module OX
     
     def delimited_list( values_array, delimiter=", ")
       result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
+    end
+    
+    def logger      
+      @logger ||= defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDOUT)
     end
     
     private :file_from_url

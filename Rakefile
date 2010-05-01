@@ -12,6 +12,7 @@ begin
     gem.authors = ["Matt Zumwalt"]
     
     gem.add_dependency('nokogiri')
+    gem.add_dependency('facets')
     
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "mocha", ">= 0.9.8"

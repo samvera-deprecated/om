@@ -32,7 +32,8 @@ describe "OpinionatedXml" do
                   
       property :person, :variant_of=>:name_, :attributes=>{:type=>"personal"}
       
-      property :role, :path=>[:name_, "role"],
+      property :role, :path=>"role",
+                  :parents=>[:name_],
                   :attributes=>[ { "type"=>["text", "code"] } , "authority"],
                   :default_content_path => "roleTerm"
                   
@@ -83,6 +84,7 @@ describe "OpinionatedXml" do
     end
   
     it "constructs xpath queries for you" do
+      # pp FakeOxMods.properties
       FakeOxMods.properties[:name_][:xpath].should == '//oxns:name'                
       FakeOxMods.properties[:person][:xpath].should == '//oxns:name[@type="personal"]'
       
@@ -93,19 +95,32 @@ describe "OpinionatedXml" do
       
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains("#Beethoven, Ludwig van")]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, "Beethoven, Ludwig van")
-      
+
+      #FakeOxMods.properties[:name_][:convenience_methods][:date][:xpath].should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'      
       FakeOxMods.properties[:person][:convenience_methods][:date][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
     
       @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains(oxns:namePart[@type="date"], "2010") ]', @fakemods.ox_namespaces)
       @fakemods.lookup(:person, :date=>"2010")
           
-      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleterm, "#{constraint_value}")]'
+      FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath].should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
       
-      @fakemods.expects(:xpath).with('//oxns:name[contains(oxns:role/oxns:roleterm, "donor") and @type="personal"]', @fakemods.ox_namespaces)
-      @fakemods.lookup(:person, :role=>"donor")
-
-      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleterm, "#{constraint_value}")]'
+      @fakemods.expects(:xpath).with('//oxns:name[contains(oxns:role/oxns:roleTerm, "donor") and @type="personal"]', @fakemods.ox_namespaces)
+      @fakemods.lookup(:person, :role=>"donor")    
+    end
     
+    it "constructs xpath queries for subelements too" do
+      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath].should == '//oxns:name[@type="personal"]/oxns:displayForm'
+      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:displayForm, "#{constraint_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
+    end
+    
+    it "should not overwrite default property info when adding a variant property" do
+      FakeOxMods.properties[:name_].should_not equal(FakeOxMods.properties[:person])
+      FakeOxMods.properties[:name_][:convenience_methods].should_not equal(FakeOxMods.properties[:person][:convenience_methods])
+
+      FakeOxMods.properties[:name_][:xpath].should_not == FakeOxMods.properties[:person][:xpath]
+      FakeOxMods.properties[:name_][:convenience_methods][:date][:xpath].should_not == FakeOxMods.properties[:person][:convenience_methods][:date][:xpath]
     end
   
   end
@@ -146,7 +161,16 @@ describe "OpinionatedXml" do
              
       FakeOxMods.generate_xpath( opts1, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}} ).should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
       FakeOxMods.generate_xpath( opts1, :constraints=>{:path=>"namePart", :attributes=>{:type=>"date"}}, :variations=>{:attributes=>{:type=>"personal"}} ).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
-      FakeOxMods.generate_xpath(FakeOxMods.properties[:person],:variations=>FakeOxMods.properties[:person]).should == "//oxns:name[@type=\"personal\"]"
+      FakeOxMods.generate_xpath(FakeOxMods.properties[:person], :variations=>{:attributes=>{:type=>"personal"}}, :constraints=>{:path=>"role", :default_content_path=>"roleTerm"}, :subelement_of=>":person").should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
+      
+      FakeOxMods.generate_xpath(opts1,  :variations=>{:attributes=>{:type=>"personal"}, :subelement_path=>"displayForm" } ).should == '//oxns:name[@type="personal"]/oxns:displayForm'
+      FakeOxMods.generate_xpath(opts1,  :variations=>{:attributes=>{:type=>"personal"}}, :constraints=>{:path=>"displayForm"} ).should == '//oxns:name[@type="personal" and contains(oxns:displayForm, "#{constraint_value}")]'
+    
+    end
+    
+    it "should work with real properties hashes" do
+      FakeOxMods.generate_xpath(FakeOxMods.properties[:person], :variations=>FakeOxMods.properties[:person]).should == "//oxns:name[@type=\"personal\"]"
+      FakeOxMods.generate_xpath(FakeOxMods.properties[:person], :variations=>FakeOxMods.properties[:person], :constraints=>{:path=>"role", :default_content_path=>"roleTerm"}, :subelement_of=>":person").should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
     end
     
     it "should support custom templates" do
