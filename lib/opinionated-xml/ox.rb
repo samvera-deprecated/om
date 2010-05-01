@@ -52,7 +52,7 @@ module OX
       
       prop_hash[:convenience_methods].each_pair do |cm_name, cm_props|
         cm_xpath_opts = xpath_opts.merge(:constraints => cm_props)
-        prop_hash[:convenience_methods][cm_name][:xpath] = generate_xpath(prop_hash, cm_xpath_opts)
+        prop_hash[:convenience_methods][cm_name][:xpath_constrained] = generate_xpath(prop_hash, cm_xpath_opts)
       end
       
       if prop_hash.has_key?(:subelements) 
@@ -83,39 +83,53 @@ module OX
       end
       
       if se.instance_of?(String)
-        se_props = parent_prop_hash #.merge(:variations=>[:path=>se])
+        
         if se_xpath_opts.has_key?(:variations)
           se_xpath_opts[:variations].merge!(:subelement_path=>se)
         else
           se_xpath_opts[:variations] = {:subelement_path=>se}
         end
+        
+        se_props = parent_prop_hash #.merge(:variations=>[:path=>se])
         se_xpath = generate_xpath(se_props, se_xpath_opts)
-        se_xpath_opts[:variations].delete(:subelement_path)
         
         se_xpath_constrained_opts = se_xpath_opts.merge({:constraints=>{:path=>se}})
+        se_xpath_constrained_opts[:variations].delete(:subelement_path)
+        
         se_xpath_constrained = generate_xpath(se_props, se_xpath_constrained_opts)
         
       elsif se.instance_of?(Symbol) 
+        
         if properties.has_key?(se)
           se_props = properties[se]
-          se_xpath_opts = parent_xpath_opts.merge(:constraints => se_props)
           
-          se_xpath_opts[:subelement_of] = parent_prop_hash[:ref]
-
+          if se_xpath_opts.has_key?(:variations)
+            se_xpath_opts[:variations].merge!(:subelement_path=>se_props[:path])
+          else
+            se_xpath_opts[:variations] = {:subelement_path=>se_props[:path]}
+          end
+          
+          se_xpath_constrained_opts = parent_xpath_opts.merge(:constraints => se_props)
+          
+          se_xpath_constrained_opts[:subelement_of] = parent_prop_hash[:ref]
+          
+          # if se == :role && parent_prop_hash[:ref] == :person then debugger end
+            
           se_xpath = generate_xpath(parent_prop_hash, se_xpath_opts)
-          se_xpath_constrained_opts = se_xpath_opts#.merge({:constraints=>:default})
-          se_xpath_constrained = generate_xpath(se_props, se_xpath_constrained_opts)
+          se_xpath_constrained_opts[:variations].delete(:subelement_path)
+          se_xpath_constrained = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
         else
           properties[:unresolved] ||= {}
           properties[:unresolved][se] ||= []
           properties[:unresolved][se] << parent_prop_hash
           logger.debug("Added #{se.inspect} to unresolved properties with parent #{parent_prop_hash[:ref]}")
-        end
+        end                
       else
         logger.info("failed to generate path for #{se.inspect}")
         se_xpath = ""
       end
 
+      se_xpath_opts[:variations].delete(:subelement_path)
       properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained}  
 
     end
@@ -140,7 +154,13 @@ module OX
             end
           end
           if opts[:variations].has_key?(:subelement_path) 
-            subelement_path_parts << "#{prefix}:#{opts[:variations][:subelement_path]}"  
+            if opts[:variations][:subelement_path].instance_of?(Array)
+              opts[:variations][:subelement_path].each do |se_path|
+                subelement_path_parts << "#{prefix}:#{se_path}"  
+              end
+            else
+              subelement_path_parts << "#{prefix}:#{opts[:variations][:subelement_path]}"  
+            end
           end
         end
       
