@@ -276,15 +276,15 @@ module OX
   # Instance Methods -- These methods will be available on instances of OX classes (ie. the actual xml documents)
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
-  def lookup( property_ref, opts={} )
+  def lookup( property_ref, query_opts={}, opts={} )
     if self.class.properties.has_key?(property_ref)
-      if opts.kind_of?(String)
-        constraint_value = opts
+      if query_opts.kind_of?(String)
+        constraint_value = query_opts
         xpath_template = self.class.properties[property_ref][:xpath_constrained]
         constrained_query = eval( '"' + xpath_template + '"' )
         result = xpath(constrained_query, ox_namespaces)
-      elsif !opts.empty?        
-        opts.each_pair do |k, v|
+      elsif !query_opts.empty?       
+        query_opts.each_pair do |k, v|
           constraint_value = v
           xpath_template = self.class.properties[property_ref][:convenience_methods][k][:xpath_constrained]
           constrained_query = eval( '"' + xpath_template + '"' )          

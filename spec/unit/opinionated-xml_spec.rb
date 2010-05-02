@@ -143,7 +143,7 @@ describe "OpinionatedXml" do
     # This lets you benefit from the handy xpath helpers 
     # without the performance cost of mixing in property-specific convenience methods that you might not be using.
     it "skips mixing in convenience methods if you tell it not to" do
-      people_set = @fixturemods.lookup(:person, :convenience_methods => false)
+      people_set = @fixturemods.lookup(:person, {}, :convenience_methods => false)
       person1 = people_set.first
       [:date, :family_name, :given_name, :terms_of_address].each {|cmeth| person1.should_not respond_to(cmeth)}
     end
