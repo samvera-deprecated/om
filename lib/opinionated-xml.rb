@@ -1,5 +1,5 @@
 require 'rubygems'
 
-require 'opinionated-xml/ox.rb'
 require 'nokogiri'
 require "facets"
+require File.join(File.dirname(__FILE__), 'opinionated-xml', '/ox.rb')

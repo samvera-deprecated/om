@@ -48,11 +48,11 @@ module OX
       xpath_constrained_opts = xpath_opts.merge({:constraints=>:default})
       
       prop_hash[:xpath] = generate_xpath(prop_hash, xpath_opts)
-      prop_hash[:xpath_constrained] = generate_xpath(prop_hash, xpath_constrained_opts)
+      prop_hash[:xpath_constrained] = generate_xpath(prop_hash, xpath_constrained_opts).gsub('"', '\"')
       
       prop_hash[:convenience_methods].each_pair do |cm_name, cm_props|
         cm_xpath_opts = xpath_opts.merge(:constraints => cm_props)
-        prop_hash[:convenience_methods][cm_name][:xpath_constrained] = generate_xpath(prop_hash, cm_xpath_opts)
+        prop_hash[:convenience_methods][cm_name][:xpath_constrained] = generate_xpath(prop_hash, cm_xpath_opts).gsub('"', '\"')
       end
       
       if prop_hash.has_key?(:subelements) 
@@ -123,14 +123,17 @@ module OX
           properties[:unresolved][se] ||= []
           properties[:unresolved][se] << parent_prop_hash
           logger.debug("Added #{se.inspect} to unresolved properties with parent #{parent_prop_hash[:ref]}")
+          se_xpath = ""
+          se_xpath_constrained = ""
         end                
       else
         logger.info("failed to generate path for #{se.inspect}")
         se_xpath = ""
+        se_xpath_constrained = ""
       end
 
       se_xpath_opts[:variations].delete(:subelement_path)
-      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained}  
+      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"')}  
 
     end
     
@@ -272,8 +275,27 @@ module OX
   
   # Instance Methods -- These methods will be available on instances of OX classes (ie. the actual xml documents)
   
+  # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
   def lookup( property_ref, opts={} )
-    result = []
+    if self.class.properties.has_key?(property_ref)
+      if opts.kind_of?(String)
+        constraint_value = opts
+        xpath_template = self.class.properties[property_ref][:xpath_constrained]
+        constrained_query = eval( '"' + xpath_template + '"' )
+        result = xpath(constrained_query, ox_namespaces)
+      elsif !opts.empty?        
+        opts.each_pair do |k, v|
+          constraint_value = v
+          xpath_template = self.class.properties[property_ref][:convenience_methods][k][:xpath_constrained]
+          constrained_query = eval( '"' + xpath_template + '"' )          
+          result = xpath(constrained_query, ox_namespaces)
+        end
+      else 
+        result = xpath(self.class.properties[property_ref][:xpath], ox_namespaces)
+      end
+    else
+      result = []
+    end
     return result
   end  
   

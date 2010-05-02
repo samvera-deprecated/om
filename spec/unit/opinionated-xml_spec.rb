@@ -52,7 +52,7 @@ describe "OpinionatedXml" do
   end
   
   before(:each) do
-    @fakemods = FakeOxMods.parse( fixture( File.join("CBF_MODS", "ARS0025_016.xml") ) )
+    @fixturemods = FakeOxMods.parse( fixture( File.join("CBF_MODS", "ARS0025_016.xml") ) )
   end
   
   after(:all) do
@@ -61,7 +61,7 @@ describe "OpinionatedXml" do
   
   describe "#new" do
     it "should set up namespaces" do
-      @fakemods.ox_namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3", "xmlns:ns2"=>"http://www.w3.org/1999/xlink", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns:ns3"=>"http://www.loc.gov/mods/v3"}
+      @fixturemods.ox_namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3", "xmlns:ns2"=>"http://www.w3.org/1999/xlink", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns:ns3"=>"http://www.loc.gov/mods/v3"}
     end
   end
   
@@ -80,7 +80,7 @@ describe "OpinionatedXml" do
   describe "#property" do
     
     it "fails gracefully if you try to look up nodes for an undefined property" do
-      @fakemods.lookup(:nobody_home).should == []
+      @fixturemods.lookup(:nobody_home).should == []
     end
   
     it "constructs xpath queries for you" do
@@ -88,31 +88,31 @@ describe "OpinionatedXml" do
       FakeOxMods.properties[:name_][:xpath].should == '//oxns:name'                
       FakeOxMods.properties[:person][:xpath].should == '//oxns:name[@type="personal"]'
       
-      @fakemods.expects(:xpath).with('//oxns:name[@type="personal"]', @fakemods.ox_namespaces)
-      @fakemods.lookup(:person)
+      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
+      @fixturemods.lookup(:person)
     
-      FakeOxMods.properties[:person][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:namePart, "#{constraint_value}")]'
-      
-      @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains("#Beethoven, Ludwig van")]', @fakemods.ox_namespaces)
-      @fakemods.lookup(:person, "Beethoven, Ludwig van")
+      FakeOxMods.properties[:person][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:namePart, "#{constraint_value}")]'.gsub('"', '\"')
+            
+      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
+      @fixturemods.lookup(:person, "Beethoven, Ludwig van")
 
       #FakeOxMods.properties[:name_][:convenience_methods][:date][:xpath].should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'      
-      FakeOxMods.properties[:person][:convenience_methods][:date][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:date][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'.gsub('"', '\"')
     
-      @fakemods.expects(:xpath).with('//oxns:name[@type="person" and contains(oxns:namePart[@type="date"], "2010") ]', @fakemods.ox_namespaces)
-      @fakemods.lookup(:person, :date=>"2010")
+      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
+      @fixturemods.lookup(:person, :date=>"2010")
           
-      FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
-      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
+      FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
+      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
       
-      @fakemods.expects(:xpath).with('//oxns:name[contains(oxns:role/oxns:roleTerm, "donor") and @type="personal"]', @fakemods.ox_namespaces)
-      @fakemods.lookup(:person, :role=>"donor")    
+      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
+      @fixturemods.lookup(:person, :role=>"donor")    
     end
     
     it "constructs xpath queries for subelements too" do
       FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath].should == '//oxns:name[@type="personal"]/oxns:displayForm'
-      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:displayForm, "#{constraint_value}")]'
-      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'
+      FakeOxMods.properties[:person][:convenience_methods][:displayForm][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:displayForm, "#{constraint_value}")]'.gsub('"', '\"')
+      FakeOxMods.properties[:person][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
       FakeOxMods.properties[:person][:convenience_methods][:role][:xpath].should == '//oxns:name[@type="personal"]/oxns:role'
     end
     
@@ -128,7 +128,7 @@ describe "OpinionatedXml" do
   
   describe ".lookup"  do
     it "mixes convenience methods into xml nodeSets" do
-      people_set = @fakemods.lookup(:person)
+      people_set = @fixturemods.lookup(:person)
       people_set.class.should == Nokogiri::XML::NodeSet
       person1 = people_set.first
       [:date, :family_name, :given_name, :terms_of_address].each {|cmeth| person1.should respond_to(cmeth)}
@@ -143,7 +143,7 @@ describe "OpinionatedXml" do
     # This lets you benefit from the handy xpath helpers 
     # without the performance cost of mixing in property-specific convenience methods that you might not be using.
     it "skips mixing in convenience methods if you tell it not to" do
-      people_set = @fakemods.lookup(:person, :convenience_methods => false)
+      people_set = @fixturemods.lookup(:person, :convenience_methods => false)
       person1 = people_set.first
       [:date, :family_name, :given_name, :terms_of_address].each {|cmeth| person1.should_not respond_to(cmeth)}
     end
@@ -195,15 +195,15 @@ describe "OpinionatedXml" do
   
   describe "#validate" do
     it "should validate the provided document against the schema provided in class definition  -- fails if no internet connection" do
-      FakeOxMods.schema.expects(:validate).with(@fakemods).returns([])
-      FakeOxMods.validate(@fakemods)
+      FakeOxMods.schema.expects(:validate).with(@fixturemods).returns([])
+      FakeOxMods.validate(@fixturemods)
     end
   end
   
   describe ".validate" do
     it "should rely on class validate method" do
-      FakeOxMods.expects(:validate).with(@fakemods)
-      @fakemods.validate
+      FakeOxMods.expects(:validate).with(@fixturemods)
+      @fixturemods.validate
     end
   end
   
