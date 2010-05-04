@@ -94,20 +94,10 @@ module OX
       if se.instance_of?(String)
          
         se_relative_xpath = generate_xpath({:path=>se}, :relative=>true)
-        
-        if se_xpath_opts.has_key?(:variations)
-          se_xpath_opts[:variations].merge!(:subelement_path=>se)
-        else
-          se_xpath_opts[:variations] = {:subelement_path=>se}
-        end
-        
-        se_props = parent_prop_hash #.merge(:variations=>[:path=>se])
-        se_xpath = generate_xpath(se_props, se_xpath_opts)
+        se_xpath = parent_prop_hash[:xpath] + "/" + se_relative_xpath
         
         se_xpath_constrained_opts = se_xpath_opts.merge({:constraints=>{:path=>se}})
-        se_xpath_constrained_opts[:variations].delete(:subelement_path)
-        
-        se_xpath_constrained = generate_xpath(se_props, se_xpath_constrained_opts)
+        se_xpath_constrained = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
         
       elsif se.instance_of?(Symbol) 
         
@@ -115,22 +105,11 @@ module OX
           se_props = properties[se]
           
           se_relative_xpath = se_props[:xpath_relative]
+          se_xpath = parent_prop_hash[:xpath] + "/" + se_relative_xpath
           
-          if se_xpath_opts.has_key?(:variations)
-            se_xpath_opts[:variations].merge!(:subelement_path=>se_props[:path])
-          else
-            se_xpath_opts[:variations] = {:subelement_path=>se_props[:path]}
-          end
-          
-          se_xpath_constrained_opts = parent_xpath_opts.merge(:constraints => se_props)
-          
-          se_xpath_constrained_opts[:subelement_of] = parent_prop_hash[:ref]
-          
-          # if se == :role && parent_prop_hash[:ref] == :person then debugger end
-            
-          se_xpath = generate_xpath(parent_prop_hash, se_xpath_opts)
-          se_xpath_constrained_opts[:variations].delete(:subelement_path)
+          se_xpath_constrained_opts = parent_xpath_opts.merge(:constraints => se_props, :subelement_of => parent_prop_hash[:ref])        
           se_xpath_constrained = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
+          
         else
           properties[:unresolved] ||= {}
           properties[:unresolved][se] ||= []
@@ -146,7 +125,6 @@ module OX
         se_xpath_constrained = ""
       end
 
-      se_xpath_opts[:variations].delete(:subelement_path)
       properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"'), :xpath_relative=>se_relative_xpath}  
 
     end
