@@ -39,6 +39,8 @@ module OX
     # putting the results into the hash under keys like :xpath and :xpath_constrained
     # This is also done recursively for all subelements and convenience methods described in the hash.
     def configure_paths(prop_hash=root_config)
+      prop_hash[:path] ||= ""
+      # prop_hash[:path] = Array( prop_hash[:path] )
       xpath_opts = {}
       
       if prop_hash.has_key?(:variant_of)
@@ -47,19 +49,26 @@ module OX
       
       xpath_constrained_opts = xpath_opts.merge({:constraints=>:default})
       
-      prop_hash[:xpath] = generate_xpath(prop_hash, xpath_opts)
+      relative_xpath = generate_xpath(prop_hash, xpath_opts.merge(:relative=>true))
+      # prop_hash[:xpath] = generate_xpath(prop_hash, xpath_opts)
+      prop_hash[:xpath] = "//#{relative_xpath}"
+      prop_hash[:xpath_relative] = relative_xpath
       prop_hash[:xpath_constrained] = generate_xpath(prop_hash, xpath_constrained_opts).gsub('"', '\"')
       
       prop_hash[:convenience_methods].each_pair do |cm_name, cm_props|
-        cm_xpath_opts = xpath_opts.merge(:constraints => cm_props)
-        prop_hash[:convenience_methods][cm_name][:xpath_constrained] = generate_xpath(prop_hash, cm_xpath_opts).gsub('"', '\"')
+        cm_xpath_relative_opts = cm_props.merge(:variations => cm_props, :relative=>true)
+        cm_constrained_opts = xpath_opts.merge(:constraints => cm_props)
+        
+        cm_relative_xpath = generate_xpath(cm_props, cm_xpath_relative_opts)
+        prop_hash[:convenience_methods][cm_name][:xpath_relative] = cm_relative_xpath
+        # prop_hash[:convenience_methods][cm_name][:xpath] = generate_xpath(cm_xpath_hash, cm_xpath_opts)
+        prop_hash[:convenience_methods][cm_name][:xpath] = prop_hash[:xpath] + "/" + cm_relative_xpath
+        prop_hash[:convenience_methods][cm_name][:xpath_constrained] = generate_xpath(prop_hash, cm_constrained_opts).gsub('"', '\"')
       end
       
       if prop_hash.has_key?(:subelements) 
         prop_hash[:subelements].each do |se|
-          # unless prop_hash[:convenience_methods].has_key?(se) && !se.instance_of?(Symbol)
-            configure_subelement_paths(se, prop_hash, xpath_opts)
-          # end
+          configure_subelement_paths(se, prop_hash, xpath_opts)
         end
       end
       
@@ -83,6 +92,8 @@ module OX
       end
       
       if se.instance_of?(String)
+         
+        se_relative_xpath = generate_xpath({:path=>se}, :relative=>true)
         
         if se_xpath_opts.has_key?(:variations)
           se_xpath_opts[:variations].merge!(:subelement_path=>se)
@@ -102,6 +113,8 @@ module OX
         
         if properties.has_key?(se)
           se_props = properties[se]
+          
+          se_relative_xpath = se_props[:xpath_relative]
           
           if se_xpath_opts.has_key?(:variations)
             se_xpath_opts[:variations].merge!(:subelement_path=>se_props[:path])
@@ -125,6 +138,7 @@ module OX
           logger.debug("Added #{se.inspect} to unresolved properties with parent #{parent_prop_hash[:ref]}")
           se_xpath = ""
           se_xpath_constrained = ""
+          se_relative_xpath = ""
         end                
       else
         logger.info("failed to generate path for #{se.inspect}")
@@ -133,14 +147,20 @@ module OX
       end
 
       se_xpath_opts[:variations].delete(:subelement_path)
-      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"')}  
+      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"'), :xpath_relative=>se_relative_xpath}  
 
     end
     
     def generate_xpath( property_info, opts={})
       prefix = "oxns"
+      property_info[:path] ||= "" 
       path = property_info[:path]
-      template = "//#{prefix}:#{path}"
+      path_array = Array( path )
+      template = ""
+      template << "//" unless opts[:relative]
+      template << "#{prefix}:"
+      template << delimited_list(path_array, "/#{prefix}:")
+
       predicates = []   
       default_content_path = property_info.has_key?(:default_content_path) ? property_info[:default_content_path] : ""
       subelement_path_parts = []
