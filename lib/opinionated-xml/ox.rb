@@ -92,7 +92,8 @@ module OX
       end
       
       if se.instance_of?(String)
-         
+        
+        se_path = se
         se_relative_xpath = generate_xpath({:path=>se}, :relative=>true)
         se_xpath = parent_prop_hash[:xpath] + "/" + se_relative_xpath
         
@@ -104,6 +105,7 @@ module OX
         if properties.has_key?(se)
           se_props = properties[se]
           
+          se_path = se_props[:path]
           se_relative_xpath = se_props[:xpath_relative]
           se_xpath = parent_prop_hash[:xpath] + "/" + se_relative_xpath
           
@@ -125,7 +127,7 @@ module OX
         se_xpath_constrained = ""
       end
 
-      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"'), :xpath_relative=>se_relative_xpath}  
+      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:path=>se_path, :xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"'), :xpath_relative=>se_relative_xpath}  
 
     end
     
@@ -217,6 +219,52 @@ module OX
       return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
     end
     
+    #
+    # Convenience Methods for Retrieving Generated Info
+    #
+    
+    def xpath_query_for( property_ref, query_opts={}, opts={} )
+
+      if property_ref.instance_of?(String)
+        xpath_query = property_ref
+      else
+        property_info = property_info_for( property_ref )
+
+        if !property_info.nil?
+          if query_opts.kind_of?(String)
+            constraint_value = query_opts
+            xpath_template = property_info[:xpath_constrained]
+            xpath_query = eval( '"' + xpath_template + '"' )
+          elsif query_opts.kind_of?(Hash) && !query_opts.empty?       
+            key_value_pair = query_opts.first 
+            constraint_value = key_value_pair.last
+            xpath_template = property_info[:convenience_methods][key_value_pair.first][:xpath_constrained]
+            xpath_query = eval( '"' + xpath_template + '"' )          
+          else 
+            xpath_query = property_info[:xpath]
+          end
+        else
+          xpath_query = nil
+        end
+      end
+      return xpath_query
+    end
+
+    def property_info_for(property_ref)
+      if property_ref.instance_of?(Symbol)
+        property_info = properties[property_ref]
+      elsif property_ref.kind_of?(Array)
+        prop_ref = property_ref[0]
+        cm_name = property_ref[1]
+        if properties.has_key?(prop_ref)
+          property_info = properties[prop_ref][:convenience_methods][cm_name]
+        end
+      else
+        property_info = nil
+      end
+      return property_info 
+    end
+    
     ##
     # Validation Support
     ##
@@ -261,6 +309,28 @@ module OX
       result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
     end
     
+    
+    #
+    # Builder Support
+    #
+    
+    def builder_template(property_ref, opts={})
+      property_info = property_info_for(property_ref)
+      if property_info.nil?
+        return nil
+      else
+        node_options = [":::builder_new_value:::"]
+        if property_info.has_key?(:attributes)
+          property_info[:attributes].each_pair do |k,v|
+            node_options << ":#{k}=>\"#{v}\""
+          end
+        end
+        template = "xml.#{property_info[:path]}( #{delimited_list(node_options)} )"
+        return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
+      end
+    end
+    
+    
     def logger      
       @logger ||= defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDOUT)
     end
@@ -286,47 +356,6 @@ module OX
     return result
   end  
   
-  def xpath_query_for( property_ref, query_opts={}, opts={} )
-    
-    if property_ref.instance_of?(String)
-      xpath_query = property_ref
-    else
-      property_info = property_info_for( property_ref )
-
-      if !property_info.nil?
-        if query_opts.kind_of?(String)
-          constraint_value = query_opts
-          xpath_template = property_info[:xpath_constrained]
-          xpath_query = eval( '"' + xpath_template + '"' )
-        elsif query_opts.kind_of?(Hash) && !query_opts.empty?       
-          key_value_pair = query_opts.first 
-          constraint_value = key_value_pair.last
-          xpath_template = property_info[:convenience_methods][key_value_pair.first][:xpath_constrained]
-          xpath_query = eval( '"' + xpath_template + '"' )          
-        else 
-          xpath_query = property_info[:xpath]
-        end
-      else
-        xpath_query = nil
-      end
-    end
-    return xpath_query
-  end
-  
-  def property_info_for(property_ref)
-    if property_ref.instance_of?(Symbol)
-      property_info = self.class.properties[property_ref]
-    elsif property_ref.kind_of?(Array)
-      prop_ref = property_ref[0]
-      cm_name = property_ref[1]
-      if self.class.properties.has_key?(prop_ref)
-        property_info = self.class.properties[prop_ref][:convenience_methods][cm_name]
-      end
-    else
-      property_info = nil
-    end
-    return property_info 
-  end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your class definiton.
   # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your root property config
@@ -336,6 +365,14 @@ module OX
   
   def validate
     self.class.validate(self)
+  end
+  
+  def xpath_query_for( property_ref, query_opts={}, opts={} )
+    self.class.xpath_query_for( property_ref, query_opts, opts )
+  end
+  
+  def property_info_for(property_ref)
+    self.class.property_info_for(property_ref)
   end
 
 end

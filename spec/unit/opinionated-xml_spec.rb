@@ -155,30 +155,7 @@ describe "OpinionatedXml" do
       # @fixturemods.expects(:xpath).with('//oxns:name[contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
       # @fixturemods.lookup([:person,:date], "2010")
     end
-    
-    it "mixes convenience methods into xml nodeSets" do
-      people_set = @fixturemods.lookup(:person)
-      people_set.class.should == Nokogiri::XML::NodeSet
-      
-      pending 
-      
-      person1 = people_set.first
-      [:date, :family_name, :given_name, :terms_of_address].each {|cmeth| person1.should respond_to(cmeth)}
-    
-      person1.expects(:xpath).with('namePart[@type="date"]')
-      date_set = person1.date
-      date_set.class.should == Nokogiri::XML::NodeSet
-      date_set.first.class.should == Nokogiri::XML::Element
-
-    end
   
-    # This lets you benefit from the handy xpath helpers 
-    # without the performance cost of mixing in property-specific convenience methods that you might not be using.
-    it "skips mixing in convenience methods if you tell it not to" do
-      people_set = @fixturemods.lookup(:person, {}, :convenience_methods => false)
-      person1 = people_set.first
-      [:date, :family_name, :given_name, :terms_of_address].each {|cmeth| person1.should_not respond_to(cmeth)}
-    end
   end
   
   describe ".xpath_query_for" do
@@ -244,8 +221,32 @@ describe "OpinionatedXml" do
     end
   end
   
-  describe "#configure_paths" do
-    it "should generate a hash with xpath queries for all of the defined properties, their convenience methods and their subelements"
+  describe "#builder_template" do
+    
+    it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
+      FakeOxMods.builder_template([:person,:date]).should == 'xml.namePart( #{builder_new_value}, :type=>"date" )'
+      FakeOxMods.builder_template([:name_,:affiliation]).should == 'xml.affiliation( #{builder_new_value} )'
+      
+      pending "must implement for complex nodes (ie. nested properties)"
+      
+      simple_role_builder_template = <<-END
+      xml.role(:type=>"text") {
+        xml.roleTerm \#{builder_new_value}
+      }  
+      END
+      
+      FakeOxMods.builder_template([:person,:role]).should == simple_role_builder_template
+      
+      marcrelator_role_builder_template = <<-END
+      xml.role(:type=>"code", :authority=>"marcrelator") {
+        xml.roleTerm \#{builder_new_value}
+      }  
+      END
+      
+      FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
+
+    end
+    
   end
   
   ## Validation Support 
