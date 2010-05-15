@@ -1,6 +1,6 @@
 = opinionated-xml
 
-Description goes here.
+A library to help you tame sprawling XML schemas like MODS.
 
 == Note on Patches/Pull Requests
  
