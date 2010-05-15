@@ -275,27 +275,55 @@ module OX
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
   def lookup( property_ref, query_opts={}, opts={} )
-    if self.class.properties.has_key?(property_ref)
-      if query_opts.kind_of?(String)
-        constraint_value = query_opts
-        xpath_template = self.class.properties[property_ref][:xpath_constrained]
-        constrained_query = eval( '"' + xpath_template + '"' )
-        result = xpath(constrained_query, ox_namespaces)
-      elsif !query_opts.empty?       
-        query_opts.each_pair do |k, v|
-          constraint_value = v
-          xpath_template = self.class.properties[property_ref][:convenience_methods][k][:xpath_constrained]
-          constrained_query = eval( '"' + xpath_template + '"' )          
-          result = xpath(constrained_query, ox_namespaces)
-        end
-      else 
-        result = xpath(self.class.properties[property_ref][:xpath], ox_namespaces)
-      end
-    else
+    xpath_query = xpath_query_for( property_ref, query_opts, opts )
+    
+    if xpath_query.nil?
       result = []
+    else
+      result = xpath(xpath_query, ox_namespaces)
     end
+    
     return result
   end  
+  
+  def xpath_query_for( property_ref, query_opts={}, opts={} )
+    
+    property_info = property_info_for( property_ref )
+
+    if !property_info.nil?
+      if query_opts.kind_of?(String)
+        constraint_value = query_opts
+        xpath_template = property_info[:xpath_constrained]
+        xpath_query = eval( '"' + xpath_template + '"' )
+      elsif query_opts.kind_of?(Hash) && !query_opts.empty?       
+        key_value_pair = query_opts.first 
+        constraint_value = key_value_pair.last
+        xpath_template = property_info[:convenience_methods][key_value_pair.first][:xpath_constrained]
+        xpath_query = eval( '"' + xpath_template + '"' )          
+      else 
+        xpath_query = property_info[:xpath]
+      end
+    else
+      xpath_query = nil
+    end
+    
+    return xpath_query
+  end
+  
+  def property_info_for(property_ref)
+    if property_ref.instance_of?(Symbol)
+      property_info = self.class.properties[property_ref]
+    elsif property_ref.kind_of?(Array)
+      prop_ref = property_ref[0]
+      cm_name = property_ref[1]
+      if self.class.properties.has_key?(prop_ref)
+        property_info = self.class.properties[prop_ref][:convenience_methods][cm_name]
+      end
+    else
+      property_info = nil
+    end
+    return property_info 
+  end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your class definiton.
   # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your root property config

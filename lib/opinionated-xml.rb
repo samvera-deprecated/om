@@ -2,4 +2,8 @@ require 'rubygems'
 
 require 'nokogiri'
 require "facets"
-require File.join(File.dirname(__FILE__), 'opinionated-xml', '/ox.rb')
+
+module OX; end
+
+require "opinionated-xml/ox_property_values_helper"
+require File.join(File.dirname(__FILE__), 'opinionated-xml', 'ox.rb')

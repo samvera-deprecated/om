@@ -148,6 +148,12 @@ describe "OpinionatedXml" do
       
       @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
       @fixturemods.lookup(:person, :role=>"donor")
+      
+      # @fixturemods.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]', @fixturemods.ox_namespaces)
+      # @fixturemods.lookup([:person,:date])
+      
+      # @fixturemods.expects(:xpath).with('//oxns:name[contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
+      # @fixturemods.lookup([:person,:date], "2010")
     end
     
     it "mixes convenience methods into xml nodeSets" do
@@ -172,6 +178,23 @@ describe "OpinionatedXml" do
       people_set = @fixturemods.lookup(:person, {}, :convenience_methods => false)
       person1 = people_set.first
       [:date, :family_name, :given_name, :terms_of_address].each {|cmeth| person1.should_not respond_to(cmeth)}
+    end
+  end
+  
+  describe ".xpath_query_for" do
+
+    it "retrieves the generated xpath query to match your desires" do    
+      @fixturemods.xpath_query_for(:person).should == '//oxns:name[@type="personal"]'
+          
+      @fixturemods.xpath_query_for(:person, "Beethoven, Ludwig van").should == '//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]'
+          
+      @fixturemods.xpath_query_for(:person, :date=>"2010").should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
+          
+      @fixturemods.xpath_query_for(:person, :role=>"donor").should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]'
+          
+      @fixturemods.xpath_query_for([:person,:date]).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+          
+      @fixturemods.xpath_query_for([:person,:date], "2010").should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
     end
   end
   
