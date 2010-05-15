@@ -14,7 +14,7 @@ describe "OX::PropertyValuesHelper" do
     @fake_includer = FakePVHClass.new
   end
     
-  describe ".property_values_for" do
+  describe ".property_values" do
 
     it "should call .lookup and then build an array of values from the returned nodeset (using default_node, etc as nessesary)" do
       lookup_opts = "insert args here"
@@ -23,25 +23,33 @@ describe "OX::PropertyValuesHelper" do
       mock_nodeset = [mock_node, mock_node, mock_node]
       helper.expects(:lookup).with(lookup_opts).returns(mock_nodeset)
       
-      helper.property_values_for(lookup_opts).should == ["sample value","sample value","sample value"]
+      helper.property_values(lookup_opts).should == ["sample value","sample value","sample value"]
     end
   
   end
 
-  describe ".property_values_append_for" do
+  describe ".property_value_append" do
 	
-  	it "should call corresponding builder method" do
-  	  pending
-	    helper.property_values_append_for(:date)
+  	it "should call templated builder method on the parent node of the first item returned by the corresponding xpath" do
+  	  mock_parent_node = mock("parent node")
+  	  mock_node = mock("node", :parent=>mock_parent_node)
+  	  mock_nodeset = [mock_node]
+  	  helper.expects(:lookup).with(:person, :date=>"2010").returns(mock_nodeset)
+  	  
+  	  helper.expects(:builder_template).with(:person).returns('my template inserts #{new_builder_value}')
+  	  
+  	  Nokogiri::XML::Builder.expects(:with).with(mock_parent_node).returns(mock_parent_node)
+      
+	    helper.property_value_append(:person, {:date=>"2010"}, ["my new value", "another new value"])
 	  end
   	
   end
 
-  describe ".property_values_set_for" do
+  describe ".property_value_set" do
 	
   	  it "should wipe out any existing nodes, use the corresponding builder, and insert new node(s) as the replacement" do
   	    pending
-  	    helper.property_values_set_for(:date)
+        helper.property_value_set(:person, {:date=>"2010"}, 1, "new value")
   	  end
 
   end

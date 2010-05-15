@@ -288,25 +288,28 @@ module OX
   
   def xpath_query_for( property_ref, query_opts={}, opts={} )
     
-    property_info = property_info_for( property_ref )
-
-    if !property_info.nil?
-      if query_opts.kind_of?(String)
-        constraint_value = query_opts
-        xpath_template = property_info[:xpath_constrained]
-        xpath_query = eval( '"' + xpath_template + '"' )
-      elsif query_opts.kind_of?(Hash) && !query_opts.empty?       
-        key_value_pair = query_opts.first 
-        constraint_value = key_value_pair.last
-        xpath_template = property_info[:convenience_methods][key_value_pair.first][:xpath_constrained]
-        xpath_query = eval( '"' + xpath_template + '"' )          
-      else 
-        xpath_query = property_info[:xpath]
-      end
+    if property_ref.instance_of?(String)
+      xpath_query = property_ref
     else
-      xpath_query = nil
+      property_info = property_info_for( property_ref )
+
+      if !property_info.nil?
+        if query_opts.kind_of?(String)
+          constraint_value = query_opts
+          xpath_template = property_info[:xpath_constrained]
+          xpath_query = eval( '"' + xpath_template + '"' )
+        elsif query_opts.kind_of?(Hash) && !query_opts.empty?       
+          key_value_pair = query_opts.first 
+          constraint_value = key_value_pair.last
+          xpath_template = property_info[:convenience_methods][key_value_pair.first][:xpath_constrained]
+          xpath_query = eval( '"' + xpath_template + '"' )          
+        else 
+          xpath_query = property_info[:xpath]
+        end
+      else
+        xpath_query = nil
+      end
     end
-    
     return xpath_query
   end
   

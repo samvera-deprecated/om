@@ -196,6 +196,11 @@ describe "OpinionatedXml" do
           
       @fixturemods.xpath_query_for([:person,:date], "2010").should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
     end
+    
+    it "parrots any strings back to you (in case you already have an xpath query)" do
+      @fixturemods.xpath_query_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+    end
+    
   end
   
   describe "#generate_xpath" do
