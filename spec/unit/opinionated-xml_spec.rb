@@ -232,10 +232,9 @@ describe "OpinionatedXml" do
       FakeOxMods.builder_template([:role]).should == simple_role_builder_template
       FakeOxMods.builder_template([:person,:role]).should == simple_role_builder_template
       
-      marcrelator_role_builder_template = 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm #{builder_new_value} }'  
+      marcrelator_role_builder_template = 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm( #{builder_new_value} ) }'  
       FakeOxMods.builder_template([:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
       FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
-
 
     end
     

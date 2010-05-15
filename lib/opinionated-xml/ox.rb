@@ -93,12 +93,11 @@ module OX
       
       if se.instance_of?(String)
         
-        se_path = se
-        se_relative_xpath = generate_xpath({:path=>se}, :relative=>true)
-        se_xpath = parent_prop_hash[:xpath] + "/" + se_relative_xpath
-        
+        new_se_props[:path] = se
+        new_se_props[:xpath_relative] = generate_xpath({:path=>se}, :relative=>true)
+        new_se_props[:xpath] = parent_prop_hash[:xpath] + "/" + new_se_props[:xpath_relative]
         se_xpath_constrained_opts = se_xpath_opts.merge({:constraints=>{:path=>se}})
-        se_xpath_constrained = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
+        new_se_props[:xpath_constrained] = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
         
       elsif se.instance_of?(Symbol) 
         
@@ -106,21 +105,18 @@ module OX
           
           se_props = properties[se]
           
-          se_path = se_props[:path]
-          se_relative_xpath = se_props[:xpath_relative]
-          se_xpath = parent_prop_hash[:xpath] + "/" + se_relative_xpath
-          
+          new_se_props = se_props.deep_copy
+          # new_se_props[:path] = se_props[:path]
+          # new_se_props[:xpath_relative] = se_props[:xpath_relative]
+          new_se_props[:xpath] = parent_prop_hash[:xpath] + "/" + new_se_props[:xpath_relative] 
           se_xpath_constrained_opts = parent_xpath_opts.merge(:constraints => se_props, :subelement_of => parent_prop_hash[:ref])        
-          se_xpath_constrained = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
+          new_se_props[:xpath_constrained] = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
                 
         else
           properties[:unresolved] ||= {}
           properties[:unresolved][se] ||= []
           properties[:unresolved][se] << parent_prop_hash
           logger.debug("Added #{se.inspect} to unresolved properties with parent #{parent_prop_hash[:ref]}")
-          se_xpath = ""
-          se_xpath_constrained = ""
-          se_relative_xpath = ""
         end                
       else
         logger.info("failed to generate path for #{se.inspect}")
@@ -128,7 +124,11 @@ module OX
         se_xpath_constrained = ""
       end
 
-      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = {:path=>se_path, :xpath=>se_xpath, :xpath_constrained=>se_xpath_constrained.gsub('"', '\"'), :xpath_relative=>se_relative_xpath}  
+      if new_se_props.has_key?(:xpath_constrained)
+        new_se_props[:xpath_constrained].gsub!('"', '\"')
+      end
+      
+      properties[ parent_prop_hash[:ref] ][:convenience_methods][se.to_sym] = new_se_props  
 
     end
     
@@ -320,26 +320,28 @@ module OX
     
     def builder_template(property_ref, opts={})
       property_info = property_info_for(property_ref)
-      if property_info.nil?
+      
+      prop_info = property_info.merge(opts)
+      
+      if prop_info.nil?
         return nil
       else
         node_options = []
         node_child_template = ""
-        if property_info.has_key?(:default_content_path)
+        if prop_info.has_key?(:default_content_path)
           node_child_options = [":::builder_new_value:::"]
           node_child_template = " { xml.#{property_info[:default_content_path]}( #{delimited_list(node_child_options)} ) }"
         else
           node_options = [":::builder_new_value:::"]
-          
         end
         # if opts.has_key?(:attributes) ...
         # ...
-        if property_info.has_key?(:attributes)
-          applicable_attributes( property_info[:attributes] ).each_pair do |k,v|
+        if prop_info.has_key?(:attributes)
+          applicable_attributes( prop_info[:attributes] ).each_pair do |k,v|
             node_options << ":#{k}=>\"#{v}\""
           end
         end
-        template = "xml.#{property_info[:path]}( #{delimited_list(node_options)} )" + node_child_template
+        template = "xml.#{prop_info[:path]}( #{delimited_list(node_options)} )" + node_child_template
         return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
       end
     end
