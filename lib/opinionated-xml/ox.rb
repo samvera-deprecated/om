@@ -86,7 +86,7 @@ module OX
     def configure_subelement_paths(se, parent_prop_hash, parent_xpath_opts)
       # se_xpath_opts = parent_xpath_opts.merge(:subelement_of => parent_prop_hash[:ref])
       se_xpath_opts = parent_xpath_opts
-      
+      new_se_props = {}
       if parent_prop_hash.has_key?(:variant_of)
         se_xpath_opts[:variations] = parent_prop_hash
       end
@@ -103,6 +103,7 @@ module OX
       elsif se.instance_of?(Symbol) 
         
         if properties.has_key?(se)
+          
           se_props = properties[se]
           
           se_path = se_props[:path]
@@ -111,7 +112,7 @@ module OX
           
           se_xpath_constrained_opts = parent_xpath_opts.merge(:constraints => se_props, :subelement_of => parent_prop_hash[:ref])        
           se_xpath_constrained = generate_xpath(parent_prop_hash, se_xpath_constrained_opts)
-          
+                
         else
           properties[:unresolved] ||= {}
           properties[:unresolved][se] ||= []
@@ -251,6 +252,9 @@ module OX
     end
 
     def property_info_for(property_ref)
+      if property_ref.instance_of?(Array) && property_ref.length == 1
+        property_ref = property_ref[0]      
+      end
       if property_ref.instance_of?(Symbol)
         property_info = properties[property_ref]
       elsif property_ref.kind_of?(Array)
@@ -319,23 +323,64 @@ module OX
       if property_info.nil?
         return nil
       else
-        node_options = [":::builder_new_value:::"]
+        node_options = []
+        node_child_template = ""
+        if property_info.has_key?(:default_content_path)
+          node_child_options = [":::builder_new_value:::"]
+          node_child_template = " { xml.#{property_info[:default_content_path]}( #{delimited_list(node_child_options)} ) }"
+        else
+          node_options = [":::builder_new_value:::"]
+          
+        end
+        # if opts.has_key?(:attributes) ...
+        # ...
         if property_info.has_key?(:attributes)
-          property_info[:attributes].each_pair do |k,v|
+          applicable_attributes( property_info[:attributes] ).each_pair do |k,v|
             node_options << ":#{k}=>\"#{v}\""
           end
         end
-        template = "xml.#{property_info[:path]}( #{delimited_list(node_options)} )"
+        template = "xml.#{property_info[:path]}( #{delimited_list(node_options)} )" + node_child_template
         return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
       end
     end
     
+    # @attributes_spec Array or Hash
+    # Returns a Hash where all of the values are strings
+    # {:type=>"date"} will return {:type=>"date"}
+    # {["authority", {:type=>["text","code"]}] will return {:type=>"text"}
+    def applicable_attributes(attributes)
+      
+      if attributes.kind_of?(Hash)
+        attributes_hash = attributes
+      elsif attributes.kind_of?(Array)
+        attributes_hash = {}
+        attributes.each do |bute|
+          if bute.kind_of?(Hash)
+            attributes_hash.merge!(bute)
+          end
+        end
+      end
+      
+      applicable_attributes = {}
+      attributes_hash.each_pair {|k,v| applicable_attributes[k] = condense_value(v) }
+      
+      
+      return applicable_attributes
+    end
+    
+    def condense_value(value)
+      if value.kind_of?(Array)
+        return value.first
+      else
+        return value
+      end
+    end
     
     def logger      
       @logger ||= defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDOUT)
     end
     
-    private :file_from_url
+    private :file_from_url, :applicable_attributes
     
     
     

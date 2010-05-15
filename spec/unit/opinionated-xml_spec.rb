@@ -227,26 +227,25 @@ describe "OpinionatedXml" do
       FakeOxMods.builder_template([:person,:date]).should == 'xml.namePart( #{builder_new_value}, :type=>"date" )'
       FakeOxMods.builder_template([:name_,:affiliation]).should == 'xml.affiliation( #{builder_new_value} )'
       
-      pending "must implement for complex nodes (ie. nested properties)"
-      
-      simple_role_builder_template = <<-END
-      xml.role(:type=>"text") {
-        xml.roleTerm \#{builder_new_value}
-      }  
-      END
-      
+      # pending "must implement for complex nodes (ie. nested properties)"
+      simple_role_builder_template = 'xml.role( :type=>"text" ) { xml.roleTerm( #{builder_new_value} ) }'  
+      FakeOxMods.builder_template([:role]).should == simple_role_builder_template
       FakeOxMods.builder_template([:person,:role]).should == simple_role_builder_template
       
-      marcrelator_role_builder_template = <<-END
-      xml.role(:type=>"code", :authority=>"marcrelator") {
-        xml.roleTerm \#{builder_new_value}
-      }  
-      END
-      
+      marcrelator_role_builder_template = 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm #{builder_new_value} }'  
+      FakeOxMods.builder_template([:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
       FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
+
 
     end
     
+  end
+  
+  describe "#applicable_attributes" do
+    it "returns a Hash where all of the values are strings" do
+      FakeOxMods.send(:applicable_attributes, {:type=>"date"} ).should == {:type=>"date"} 
+      FakeOxMods.send(:applicable_attributes, ["authority", {:type=>["text","code"]}] ).should == {:type=>"text"} 
+    end
   end
   
   ## Validation Support 
