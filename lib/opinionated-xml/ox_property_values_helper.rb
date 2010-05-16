@@ -10,7 +10,7 @@ module OX::PropertyValuesHelper
     return result
   end
   
-  def property_value_append(opts={})
+  def property_values_append(opts={})
     parent_select = opts[:parent_select] 
     parent_index = opts[:parent_index]
     template = opts[:template]

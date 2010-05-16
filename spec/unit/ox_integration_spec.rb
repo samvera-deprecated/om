@@ -48,10 +48,10 @@ describe "OpinionatedXml" do
     Object.send(:remove_const, :FakeOxIntegrationMods)
   end
   
-  describe ".property_value_append" do
+  describe ".property_values_append" do
 	
   	it "looks up the parent using :parent_select, uses :parent_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
-	    @fixturemods.property_value_append(
+	    @fixturemods.property_values_append(
         :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
         :parent_index => :first,
         :template => [:person, :affiliation],
@@ -67,7 +67,7 @@ describe "OpinionatedXml" do
   <ns3:affiliation>my new value</ns3:affiliation><ns3:affiliation>another new value</ns3:affiliation></ns3:name>'
       #expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
       
-	    @fixturemods.property_value_append(
+	    @fixturemods.property_values_append(
         :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
         :parent_index => :first,
         :template => [:person, :affiliation],
@@ -81,7 +81,7 @@ describe "OpinionatedXml" do
       # this appends a role of "my role" into the third "person" node in the document
       expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Klimt</ns3:namePart>\n      <ns3:namePart type=\"given\">Gustav</ns3:namePart>\n  <ns3:role type=\"text\"><ns3:roleTerm>my role</ns3:roleTerm></ns3:role></ns3:name>"
       
-      @fixturemods.property_value_append(
+      @fixturemods.property_values_append(
         :parent_select => :person ,
         :parent_index => 3,
         :template => :role,
@@ -94,7 +94,7 @@ describe "OpinionatedXml" do
     it "should accept parent_select as an (xpath) string and template as a (template) string" do
       # this uses the provided template to add a node into the first node resulting from the xpath '//oxns:name[@type="personal"]'
       expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Berners-Lee</ns3:namePart>\n      <ns3:namePart type=\"given\">Tim</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>creator</ns3:roleTerm></ns3:role></ns3:name>"
-      @fixturemods.property_value_append(
+      @fixturemods.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :parent_index => 0,
         :template => 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }',
@@ -107,7 +107,7 @@ describe "OpinionatedXml" do
 	  it "should support more complex mixing & matching" do
 	    expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Jobs</ns3:namePart>\n      <ns3:namePart type=\"given\">Steve</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>foo</ns3:roleTerm></ns3:role></ns3:name>"
       
-	    @fixturemods.property_value_append(
+	    @fixturemods.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :parent_index => 1,
         :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],

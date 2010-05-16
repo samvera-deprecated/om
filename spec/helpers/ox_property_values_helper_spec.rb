@@ -28,7 +28,7 @@ describe "OX::PropertyValuesHelper" do
   
   end
 
-  describe ".property_value_append" do
+  describe ".property_values_append" do
 	
 	  # see ../unit/ox_integration_spec.rb
   	
