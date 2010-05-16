@@ -36,11 +36,20 @@ describe "OX::PropertyValuesHelper" do
 
   describe ".property_value_set" do
 	
-  	  it "should wipe out any existing nodes, use the corresponding builder, and insert new node(s) as the replacement" do
-  	    pending
-        helper.property_value_set(:person, {:date=>"2010"}, 1, "new value")
+  	  it "should " do
+  	    pending "in progress..."
+  	    @fixturemods.property_value_set('//oxns:name[@type="personal"]',1,"foo")
+  	    @fixturemods.property_value_set([ [:person,:role], "donor"], 5, "special donor")
   	  end
-
+      
+      it "could support alternative notation" do
+        pending "this would be for the sake of consistency with the method signature of property_values_append"
+        # @fixturemods.property_value_set(
+        #           :node_select =>'//oxns:name[@type="personal"]',
+        #           :node_index => 1,
+        #           :values => "foo" 
+        #         ).to_xml.should == expected_result
+      end
   end
 
 end
