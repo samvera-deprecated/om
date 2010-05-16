@@ -79,46 +79,42 @@ describe "OpinionatedXml" do
     
     it "should accept symbols as arguments for generators/lookups" do
       # this appends a role of "my role" into the third "person" node in the document
-      expected_result = '<mods:name type="personal"><mods:role type="text"><mods:roleTerm>my role</mods:roleTerm></mods:role></mods:name>'
-      expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
+      expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Klimt</ns3:namePart>\n      <ns3:namePart type=\"given\">Gustav</ns3:namePart>\n  <ns3:role type=\"text\"><ns3:roleTerm>my role</ns3:roleTerm></ns3:role></ns3:name>"
       
       @fixturemods.property_value_append(
         :parent_select => :person ,
         :parent_index => 3,
         :template => :role,
         :values => "my role" 
-      ).should == expected_result
+      ).to_xml.should == expected_result
 
-      @fixturemods.lookup(:person)[3].should == expected_result
+      @fixturemods.lookup(:person)[3].to_xml.should == expected_result
     end
     
     it "should accept parent_select as an (xpath) string and template as a (template) string" do
       # this uses the provided template to add a node into the first node resulting from the xpath '//oxns:name[@type="personal"]'
-      expected_result = '<mods:name type="personal"><mods:role type="code" authority="marcrelator"><mods:roleTerm>creator</mods:roleTerm></mods:role></mods:name>'
-      expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
-      
+      expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Berners-Lee</ns3:namePart>\n      <ns3:namePart type=\"given\">Tim</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>creator</ns3:roleTerm></ns3:role></ns3:name>"
       @fixturemods.property_value_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :parent_index => 0,
-        :template => 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm( #{builder_new_value} ) }',
+        :template => 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }',
         :values => "creator" 
-      ).should == expected_result
+      ).to_xml.should == expected_result
 
-      @fixturemods.lookup(:person).first.should == expected_result
+      @fixturemods.lookup(:person).first.to_xml.should == expected_result
     end
 	  
 	  it "should support more complex mixing & matching" do
-	    expected_result = '<mods:name type="personal"><mods:role type="code" authority="marcrelator"><mods:roleTerm>foo</mods:roleTerm></mods:role></mods:name>'
-      expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
+	    expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Jobs</ns3:namePart>\n      <ns3:namePart type=\"given\">Steve</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>foo</ns3:roleTerm></ns3:role></ns3:name>"
       
 	    @fixturemods.property_value_append(
         :parent_select =>'//oxns:name[@type="personal"]',
-        :parent_index => 5,
+        :parent_index => 1,
         :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],
         :values => "foo" 
-      ).should == expected_result
+      ).to_xml.should == expected_result
 
-      @fixturemods.lookup(:person)[5].should == expected_result
+      @fixturemods.lookup(:person)[1].to_xml.should == expected_result
 	  end
 	  
 	  it "should raise exception if no node corresponds to the provided :parent_select and :parent_index"

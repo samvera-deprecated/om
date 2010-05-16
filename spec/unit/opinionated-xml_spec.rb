@@ -222,14 +222,14 @@ describe "OpinionatedXml" do
   describe "#builder_template" do
     
     it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
-      FakeOxMods.builder_template([:person,:date]).should == 'xml.namePart( \'#{builder_new_value}\', :type=>"date" )'
+      FakeOxMods.builder_template([:person,:date]).should == 'xml.namePart( \'#{builder_new_value}\', :type=>\'date\' )'
       FakeOxMods.builder_template([:name_,:affiliation]).should == 'xml.affiliation( \'#{builder_new_value}\' )'
       
-      simple_role_builder_template = 'xml.role( :type=>"text" ) { xml.roleTerm( \'#{builder_new_value}\' ) }'  
+      simple_role_builder_template = 'xml.role( :type=>\'text\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }'  
       FakeOxMods.builder_template([:role]).should == simple_role_builder_template
       FakeOxMods.builder_template([:person,:role]).should == simple_role_builder_template
       
-      marcrelator_role_builder_template = 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm( \'#{builder_new_value}\' ) }'  
+      marcrelator_role_builder_template = 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }'  
       FakeOxMods.builder_template([:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
       FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
     end

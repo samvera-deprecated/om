@@ -321,7 +321,7 @@ module OX
     def builder_template(property_ref, opts={})
       property_info = property_info_for(property_ref)
 
-      prop_info = property_info.merge(opts)
+      prop_info = property_info.merge(opts) 
       
       if prop_info.nil?
         return nil
@@ -338,7 +338,7 @@ module OX
         # ...
         if prop_info.has_key?(:attributes)
           applicable_attributes( prop_info[:attributes] ).each_pair do |k,v|
-            node_options << ":#{k}=>\"#{v}\""
+            node_options << ":#{k}=>\'#{v}\'"
           end
         end
         template = "xml.#{prop_info[:path]}( #{delimited_list(node_options)} )" + node_child_template

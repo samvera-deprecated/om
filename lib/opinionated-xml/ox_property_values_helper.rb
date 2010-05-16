@@ -20,7 +20,7 @@ module OX::PropertyValuesHelper
     unless template.instance_of?(String)
       template_args = Array(template)
       if template_args.last.kind_of?(Hash)
-        template_opts = template_args.delete(template_args.length)
+        template_opts = template_args.delete_at(template_args.length - 1)
       else
         template_opts = {}
       end
