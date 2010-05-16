@@ -390,6 +390,11 @@ module OX
   
   # Instance Methods -- These methods will be available on instances of OX classes (ie. the actual xml documents)
   
+  def self.included(klass)
+    klass.extend(ClassMethods)
+    # klass.send(:include, OX::PropertyValuesHelper)
+  end
+  
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
   def lookup( property_ref, query_opts={}, opts={} )
     xpath_query = xpath_query_for( property_ref, query_opts, opts )

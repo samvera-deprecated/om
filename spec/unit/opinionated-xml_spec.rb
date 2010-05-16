@@ -6,9 +6,7 @@ describe "OpinionatedXml" do
     #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
     class FakeOxMods < Nokogiri::XML::Document
       
-      include OX
-      extend OX::ClassMethods
-      
+      include OX      
       
       # Could add support for multiple root declarations.  
       #  For now, assume that any modsCollections have already been broken up and fed in as individual mods documents
@@ -227,7 +225,6 @@ describe "OpinionatedXml" do
       FakeOxMods.builder_template([:person,:date]).should == 'xml.namePart( #{builder_new_value}, :type=>"date" )'
       FakeOxMods.builder_template([:name_,:affiliation]).should == 'xml.affiliation( #{builder_new_value} )'
       
-      # pending "must implement for complex nodes (ie. nested properties)"
       simple_role_builder_template = 'xml.role( :type=>"text" ) { xml.roleTerm( #{builder_new_value} ) }'  
       FakeOxMods.builder_template([:role]).should == simple_role_builder_template
       FakeOxMods.builder_template([:person,:role]).should == simple_role_builder_template
@@ -235,7 +232,6 @@ describe "OpinionatedXml" do
       marcrelator_role_builder_template = 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm( #{builder_new_value} ) }'  
       FakeOxMods.builder_template([:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
       FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
-
     end
     
   end
