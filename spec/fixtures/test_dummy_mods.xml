@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:mods xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns3="http://www.loc.gov/mods/v3" xmlns:ns2="http://www.w3.org/1999/xlink">
+  <ns3:name type="personal">
+      <ns3:namePart type="family">Berners-Lee</ns3:namePart>
+      <ns3:namePart type="given">Tim</ns3:namePart>
+  </ns3:name>
+  <ns3:name type="personal">
+      <ns3:namePart type="family">Jobs</ns3:namePart>
+      <ns3:namePart type="given">Steve</ns3:namePart>
+  </ns3:name>
+  <ns3:name type="personal">
+      <ns3:namePart type="family">Wozniak</ns3:namePart>
+      <ns3:namePart type="given">The Woz</ns3:namePart>
+  </ns3:name>
+  <ns3:name type="personal">
+      <ns3:namePart type="family">Klimt</ns3:namePart>
+      <ns3:namePart type="given">Gustav</ns3:namePart>
+  </ns3:name>
+</ns3:mods>

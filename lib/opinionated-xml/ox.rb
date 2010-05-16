@@ -320,7 +320,7 @@ module OX
     
     def builder_template(property_ref, opts={})
       property_info = property_info_for(property_ref)
-      
+
       prop_info = property_info.merge(opts)
       
       if prop_info.nil?
@@ -329,10 +329,10 @@ module OX
         node_options = []
         node_child_template = ""
         if prop_info.has_key?(:default_content_path)
-          node_child_options = [":::builder_new_value:::"]
+          node_child_options = ["\':::builder_new_value:::\'"]
           node_child_template = " { xml.#{property_info[:default_content_path]}( #{delimited_list(node_child_options)} ) }"
         else
-          node_options = [":::builder_new_value:::"]
+          node_options = ["\':::builder_new_value:::\'"]
         end
         # if opts.has_key?(:attributes) ...
         # ...
@@ -392,7 +392,7 @@ module OX
   
   def self.included(klass)
     klass.extend(ClassMethods)
-    # klass.send(:include, OX::PropertyValuesHelper)
+    klass.send(:include, OX::PropertyValuesHelper)
   end
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet

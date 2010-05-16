@@ -1,0 +1,128 @@
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+
+describe "OpinionatedXml" do
+  
+  before(:all) do
+    #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
+    class FakeOxIntegrationMods < Nokogiri::XML::Document
+      
+      include OX      
+      
+      # Could add support for multiple root declarations.  
+      #  For now, assume that any modsCollections have already been broken up and fed in as individual mods documents
+      # root :mods_collection, :path=>"modsCollection", 
+      #           :attributes=>[],
+      #           :subelements => :mods
+                     
+      root_property :mods, "mods", "http://www.loc.gov/mods/v3", :attributes=>["id", "version"], :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"          
+                
+                
+      property :name_, :path=>"name", 
+                  :attributes=>[:xlink, :lang, "xml:lang", :script, :transliteration, {:type=>["personal", "enumerated", "corporate"]} ],
+                  :subelements=>["namePart", "displayForm", "affiliation", :role, "description"],
+                  :default_content_path => "namePart",
+                  :convenience_methods => {
+                    :date => {:path=>"namePart", :attributes=>{:type=>"date"}},
+                    :family_name => {:path=>"namePart", :attributes=>{:type=>"family"}},
+                    :given_name => {:path=>"namePart", :attributes=>{:type=>"given"}},
+                    :terms_of_address => {:path=>"namePart", :attributes=>{:type=>"termsOfAddress"}}
+                  }
+                  
+      property :person, :variant_of=>:name_, :attributes=>{:type=>"personal"}
+      
+      property :role, :path=>"role",
+                  :parents=>[:name_],
+                  :attributes=>[ { "type"=>["text", "code"] } , "authority"],
+                  :default_content_path => "roleTerm"
+                  
+                  
+    end
+        
+  end
+  
+  before(:each) do
+    @fixturemods = FakeOxIntegrationMods.parse( fixture( File.join("test_dummy_mods.xml") ) )
+  end
+  
+  after(:all) do
+    Object.send(:remove_const, :FakeOxIntegrationMods)
+  end
+  
+  describe ".property_value_append" do
+	
+  	it "looks up the parent using :parent_select, uses :parent_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
+	    @fixturemods.property_value_append(
+        :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
+        :parent_index => :first,
+        :template => [:person, :affiliation],
+        :values => ["my new value", "another new value"] 
+      )
+    end
+    
+    it "should accept parent_select and template [property_reference, lookup_opts] as argument arrays for generators/lookups" do
+      # this appends two affiliation nodes into the first person node whose name is Tim Berners-Lee
+      expected_result = '<ns3:name type="personal">
+      <ns3:namePart type="family">Berners-Lee</ns3:namePart>
+      <ns3:namePart type="given">Tim</ns3:namePart>
+  <ns3:affiliation>my new value</ns3:affiliation><ns3:affiliation>another new value</ns3:affiliation></ns3:name>'
+      #expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
+      
+	    @fixturemods.property_value_append(
+        :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
+        :parent_index => :first,
+        :template => [:person, :affiliation],
+        :values => ["my new value", "another new value"] 
+      ).to_xml.should == expected_result
+      
+      @fixturemods.lookup(:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}).first.to_xml.should == expected_result
+    end
+    
+    it "should accept symbols as arguments for generators/lookups" do
+      # this appends a role of "my role" into the third "person" node in the document
+      expected_result = '<mods:name type="personal"><mods:role type="text"><mods:roleTerm>my role</mods:roleTerm></mods:role></mods:name>'
+      expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
+      
+      @fixturemods.property_value_append(
+        :parent_select => :person ,
+        :parent_index => 3,
+        :template => :role,
+        :values => "my role" 
+      ).should == expected_result
+
+      @fixturemods.lookup(:person)[3].should == expected_result
+    end
+    
+    it "should accept parent_select as an (xpath) string and template as a (template) string" do
+      # this uses the provided template to add a node into the first node resulting from the xpath '//oxns:name[@type="personal"]'
+      expected_result = '<mods:name type="personal"><mods:role type="code" authority="marcrelator"><mods:roleTerm>creator</mods:roleTerm></mods:role></mods:name>'
+      expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
+      
+      @fixturemods.property_value_append(
+        :parent_select =>'//oxns:name[@type="personal"]',
+        :parent_index => 0,
+        :template => 'xml.role( :type=>"code", :authority=>"marcrelator" ) { xml.roleTerm( #{builder_new_value} ) }',
+        :values => "creator" 
+      ).should == expected_result
+
+      @fixturemods.lookup(:person).first.should == expected_result
+    end
+	  
+	  it "should support more complex mixing & matching" do
+	    expected_result = '<mods:name type="personal"><mods:role type="code" authority="marcrelator"><mods:roleTerm>foo</mods:roleTerm></mods:role></mods:name>'
+      expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
+      
+	    @fixturemods.property_value_append(
+        :parent_select =>'//oxns:name[@type="personal"]',
+        :parent_index => 5,
+        :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],
+        :values => "foo" 
+      ).should == expected_result
+
+      @fixturemods.lookup(:person)[5].should == expected_result
+	  end
+	  
+	  it "should raise exception if no node corresponds to the provided :parent_select and :parent_index"
+  	
+  end
+  
+end

@@ -30,18 +30,7 @@ describe "OX::PropertyValuesHelper" do
 
   describe ".property_value_append" do
 	
-  	it "should call templated builder method on the parent node of the first item returned by the corresponding xpath" do
-  	  mock_parent_node = mock("parent node")
-  	  mock_node = mock("node", :parent=>mock_parent_node)
-  	  mock_nodeset = [mock_node]
-  	  helper.expects(:lookup).with(:person, :date=>"2010").returns(mock_nodeset)
-  	  
-  	  helper.expects(:builder_template).with(:person).returns('my template inserts #{new_builder_value}')
-  	  
-  	  Nokogiri::XML::Builder.expects(:with).with(mock_parent_node).returns(mock_parent_node)
-      
-	    helper.property_value_append(:person, {:date=>"2010"}, ["my new value", "another new value"])
-	  end
+	  # see ../unit/ox_integration_spec.rb
   	
   end
 
