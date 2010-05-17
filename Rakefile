@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "opinionated-xml"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{A library to help you tame sprawling XML schemas like MODS.}
+    gem.description = %Q{A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
     gem.email = "matt.zumwalt@yourmediashelf.com"
     gem.homepage = "http://github.com/mediashelf/opinionated-xml"
     gem.authors = ["Matt Zumwalt"]
