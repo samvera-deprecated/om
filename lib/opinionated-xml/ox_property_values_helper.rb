@@ -12,7 +12,7 @@ module OX::PropertyValuesHelper
   
   def property_values_append(opts={})
     parent_select = opts[:parent_select] 
-    parent_index = opts[:parent_index]
+    child_index = opts[:child_index]
     template = opts[:template]
     new_values = opts[:values]
     
@@ -33,14 +33,14 @@ module OX::PropertyValuesHelper
     parent_select = Array(parent_select)
     parent_nodeset = lookup(parent_select[0], parent_select[1])
     
-    if parent_index.kind_of?(Integer)
-      parent_node = parent_nodeset[parent_index]
-    elsif parent_index.kind_of?(Symbol) && parent_nodeset.respond_to?(parent_index) 
-      parent_node = parent_nodeset.send(parent_index)
+    if child_index.kind_of?(Integer)
+      parent_node = parent_nodeset[child_index]
+    elsif child_index.kind_of?(Symbol) && parent_nodeset.respond_to?(child_index) 
+      parent_node = parent_nodeset.send(child_index)
     end
     
     if parent_node.nil?
-      raise OX::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
+      raise OX::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :child_index #{child_index.inspect}"
     end
     
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|

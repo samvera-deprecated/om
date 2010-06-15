@@ -50,10 +50,10 @@ describe "OpinionatedXml" do
   
   describe ".property_values_append" do
 	
-  	it "looks up the parent using :parent_select, uses :parent_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
+  	it "looks up the parent using :parent_select, uses :child_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
 	    @fixturemods.property_values_append(
         :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
-        :parent_index => :first,
+        :child_index => :first,
         :template => [:person, :affiliation],
         :values => ["my new value", "another new value"] 
       )
@@ -69,7 +69,7 @@ describe "OpinionatedXml" do
       
 	    @fixturemods.property_values_append(
         :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
-        :parent_index => :first,
+        :child_index => :first,
         :template => [:person, :affiliation],
         :values => ["my new value", "another new value"] 
       ).to_xml.should == expected_result
@@ -83,7 +83,7 @@ describe "OpinionatedXml" do
       
       @fixturemods.property_values_append(
         :parent_select => :person ,
-        :parent_index => 3,
+        :child_index => 3,
         :template => :role,
         :values => "my role" 
       ).to_xml.should == expected_result
@@ -96,7 +96,7 @@ describe "OpinionatedXml" do
       expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Berners-Lee</ns3:namePart>\n      <ns3:namePart type=\"given\">Tim</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>creator</ns3:roleTerm></ns3:role></ns3:name>"
       @fixturemods.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
-        :parent_index => 0,
+        :child_index => 0,
         :template => 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }',
         :values => "creator" 
       ).to_xml.should == expected_result
@@ -109,7 +109,7 @@ describe "OpinionatedXml" do
       
 	    @fixturemods.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
-        :parent_index => 1,
+        :child_index => 1,
         :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],
         :values => "foo" 
       ).to_xml.should == expected_result
@@ -117,7 +117,7 @@ describe "OpinionatedXml" do
       @fixturemods.lookup(:person)[1].to_xml.should == expected_result
 	  end
 	  
-	  it "should raise exception if no node corresponds to the provided :parent_select and :parent_index"
+	  it "should raise exception if no node corresponds to the provided :parent_select and :child_index"
   	
   end
   
