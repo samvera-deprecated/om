@@ -3,10 +3,19 @@
   <ns3:name type="personal">
       <ns3:namePart type="family">Berners-Lee</ns3:namePart>
       <ns3:namePart type="given">Tim</ns3:namePart>
+      <ns3:role>
+          <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+          <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+      </ns3:role>
   </ns3:name>
   <ns3:name type="personal">
       <ns3:namePart type="family">Jobs</ns3:namePart>
       <ns3:namePart type="given">Steve</ns3:namePart>
+      <ns3:namePart type="date">2004</ns3:namePart>
+      <ns3:role>
+          <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+          <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+      </ns3:role>
   </ns3:name>
   <ns3:name type="personal">
       <ns3:namePart type="family">Wozniak</ns3:namePart>

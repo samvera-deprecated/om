@@ -64,8 +64,11 @@ describe "OpinionatedXml" do
       expected_result = '<ns3:name type="personal">
       <ns3:namePart type="family">Berners-Lee</ns3:namePart>
       <ns3:namePart type="given">Tim</ns3:namePart>
+      <ns3:role>
+          <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+          <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+      </ns3:role>
   <ns3:affiliation>my new value</ns3:affiliation><ns3:affiliation>another new value</ns3:affiliation></ns3:name>'
-      #expected_result = Nokogiri::XML::Node.new( expected_result, @fixturemods )
       
 	    @fixturemods.property_values_append(
         :parent_select => [:person, {:given_name=>"Tim", :family_name=>"Berners-Lee"}] ,
@@ -93,7 +96,7 @@ describe "OpinionatedXml" do
     
     it "should accept parent_select as an (xpath) string and template as a (template) string" do
       # this uses the provided template to add a node into the first node resulting from the xpath '//oxns:name[@type="personal"]'
-      expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Berners-Lee</ns3:namePart>\n      <ns3:namePart type=\"given\">Tim</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>creator</ns3:roleTerm></ns3:role></ns3:name>"
+      expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Berners-Lee</ns3:namePart>\n      <ns3:namePart type=\"given\">Tim</ns3:namePart>\n      <ns3:role>\n          <ns3:roleTerm type=\"text\" authority=\"marcrelator\">creator</ns3:roleTerm>\n          <ns3:roleTerm type=\"code\" authority=\"marcrelator\">cre</ns3:roleTerm>\n      </ns3:role>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>creator</ns3:roleTerm></ns3:role></ns3:name>"
       @fixturemods.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :child_index => 0,
@@ -105,8 +108,8 @@ describe "OpinionatedXml" do
     end
 	  
 	  it "should support more complex mixing & matching" do
-	    expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Jobs</ns3:namePart>\n      <ns3:namePart type=\"given\">Steve</ns3:namePart>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>foo</ns3:roleTerm></ns3:role></ns3:name>"
-      
+	    expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Jobs</ns3:namePart>\n      <ns3:namePart type=\"given\">Steve</ns3:namePart>\n      <ns3:namePart type=\"date\">2004</ns3:namePart>\n      <ns3:role>\n          <ns3:roleTerm type=\"text\" authority=\"marcrelator\">creator</ns3:roleTerm>\n          <ns3:roleTerm type=\"code\" authority=\"marcrelator\">cre</ns3:roleTerm>\n      </ns3:role>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>foo</ns3:roleTerm></ns3:role></ns3:name>"
+
 	    @fixturemods.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :child_index => 1,
@@ -119,6 +122,39 @@ describe "OpinionatedXml" do
 	  
 	  it "should raise exception if no node corresponds to the provided :parent_select and :child_index"
   	
+  end
+  
+  describe ".property_value_update" do
+
+    it "should accept an xpath as :parent_select" do
+	    sample_xpath = '//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="text"]'
+	    @fixturemods.property_value_update(      
+        :parent_select =>sample_xpath,
+        :child_index => 1,
+        :value => "donor"
+      )
+      @fixturemods.xpath(sample_xpath, @fixturemods.ox_namespaces)[1].text.should == "donor"
+    end
+    
+    it "if :select is provided, should update the first node provided by that xpath statement" do
+      sample_xpath = '//oxns:name[@type="personal" and position()=1]/oxns:namePart[@type="given"]'
+      @fixturemods.property_value_update(
+        :select =>sample_xpath,
+        :value => "Timmeh"
+      )
+      @fixturemods.xpath(sample_xpath, @fixturemods.ox_namespaces).first.text.should == "Timmeh"
+    end
+    
+    it "should replace the existing node if you pass a template and values" do
+      pending
+      @fixturemods.property_value_update(
+        :parent_select =>'//oxns:name[@type="personal"]',
+        :child_index => 1,
+        :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],
+        :value => "foo"
+      )
+      1.should == 2
+    end
   end
   
 end

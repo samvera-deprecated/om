@@ -11,10 +11,10 @@ module OX::PropertyValuesHelper
   end
   
   def property_values_append(opts={})
-    parent_select = opts[:parent_select] 
+    parent_select = Array( opts[:parent_select] )
     child_index = opts[:child_index]
     template = opts[:template]
-    new_values = opts[:values]
+    new_values = Array( opts[:values] )
     
     # If template is a string, use it as the template, otherwise use it as arguments to builder_template
     unless template.instance_of?(String)
@@ -25,19 +25,10 @@ module OX::PropertyValuesHelper
         template_opts = {}
       end
       template = self.class.builder_template( template_args, template_opts )
-    end
+    end    
     
-    new_values = Array(new_values)
-    # template = self.class.builder_template(property_ref) 
-    
-    parent_select = Array(parent_select)
     parent_nodeset = lookup(parent_select[0], parent_select[1])
-    
-    if child_index.kind_of?(Integer)
-      parent_node = parent_nodeset[child_index]
-    elsif child_index.kind_of?(Symbol) && parent_nodeset.respond_to?(child_index) 
-      parent_node = parent_nodeset.send(child_index)
-    end
+    parent_node = node_from_set(parent_nodeset, child_index)
     
     if parent_node.nil?
       raise OX::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :child_index #{child_index.inspect}"
@@ -56,7 +47,41 @@ module OX::PropertyValuesHelper
     
   end
   
+  def property_value_update(opts={})
+    parent_select = Array( opts[:parent_select] )
+    child_index = opts[:child_index]
+    template = opts[:template]
+    new_value = opts[:value]
+    xpath_select = opts[:select]
+    
+    if !xpath_select.nil?
+      node = lookup(xpath_select, nil).first
+    else
+      parent_nodeset = lookup(parent_select[0], parent_select[1])
+      node = node_from_set(parent_nodeset, child_index)
+    end
+    
+    node.content = new_value
+    
+  end
+  
   def property_value_set(property_ref, query_opts, node_index, new_value)
   end
+   
+  
+  # Allows you to provide an array index _or_ a symbol representing the function to call on the nodeset in order to retrieve the node.
+  def node_from_set(nodeset, index)
+    if index.kind_of?(Integer)
+      node = nodeset[index]
+    elsif index.kind_of?(Symbol) && nodeset.respond_to?(index) 
+      node = nodeset.send(index)
+    else
+      raise "Could not retrieve node using index #{index}."
+    end
+    
+    return node
+  end
+  
+  private :node_from_set
   
 end
