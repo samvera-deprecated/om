@@ -24,5 +24,13 @@
   <ns3:name type="personal">
       <ns3:namePart type="family">Klimt</ns3:namePart>
       <ns3:namePart type="given">Gustav</ns3:namePart>
+      <ns3:role>
+          <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+          <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+      </ns3:role>
+      <ns3:role>
+          <ns3:roleTerm type="text" authority="marcrelator">visionary</ns3:roleTerm>
+          <ns3:roleTerm type="code" authority="marcrelator">vry</ns3:roleTerm>
+      </ns3:role>
   </ns3:name>
 </ns3:mods>

@@ -65,7 +65,31 @@ module OX::PropertyValuesHelper
     
   end
   
-  def property_value_set(property_ref, query_opts, node_index, new_value)
+  # def property_value_set(property_ref, query_opts, node_index, new_value)
+  # end
+  
+  def property_value_delete(opts={})
+    parent_select = Array( opts[:parent_select] )
+    parent_index = opts[:parent_index]
+    child_index = opts[:child_index]
+    xpath_select = opts[:select]
+    
+    if !xpath_select.nil?
+      node = lookup(xpath_select, nil).first
+    else
+      parent_nodeset = lookup(parent_select, parent_select)
+      # parent_nodeset = lookup(parent_select[0])
+      
+      if parent_index.nil?
+        node = node_from_set(parent_nodeset, child_index)
+      else
+        parent = node_from_set(parent_nodeset, parent_index)
+        # this next line is a hack around the fact that element_children() sometimes doesn't work.
+        node = node_from_set(parent.xpath("*"), child_index)
+      end
+    end
+    
+    node.remove
   end
    
   

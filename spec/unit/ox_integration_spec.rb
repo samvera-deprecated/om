@@ -82,7 +82,7 @@ describe "OpinionatedXml" do
     
     it "should accept symbols as arguments for generators/lookups" do
       # this appends a role of "my role" into the third "person" node in the document
-      expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Klimt</ns3:namePart>\n      <ns3:namePart type=\"given\">Gustav</ns3:namePart>\n  <ns3:role type=\"text\"><ns3:roleTerm>my role</ns3:roleTerm></ns3:role></ns3:name>"
+      expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Klimt</ns3:namePart>\n      <ns3:namePart type=\"given\">Gustav</ns3:namePart>\n      <ns3:role>\n          <ns3:roleTerm type=\"text\" authority=\"marcrelator\">creator</ns3:roleTerm>\n          <ns3:roleTerm type=\"code\" authority=\"marcrelator\">cre</ns3:roleTerm>\n      </ns3:role>\n      <ns3:role>\n          <ns3:roleTerm type=\"text\" authority=\"marcrelator\">visionary</ns3:roleTerm>\n          <ns3:roleTerm type=\"code\" authority=\"marcrelator\">vry</ns3:roleTerm>\n      </ns3:role>\n  <ns3:role type=\"text\"><ns3:roleTerm>my role</ns3:roleTerm></ns3:role></ns3:name>"
       
       @fixturemods.property_values_append(
         :parent_select => :person ,
@@ -154,6 +154,65 @@ describe "OpinionatedXml" do
         :value => "foo"
       )
       1.should == 2
+    end
+  end
+  
+  describe ".property_value_delete" do
+    it "should accept an xpath query as :select option" do
+      generic_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role'
+      specific_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role[oxns:roleTerm="visionary"]'
+      select_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role[last()]'
+      
+      # Check that we're starting with 2 roles
+      # Check that the specific node we want to delete exists
+      @fixturemods.lookup(generic_xpath).length.should == 2
+      @fixturemods.lookup(specific_xpath).length.should == 1
+
+      @fixturemods.property_value_delete(
+        :select =>select_xpath
+      )
+      # Check that we're finishing with 1 role
+      @fixturemods.lookup(generic_xpath).length.should == 1
+      # Check that the specific node we want to delete no longer exists
+      @fixturemods.lookup(specific_xpath).length.should == 0
+    end 
+    it "should accept :parent_select, :parent_index and :child_index options instead of a :select" do
+            
+      generic_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role/oxns:roleTerm'
+      specific_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role[oxns:roleTerm="visionary"]'
+      
+      # Check that we're starting with 2 roles
+      # Check that the specific node we want to delete exists
+      @fixturemods.lookup(generic_xpath).length.should == 4
+      @fixturemods.lookup(specific_xpath).length.should == 1
+
+      # this is attempting to delete the last child (in this case roleTerm) from the 3rd role in the document. 
+      @fixturemods.property_value_delete(
+        :parent_select => [:person, :role],
+        :parent_index => 3,
+        :child_index => :last
+      )
+      
+      # Check that we're finishing with 1 role
+      @fixturemods.lookup(generic_xpath).length.should == 3
+      # Check that the specific node we want to delete no longer exists
+      @fixturemods.lookup(specific_xpath).length.should == 1
+    end
+    it "should work if only :parent_select and :child_index are provided" do
+      generic_xpath = '//oxns:name[@type="personal"]/oxns:role'
+      # specific_xpath = '//oxns:name[@type="personal"]/oxns:role'
+      
+      # Check that we're starting with 2 roles
+      # Check that the specific node we want to delete exists
+      @fixturemods.lookup(generic_xpath).length.should == 4
+      # @fixturemods.lookup(specific_xpath).length.should == 1
+
+      @fixturemods.property_value_delete(
+        :parent_select => [:person, :role],
+        :child_index => 3
+      )
+      # Check that we're finishing with 1 role
+      @fixturemods.lookup(generic_xpath).length.should == 3
     end
   end
   
