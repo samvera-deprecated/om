@@ -14,8 +14,16 @@ describe "OX::AccesorHelper" do
         {:language =>{:relative_xpath=>[{:attribute=>"lang"}] }}
         ]  # this allows you to access the language attribute as if it was a regular child accessor
       accessor :abstract
-      accessor :topic_tag, :relative_xpath=>[:subject, :topic]
-      accessor :person, :children=>[:last_name, :first_name, :affiliation, :role]
+      accessor :topic_tag, :relative_xpath=>'oxns:subject/oxns:topic'
+      accessor :person, :children=>[
+        {:last_name=>{:relative_xpath=>'oxns:namePart[@type="given"]'}}, 
+        {:first_name=>{:relative_xpath=>'oxns:namePart[@type="fanily"]'}}, 
+        {:institution=>{:relative_xpath=>'oxns:affiliation'}}, 
+        {:role=>{:children=>[
+          {:text=>{:relative_xpath=>'oxns:roleTerm[@type="text"]'}},
+          {:code=>{:relative_xpath=>'oxns:roleTerm[@type="code"]'}}
+        ]}}
+      ]
       accessor :organization, :children=>[:role] 
       accessor :conference, :children=>[:role]
       accessor :journal, :relative_xpath=>'oxns:relatedItem[@type="host"]', :children=>[
@@ -25,7 +33,6 @@ describe "OX::AccesorHelper" do
           {:publisher=>{:relative_xpath=>'oxns:originInfo/oxns:publisher'}},
           {:issn=>{:relative_xpath=>'oxns:identifier[@type="issn"]'}}, 
           {:date_issued=>{:relative_xpath=>'oxns:originInfo/oxns:dateIssued'}},
-          
           {:issue => {:relative_xpath=>"oxns:part", :children=>[
             {:volume=>{:relative_xpath=>'oxns:detail[@type="volume"]'}},
             {:level=>{:relative_xpath=>'oxns:detail[@type="level"]'}},
@@ -46,11 +53,12 @@ describe "OX::AccesorHelper" do
   describe '#accessor' do
     it "should populate the .accessors hash" do
       AccessorTest.accessors[:abstract][:relative_xpath].should == "oxns:abstract"
-      
       AccessorTest.accessors[:journal][:relative_xpath].should == 'oxns:relatedItem[@type="host"]'
       AccessorTest.accessors[:journal][:children][:issue][:relative_xpath].should == "oxns:part"
-      pp AccessorTest.accessors[:journal]
       AccessorTest.accessors[:journal][:children][:issue][:children][:end_page][:relative_xpath].should == 'oxns:extent[@unit="pages"]/oxns:end'
+
+      AccessorTest.accessors[:person][:children][:role][:children][:text][:relative_xpath].should == 'oxns:roleTerm[@type="text"]'
+
     end
   end
   
