@@ -2,6 +2,7 @@ require "om/xml/container"
 require "om/xml/accessors"
 require "om/xml/validation"
 require "om/xml/properties"
+require "om/xml/property_value_operators"
 
 module OM::XML
   
@@ -14,6 +15,7 @@ module OM::XML
     klass.send(:include, OM::XML::Accessors)
     klass.send(:include, OM::XML::Validation)
     klass.send(:include, OM::XML::Properties)
+    klass.send(:include, OM::XML::PropertyValueOperators)
 
     # klass.send(:include, OM::XML::Schema)
   end

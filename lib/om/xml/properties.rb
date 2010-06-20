@@ -356,7 +356,7 @@ module OM::XML::Properties
     if xpath_query.nil?
       result = []
     else
-      result = xpath(xpath_query, ox_namespaces)
+      result = ng_xml.xpath(xpath_query, ox_namespaces)
     end
     
     return result
@@ -366,7 +366,7 @@ module OM::XML::Properties
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your class definiton.
   # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your root property config
   def ox_namespaces
-    @ox_namespaces ||= namespaces.merge(self.class.ox_namespaces)
+    @ox_namespaces ||= ng_xml.namespaces.merge(self.class.ox_namespaces)
   end
   
   def xpath_query_for( property_ref, query_opts={}, opts={} )

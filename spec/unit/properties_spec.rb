@@ -5,8 +5,9 @@ describe "OM::XML::Properties" do
   
   before(:all) do
     #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
-    class FakeOxMods < Nokogiri::XML::Document
-      
+    class FakeOxMods 
+
+      include OM::XML::Container            
       include OM::XML::Properties      
       
       # Could add support for multiple root declarations.  
@@ -51,7 +52,7 @@ describe "OM::XML::Properties" do
   end
   
   before(:each) do
-    @fixturemods = FakeOxMods.parse( fixture( File.join("CBF_MODS", "ARS0025_016.xml") ) )
+    @fixturemods = FakeOxMods.from_xml( fixture( File.join("CBF_MODS", "ARS0025_016.xml") ) )
   end
   
   after(:all) do
@@ -135,16 +136,16 @@ describe "OM::XML::Properties" do
   describe ".lookup"  do
     
     it "uses the generated xpath queries" do
-      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
       @fixturemods.lookup(:person)
       
-      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
       @fixturemods.lookup(:person, "Beethoven, Ludwig van")
       
-      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
       @fixturemods.lookup(:person, :date=>"2010")
       
-      @fixturemods.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
       @fixturemods.lookup(:person, :role=>"donor")
       
       # @fixturemods.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]', @fixturemods.ox_namespaces)
