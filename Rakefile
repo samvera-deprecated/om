@@ -4,11 +4,11 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "opinionated-xml"
-    gem.summary = %Q{A library to help you tame sprawling XML schemas like MODS.}
-    gem.description = %Q{A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
+    gem.name = "om"
+    gem.summary = %Q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.}
+    gem.description = %Q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
     gem.email = "matt.zumwalt@yourmediashelf.com"
-    gem.homepage = "http://github.com/mediashelf/opinionated-xml"
+    gem.homepage = "http://github.com/mediashelf/om"
     gem.authors = ["Matt Zumwalt"]
     
     gem.add_dependency('nokogiri')
@@ -46,7 +46,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "opinionated-xml #{version}"
+  rdoc.title = "om #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

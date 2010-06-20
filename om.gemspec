@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Zumwalt"]
   s.date = %q{2010-06-20}
-  s.description = %q{A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
+  s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
   s.email = %q{matt.zumwalt@yourmediashelf.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
      "lib/om/xml/properties.rb",
      "lib/om/xml/property_value_operators.rb",
      "lib/om/xml/validation.rb",
-     "opinionated-xml.gemspec",
+     "om.gemspec",
      "spec/fixtures/CBF_MODS/ARS0025_016.xml",
      "spec/fixtures/RUBRIC_mods_article_template.xml",
      "spec/fixtures/mods-3-2.xsd",
@@ -46,11 +46,11 @@ Gem::Specification.new do |s|
      "spec/unit/validation_spec.rb",
      "spec/unit/xml_spec.rb"
   ]
-  s.homepage = %q{http://github.com/mediashelf/opinionated-xml}
+  s.homepage = %q{http://github.com/mediashelf/om}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{A library to help you tame sprawling XML schemas like MODS.}
+  s.summary = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.}
   s.test_files = [
     "spec/spec_helper.rb",
      "spec/unit/accessors_spec.rb",
