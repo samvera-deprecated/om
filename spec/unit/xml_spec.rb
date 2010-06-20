@@ -16,7 +16,6 @@ describe "OM::XML::Container" do
     XMLTest.included_modules.should include(OM::XML::Accessors)
     XMLTest.included_modules.should include(OM::XML::Validation)
     XMLTest.included_modules.should include(OM::XML::Properties)
-
-    # XMLTest.included_modules.should include(OM::XML::Schema)
+    XMLTest.included_modules.should include(OM::XML::PropertyValueOperators)
   end
 end

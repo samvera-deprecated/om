@@ -1,7 +1,7 @@
 require "open-uri"
 require "logger"
 
-class OX::ParentNodeNotFoundError < RuntimeError; end
+class OM::XML::ParentNodeNotFoundError < RuntimeError; end
 module OM::XML::PropertyValueOperators
   
   def property_values(lookup_args)

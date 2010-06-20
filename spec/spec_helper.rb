@@ -1,6 +1,6 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'opinionated-xml'
+require 'om'
 require 'spec'
 require 'spec/autorun'
 require 'ruby-debug'

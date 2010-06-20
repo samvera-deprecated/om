@@ -113,11 +113,10 @@ module OM::XML::Accessors
     end
   end
   
-  # Instance Methods -- These methods will be available on instances of OX classes (ie. the actual xml documents)
+  # Instance Methods -- These methods will be available on instances of OM classes (ie. the actual xml documents)
   
   def self.included(klass)
     klass.extend(ClassMethods)
-    klass.send(:include, OX::PropertyValuesHelper)
   end
   
   # *args Variable length array of values in format [:accessor_name, index, :accessor_name ...]

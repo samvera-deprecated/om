@@ -51,6 +51,20 @@ describe "OM::XML::PropertyValueOperators" do
     Object.send(:remove_const, :PropertiesValueOperatorsTest)
   end
   
+  describe ".property_values" do
+
+    it "should call .lookup and then build an array of values from the returned nodeset (using default_node, etc as nessesary)" do
+      lookup_opts = "insert args here"
+      mock_node = mock("node")
+      mock_node.expects(:text).returns("sample value").times(3)
+      mock_nodeset = [mock_node, mock_node, mock_node]
+      @sample.expects(:lookup).with(lookup_opts).returns(mock_nodeset)
+      
+      @sample.property_values(lookup_opts).should == ["sample value","sample value","sample value"]
+    end
+  
+  end
+  
   describe ".property_values_append" do
 	
   	it "looks up the parent using :parent_select, uses :child_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
@@ -100,27 +114,36 @@ describe "OM::XML::PropertyValueOperators" do
     it "should accept parent_select as an (xpath) string and template as a (template) string" do
       # this uses the provided template to add a node into the first node resulting from the xpath '//oxns:name[@type="personal"]'
       expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Berners-Lee</ns3:namePart>\n      <ns3:namePart type=\"given\">Tim</ns3:namePart>\n      <ns3:role>\n          <ns3:roleTerm type=\"text\" authority=\"marcrelator\">creator</ns3:roleTerm>\n          <ns3:roleTerm type=\"code\" authority=\"marcrelator\">cre</ns3:roleTerm>\n      </ns3:role>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>creator</ns3:roleTerm></ns3:role></ns3:name>"
+      
+      @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=1]/oxns:role', @sample.ox_namespaces).length.should == 1
+      
       @sample.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :child_index => 0,
-        :template => 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }',
-        :values => "creator" 
-      ).to_xml.should == expected_result
+        :template => 'xml.role { xml.roleTerm( \'#{builder_new_value}\', :type=>\'code\', :authority=>\'marcrelator\') }',
+        :values => "founder" 
+      )
 
-      @sample.lookup(:person).first.to_xml.should == expected_result
+      @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=1]/oxns:role', @sample.ox_namespaces).length.should == 2
+      @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=1]/oxns:role[last()]/oxns:roleTerm', @sample.ox_namespaces).first.text.should == "founder"
+
+      # @sample.lookup(:person).first.to_xml.should == expected_result
     end
 	  
 	  it "should support more complex mixing & matching" do
 	    expected_result = "<ns3:name type=\"personal\">\n      <ns3:namePart type=\"family\">Jobs</ns3:namePart>\n      <ns3:namePart type=\"given\">Steve</ns3:namePart>\n      <ns3:namePart type=\"date\">2004</ns3:namePart>\n      <ns3:role>\n          <ns3:roleTerm type=\"text\" authority=\"marcrelator\">creator</ns3:roleTerm>\n          <ns3:roleTerm type=\"code\" authority=\"marcrelator\">cre</ns3:roleTerm>\n      </ns3:role>\n  <ns3:role type=\"code\" authority=\"marcrelator\"><ns3:roleTerm>foo</ns3:roleTerm></ns3:role></ns3:name>"
 
+      @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=2]/oxns:role', @sample.ox_namespaces).length.should == 1
+      
 	    @sample.property_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
         :child_index => 1,
         :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],
         :values => "foo" 
-      ).to_xml.should == expected_result
+      )
 
-      @sample.lookup(:person)[1].to_xml.should == expected_result
+      @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=2]/oxns:role', @sample.ox_namespaces).length.should == 2
+      @sample.lookup(:person)[1].search("./oxns:role[last()]/oxns:roleTerm", @sample.ox_namespaces).first.text.should == "foo"
 	  end
 	  
 	  it "should raise exception if no node corresponds to the provided :parent_select and :child_index"
