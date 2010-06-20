@@ -23,9 +23,6 @@ module OM::XML::Container
   
   def self.included(klass)
     klass.extend(ClassMethods)
-    # klass.send(:include, OM::XML::Accessors)
-    # klass.send(:include, OM::XML::Schema)
-    # klass.send(:include, OM::XML::Properties)
   end
     
   def to_xml

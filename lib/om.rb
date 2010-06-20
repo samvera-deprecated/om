@@ -6,4 +6,4 @@ require "facets"
 module OM; end
 module OM::XML; end
 
-require "om/xml/container"
+require "om/xml"

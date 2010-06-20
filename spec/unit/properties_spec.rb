@@ -1,12 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require "om"
 
-describe "OpinionatedXml" do
+describe "OM::XML::Properties" do
   
   before(:all) do
     #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
     class FakeOxMods < Nokogiri::XML::Document
       
-      include OX      
+      include OM::XML::Properties      
       
       # Could add support for multiple root declarations.  
       #  For now, assume that any modsCollections have already been broken up and fed in as individual mods documents
@@ -40,8 +41,8 @@ describe "OpinionatedXml" do
     
     class FakeOtherOx < Nokogiri::XML::Document
       
-      include OX
-      extend OX::ClassMethods
+      include OM::XML::Properties
+      # extend OX::ClassMethods
       
       root_property :other, "other", "http://www.foo.com"        
       
@@ -68,7 +69,6 @@ describe "OpinionatedXml" do
       FakeOxMods.root_property_ref.should == :mods
       FakeOxMods.root_config.should == {:ref=>:mods, :path=>"mods", :namespace=>"http://www.loc.gov/mods/v3", :attributes=>["id", "version"], :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"}
       FakeOxMods.ox_namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3"}
-      FakeOxMods.schema_url.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
       
       FakeOtherOx.root_property_ref.should == :other
       FakeOtherOx.root_config.should == {:namespace=>"http://www.foo.com", :path=>"other", :ref=>:other}
