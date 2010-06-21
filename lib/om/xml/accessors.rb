@@ -41,14 +41,19 @@ module OM::XML::Accessors
     # Returns the configuration info for the selected accessor.
     # Ingores any integers in the array (ie. nodeset indices intended for use in other accessor convenience methods)
     def accessor_info(*args)
-      # Ignore any nodeset indexes in the args array
-      keys = args.select {|x| !x.kind_of?(Integer) }
       info = @accessors
-      keys.each do |k|
-        unless keys.index(k) == 0
+      args.each do |pointer|
+        
+        # Ignore any nodeset indexes in the args array
+        if pointer.kind_of?(Hash)
+          k = pointer.keys.first
+        else
+          k = pointer
+        end
+        
+        unless args.index(pointer) == 0
           info = info.fetch(:children, nil)
           if info.nil?
-            debugger
             return nil
           end
         end
@@ -63,12 +68,27 @@ module OM::XML::Accessors
     
     
     def accessor_xpath(*args)
-      keys = even_values(args)
-      indices = odd_values(args)
+      
+      keys = []
+      # keys = even_values(args)
+      # indices = odd_values(args)
       xpath = "//"
-      keys.each do |k|
-        key_index = keys.index(k)
-        accessor_info = accessor_info(*keys[0..key_index])
+      args.each do |pointer|
+        
+        if pointer.kind_of?(Hash)
+          k = pointer.keys.first
+          index = pointer[k]
+        else
+          k = pointer
+          index = nil
+        end
+        
+        keys << k
+        
+        # key_index = keys.index(k)
+        pointer_index = args.index(pointer)
+        # accessor_info = accessor_info(*keys[0..key_index])
+        accessor_info = accessor_info(*keys)        
         relative_path = accessor_info[:relative_xpath]
         
         if relative_path.kind_of?(Hash)
@@ -77,8 +97,12 @@ module OM::XML::Accessors
           end
         else
         
-          if indices[key_index]
-            add_position_predicate!(relative_path, indices[key_index])
+          # if indices[key_index]
+          #   add_position_predicate!(relative_path, indices[key_index])
+          # end
+          
+          unless index.nil?
+            add_position_predicate!(relative_path, index)
           end
         
           if accessor_info.has_key?(:default_content_path)
@@ -86,7 +110,7 @@ module OM::XML::Accessors
           end
         
         end
-        if key_index > 0
+        if pointer_index > 0
           relative_path.insert(0, "/")
         end
         xpath << relative_path 

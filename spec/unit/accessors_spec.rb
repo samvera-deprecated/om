@@ -77,16 +77,16 @@ describe "OM::XML::Accessors" do
     it "should use Nokogiri to retrieve a NodeSet corresponding to the combination of accessor keys and array/nodeset indexes" do
       @sample.retrieve( :person ).length.should == 2
       
-      @sample.retrieve( :person, 1 ).first.should == @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=2]', "oxns"=>"http://www.loc.gov/mods/v3").first
-      @sample.retrieve( :person, 1, :first_name ).class.should == Nokogiri::XML::NodeSet
-      @sample.retrieve( :person, 1, :first_name ).first.text.should == "Siddartha"
+      @sample.retrieve( {:person=>1} ).first.should == @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=2]', "oxns"=>"http://www.loc.gov/mods/v3").first
+      @sample.retrieve( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
+      @sample.retrieve( {:person=>1}, :first_name ).first.text.should == "Siddartha"
     end
     
     it "should support accessors whose relative_xpath is a lookup array instead of an xpath string" do
       # pending "this only impacts scenarios where we want to display & edit"
       AccessorTest.accessors[:title_info][:children][:language][:relative_xpath].should == {:attribute=>"lang"}
       # @sample.retrieve( :title, 1 ).first.text.should == "Artikkelin otsikko Hydrangea artiklan 1"
-      @sample.retrieve( :title_info, 1, :language ).first.text.should == "finnish"
+      @sample.retrieve( {:title_info=>1}, :language ).first.text.should == "finnish"
     end
     
   end
@@ -117,7 +117,12 @@ describe "OM::XML::Accessors" do
       AccessorTest.accessor_info( :abstract ).should == AccessorTest.accessors[:abstract]
     end
     it "should dig into the accessors hash as far as you want, ignoring index values" do
-      AccessorTest.accessor_info( :conference, 0, :role, 1, :text ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
+      # Old Syntax ...
+      # AccessorTest.accessor_info( :conference, 0, :role, 1, :text ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
+      
+      AccessorTest.accessor_info( *[{:conference=>0}, {:role=>1}, :text] ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
+      AccessorTest.accessor_info( {:conference=>0}, {:role=>1}, :text ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
+      
       AccessorTest.accessor_info( :conference, :role, :text ).should  == AccessorTest.accessors[:conference][:children][:role][:children][:text]
     end
   end
@@ -128,7 +133,10 @@ describe "OM::XML::Accessors" do
     end   
     # Note: Ruby array indexes begin from 0.  In xpath queries (which start from 1 instead of 0), this will be translated accordingly.
     it "should prepend the xpath for any parent nodes, inserting calls to xpath:position() function where necessary" do
-      AccessorTest.accessor_xpath( :conference, 0, :role, 1, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
+      # Old Syntax ...
+      # AccessorTest.accessor_xpath( :conference, 0, :role, 1, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
+      
+      AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
     end
   end
   # describe ".accessor_xpath (instance method)" do

@@ -14,12 +14,6 @@ describe "OM::XML::Container" do
     @container = ContainerTest.from_xml("<foo><bar>1</bar></foo>")
   end
   
-  it "should automatically include the other modules" do
-    pending
-    ContainerTest.included_modules.should include(OM::XML::Accessor)
-    ContainerTest.included_modules.should include(OM::XML::Schema)
-  end
-  
   it "should add .ng_xml accessor" do
     @container.should respond_to(:ng_xml)
     @container.should respond_to(:ng_xml=)    
