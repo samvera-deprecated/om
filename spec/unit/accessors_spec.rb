@@ -116,10 +116,7 @@ describe "OM::XML::Accessors" do
     it "should return the xpath given in the call to #accessor" do
       AccessorTest.accessor_info( :abstract ).should == AccessorTest.accessors[:abstract]
     end
-    it "should dig into the accessors hash as far as you want, ignoring index values" do
-      # Old Syntax ...
-      # AccessorTest.accessor_info( :conference, 0, :role, 1, :text ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
-      
+    it "should dig into the accessors hash as far as you want, ignoring index values" do      
       AccessorTest.accessor_info( *[{:conference=>0}, {:role=>1}, :text] ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
       AccessorTest.accessor_info( {:conference=>0}, {:role=>1}, :text ).should == AccessorTest.accessors[:conference][:children][:role][:children][:text]
       
@@ -133,10 +130,12 @@ describe "OM::XML::Accessors" do
     end   
     # Note: Ruby array indexes begin from 0.  In xpath queries (which start from 1 instead of 0), this will be translated accordingly.
     it "should prepend the xpath for any parent nodes, inserting calls to xpath:position() function where necessary" do
-      # Old Syntax ...
-      # AccessorTest.accessor_xpath( :conference, 0, :role, 1, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
-      
       AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
+    end
+    it "should be idempotent" do
+      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
+      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
+      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
     end
   end
   

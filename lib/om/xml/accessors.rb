@@ -92,12 +92,8 @@ module OM::XML::Accessors
           end
         else
         
-          # if indices[key_index]
-          #   add_position_predicate!(relative_path, indices[key_index])
-          # end
-          
           unless index.nil?
-            add_position_predicate!(relative_path, index)
+            relative_path = add_position_predicate(relative_path, index)
           end
         
           if accessor_info.has_key?(:default_content_path)
@@ -106,7 +102,7 @@ module OM::XML::Accessors
         
         end
         if pointer_index > 0
-          relative_path.insert(0, "/")
+          relative_path = "/"+relative_path
         end
         xpath << relative_path 
       end
@@ -114,14 +110,16 @@ module OM::XML::Accessors
       return xpath
     end
     
-    def add_position_predicate!(xpath_query, array_index_value)
+    def add_position_predicate(xpath_query, array_index_value)
+      modified_query = xpath_query.dup
       position_function = "position()=#{array_index_value + 1}"
       
       if xpath_query.include?("]")
-        xpath_query.insert(xpath_query.rindex("]"), " and #{position_function}")
+        modified_query.insert(xpath_query.rindex("]"), " and #{position_function}")
       else
-        xpath_query << "[#{position_function}]"
+        modified_query << "[#{position_function}]"
       end
+      return modified_query
     end
     
     def accessor_generic_name(*pointers)
