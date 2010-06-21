@@ -1,1 +1,14 @@
+0.1.2
+
+* changed syntax for looking up accessors with (optional) index values -- no using [{:person=>1}, :first_name]  instead of [:person, 1, :first_name]
+
+0.1.1
+
+RENAMED to om (formerly opinionated-xml)
+
+* broke up functionality into Modules
+* added OM::XML::Accessor functionality
+
+0.1
+
 Note: OX v.1 Does not handle treating attribute values as the changing "value" of a node
