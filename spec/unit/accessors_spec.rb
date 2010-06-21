@@ -139,6 +139,19 @@ describe "OM::XML::Accessors" do
       AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
     end
   end
+  
+  describe "#accessor_generic_name" do
+    it "should generate a generic accessor name based on an array of pointers" do
+      AccessorTest.accessor_generic_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_role_text"
+    end
+  end
+  
+  describe "#accessor_hierarchical_name" do
+    it "should generate a specific accessor name based on an array of pointers and indexes" do
+      AccessorTest.accessor_hierarchical_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_0_role_1_text"
+    end
+  end
+  
   # describe ".accessor_xpath (instance method)" do
   #   it "should delegate to the class method" do
   #     AccessorTest.expects(:accessor_xpath).with( [:conference, conference_index, :text_role] )

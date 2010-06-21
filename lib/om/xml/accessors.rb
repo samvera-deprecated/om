@@ -40,25 +40,22 @@ module OM::XML::Accessors
     
     # Returns the configuration info for the selected accessor.
     # Ingores any integers in the array (ie. nodeset indices intended for use in other accessor convenience methods)
-    def accessor_info(*args)
+    def accessor_info(*pointers)
       info = @accessors
-      args.each do |pointer|
+      
+      # flatten the pointers array, excluding node indices
+      pointers = pointers_to_flat_array(pointers, false)
+      
+      pointers.each do |pointer|
         
-        # Ignore any nodeset indexes in the args array
-        if pointer.kind_of?(Hash)
-          k = pointer.keys.first
-        else
-          k = pointer
-        end
-        
-        unless args.index(pointer) == 0
+        unless pointers.index(pointer) == 0
           info = info.fetch(:children, nil)
           if info.nil?
             return nil
           end
         end
         
-        info = info.fetch(k, nil)
+        info = info.fetch(pointer, nil)
         if info.nil?
           return nil
         end
@@ -67,13 +64,11 @@ module OM::XML::Accessors
     end
     
     
-    def accessor_xpath(*args)
+    def accessor_xpath(*pointers)
       
       keys = []
-      # keys = even_values(args)
-      # indices = odd_values(args)
       xpath = "//"
-      args.each do |pointer|
+      pointers.each do |pointer|
         
         if pointer.kind_of?(Hash)
           k = pointer.keys.first
@@ -86,7 +81,7 @@ module OM::XML::Accessors
         keys << k
         
         # key_index = keys.index(k)
-        pointer_index = args.index(pointer)
+        pointer_index = pointers.index(pointer)
         # accessor_info = accessor_info(*keys[0..key_index])
         accessor_info = accessor_info(*keys)        
         relative_path = accessor_info[:relative_xpath]
@@ -129,12 +124,35 @@ module OM::XML::Accessors
       end
     end
     
-    def odd_values(array)
-      array.values_at(* array.each_index.select {|i| i.odd?})
+    def accessor_generic_name(*pointers)
+      pointers_to_flat_array(pointers, false).join("_")
     end
-    def even_values(array)
-      array.values_at(* array.each_index.select {|i| i.even?})
+    
+    def accessor_hierarchical_name(*pointers)
+      pointers_to_flat_array(pointers, true).join("_")
     end
+    
+    # @pointers pointers array that you would pass into other Accessor methods
+    # @include_indices (default: true) if set to false, parent indices will be excluded from the array
+    # Converts an array of accessor pointers into a flat array.
+    # ie. [{:conference=>0}, {:role=>1}, :text] becomes [:conference, 0, :role, 1, :text]
+    #   if include_indices is set to false,
+    #     [{:conference=>0}, {:role=>1}, :text] becomes [:conference, :role, :text]
+    def pointers_to_flat_array(pointers, include_indices=true)
+      flat_array = []
+      pointers.each do |pointer|
+        if pointer.kind_of?(Hash)
+          flat_array << pointer.keys.first
+          if include_indices 
+            flat_array << pointer.values.first
+          end
+        else
+          flat_array << pointer
+        end
+      end
+      return flat_array
+    end
+    
   end
   
   # Instance Methods -- These methods will be available on instances of OM classes (ie. the actual xml documents)
@@ -143,11 +161,11 @@ module OM::XML::Accessors
     klass.extend(ClassMethods)
   end
   
-  # *args Variable length array of values in format [:accessor_name, index, :accessor_name ...]
+  # *pointers Variable length array of values in format [:accessor_name, :accessor_name ...] or [{:accessor_name=>index}, :accessor_name ...]
   # example: [:person, 1, :first_name]
   # Currently, indexes must be integers.
-  def retrieve(*args)
-    xpath = self.class.accessor_xpath(*args)    
+  def retrieve(*pointers)
+    xpath = self.class.accessor_xpath(*pointers)    
     ng_xml.xpath(xpath, "oxns"=>"http://www.loc.gov/mods/v3")    
   end
   
