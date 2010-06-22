@@ -9,7 +9,7 @@ module OM::XML::Properties
     attr_reader :properties
     
     def root_property( property_ref, path, namespace, opts={})
-      # property property_ref, path, opts.merge({:path=>path, :ref=>property_ref})
+      property property_ref, opts.merge({:path=>path, :ref=>property_ref})
       @root_config = opts.merge({:namespace=>namespace, :path=>path, :ref=>property_ref})
       @root_property_ref = property_ref
       @ox_namespaces = {'oxns'=>root_config[:namespace]}
@@ -69,7 +69,7 @@ module OM::XML::Properties
         end
       end
       
-      if properties[:unresolved].has_key?(prop_hash[:ref])
+      if properties.fetch(:unresolved, {}).has_key?(prop_hash[:ref])
         ref = prop_hash[:ref]
         properties[:unresolved][ref].each do |parent_prop_hash|
           logger.debug "Resolving #{ref} subelement for #{parent_prop_hash[:ref]} property"

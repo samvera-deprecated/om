@@ -74,6 +74,10 @@ describe "OM::XML::Properties" do
       FakeOtherOx.root_property_ref.should == :other
       FakeOtherOx.root_config.should == {:namespace=>"http://www.foo.com", :path=>"other", :ref=>:other}
     end
+    it "should add a corresponding entry into the properties hash" do
+      FakeOxMods.property_info_for(FakeOxMods.root_property_ref).should == {:schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd", :xpath_relative=>"oxns:mods", :path=>"mods", :xpath_constrained=>"//oxns:mods[contains(\\\"\#{constraint_value}\\\")]", :xpath=>"//oxns:mods", :ref=>:mods, :convenience_methods=>{}, :attributes=>["id", "version"]}
+      FakeOxMods.builder_template(FakeOxMods.root_property_ref).should == "xml.mods( '\#{builder_new_value}' )"
+    end
   end
   
   describe "#property" do
