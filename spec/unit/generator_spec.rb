@@ -30,7 +30,11 @@ describe "OM::XML::Generator" do
                     :given_name => {:path=>"namePart", :attributes=>{:type=>"given"}},
                     :terms_of_address => {:path=>"namePart", :attributes=>{:type=>"termsOfAddress"}}
                   }
-                  
+      property :person, :variant_of=>:name_, :attributes=>{:type=>"personal"}
+      property :role, :path=>"role",
+                  :parents=>[:name_],
+                  :attributes=>[ { "type"=>["text", "code"] } , "authority"],
+                  :default_content_path => "roleTerm"
                   
     end
         
@@ -46,8 +50,8 @@ describe "OM::XML::Generator" do
   
   describe '#generate' do
     it "should use the corresponding builder template(s) to generate the node" do
-      GeneratorTest.generate(:mods).to_xml.should == ""
-      GeneratorTest.generate([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}}).should == ""
+      GeneratorTest.generate(:mods, "foo").to_xml.should == "<?xml version=\"1.0\"?>\n<mods>foo</mods>\n"
+      GeneratorTest.generate([:person,:role], "creator", {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}}).to_xml.should == "<?xml version=\"1.0\"?>\n<role type=\"code\" authority=\"marcrelator\">\n  <roleTerm>creator</roleTerm>\n</role>\n"
     end
   end
   

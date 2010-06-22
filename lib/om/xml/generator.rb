@@ -6,10 +6,13 @@ module OM::XML::Generator
   
   module ClassMethods
     
-    def generate(property_ref, opts={})
-      builder_template = builder_template(property_ref, opts={})
+    def generate(property_ref, builder_new_value, opts={})
+      template = builder_template(property_ref, opts)
+      builder_call_body = eval('"' + template + '"')
+      builder = Nokogiri::XML::Builder.new do |xml|
+        eval( builder_call_body )
+      end
       
-      xml = Nokogiri::XML::Builder.new
     end
     
   end
