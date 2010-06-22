@@ -13,7 +13,7 @@ module OM::XML::Generator
         eval( builder_call_body )
       end
       
-      return builder.doc.root
+      return builder.doc
     end
     
   end
