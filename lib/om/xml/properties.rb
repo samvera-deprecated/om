@@ -276,6 +276,8 @@ module OM::XML::Properties
     # Builder Support
     #
     
+    # @property_ref reference to the property you want to generate a builder template for
+    # @opts
     def builder_template(property_ref, opts={})
       property_info = property_info_for(property_ref)
 
