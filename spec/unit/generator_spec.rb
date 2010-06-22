@@ -50,8 +50,11 @@ describe "OM::XML::Generator" do
   
   describe '#generate' do
     it "should use the corresponding builder template(s) to generate the node" do
-      GeneratorTest.generate(:mods, "foo").to_xml.should == "<?xml version=\"1.0\"?>\n<mods>foo</mods>\n"
-      GeneratorTest.generate([:person,:role], "creator", {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}}).to_xml.should == "<?xml version=\"1.0\"?>\n<role type=\"code\" authority=\"marcrelator\">\n  <roleTerm>creator</roleTerm>\n</role>\n"
+      GeneratorTest.generate(:mods, "foo").to_xml.should == "<mods>foo</mods>"
+      GeneratorTest.generate([:person,:role], "creator", {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}}).to_xml.should == "<role type=\"code\" authority=\"marcrelator\">\n  <roleTerm>creator</roleTerm>\n</role>"
+    end
+    it "should return Nokogiri Nodes (not Builder or Document objects)" do
+      GeneratorTest.generate(:mods, "foo").class.should == Nokogiri::XML::Element
     end
   end
   

@@ -1,6 +1,7 @@
 0.1.5
 
 * root_property now inserts an entry into the properties hash
+* added .generate method for building new instances of declared properties
 
 0.1.4
 
