@@ -83,7 +83,11 @@ module OM::XML::Accessors
         # key_index = keys.index(k)
         pointer_index = pointers.index(pointer)
         # accessor_info = accessor_info(*keys[0..key_index])
-        accessor_info = accessor_info(*keys)        
+        accessor_info = accessor_info(*keys)  
+        
+        # Return nil if there is no accessor info to work with
+        if accessor_info.nil? then return nil end
+                
         relative_path = accessor_info[:relative_xpath]
         
         if relative_path.kind_of?(Hash)

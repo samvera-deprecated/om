@@ -127,6 +127,16 @@ describe "OM::XML::Properties" do
       FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
     end
     
+    it "should create an accessor for the created property" do
+      pending
+      FakeOXMods.accessors.should have_key(:name_)
+    end
+    
+    it "should create accessors for subelements" do
+      pending
+      FakeOXMods.accessors[:name_][:children][:role][:children].should have_key(:family_name)
+    end
+    
     it "should not overwrite default property info when adding a variant property" do
       FakeOxMods.properties[:name_].should_not equal(FakeOxMods.properties[:person])
       FakeOxMods.properties[:name_][:convenience_methods].should_not equal(FakeOxMods.properties[:person][:convenience_methods])

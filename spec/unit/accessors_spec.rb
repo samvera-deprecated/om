@@ -132,6 +132,9 @@ describe "OM::XML::Accessors" do
     it "should prepend the xpath for any parent nodes, inserting calls to xpath:position() function where necessary" do
       AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
     end
+    it "should return nil if no accessor_info is available" do
+      AccessorTest.accessor_xpath( :sample_undeclared_accessor ).should == nil
+    end
     it "should be idempotent" do
       AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
       AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
