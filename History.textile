@@ -2,6 +2,7 @@
 
 * root_property now inserts an entry into the properties hash
 * added .generate method for building new instances of declared properties
+* refinements to accessor_xpath
 
 0.1.4
 
