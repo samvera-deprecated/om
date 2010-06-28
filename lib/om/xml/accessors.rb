@@ -97,7 +97,7 @@ module OM::XML::Accessors
         else
         
           unless index.nil?
-            relative_path = add_position_predicate(relative_path, index)
+            relative_path = add_node_index_predicate(relative_path, index)
           end
         
           if accessor_info.has_key?(:default_content_path)
@@ -114,6 +114,26 @@ module OM::XML::Accessors
       return xpath
     end
     
+    # Adds xpath xpath node index predicate to the end of your xpath query
+    # Example: 
+    # add_node_index_predicate("//oxns:titleInfo",0)
+    #   => "//oxns:titleInfo[1]"
+    #
+    # add_node_index_predicate("//oxns:titleInfo[@lang=\"finnish\"]",0)
+    #   => "//oxns:titleInfo[@lang=\"finnish\"][1]"
+    def add_node_index_predicate(xpath_query, array_index_value)
+      modified_query = xpath_query.dup
+      modified_query << "[#{array_index_value + 1}]"
+    end
+    
+    # Adds xpath:position() method call to the end of your xpath query
+    # Examples: 
+    #
+    # add_position_predicate("//oxns:titleInfo",0)
+    # => "//oxns:titleInfo[position()=1]"
+    #
+    # add_position_predicate("//oxns:titleInfo[@lang=\"finnish\"]",0)
+    # => "//oxns:titleInfo[@lang=\"finnish\" and position()=1]"
     def add_position_predicate(xpath_query, array_index_value)
       modified_query = xpath_query.dup
       position_function = "position()=#{array_index_value + 1}"

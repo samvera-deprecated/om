@@ -77,7 +77,7 @@ describe "OM::XML::Accessors" do
     it "should use Nokogiri to retrieve a NodeSet corresponding to the combination of accessor keys and array/nodeset indexes" do
       @sample.retrieve( :person ).length.should == 2
       
-      @sample.retrieve( {:person=>1} ).first.should == @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=2]', "oxns"=>"http://www.loc.gov/mods/v3").first
+      @sample.retrieve( {:person=>1} ).first.should == @sample.ng_xml.xpath('//oxns:name[@type="personal"][2]', "oxns"=>"http://www.loc.gov/mods/v3").first
       @sample.retrieve( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
       @sample.retrieve( {:person=>1}, :first_name ).first.text.should == "Siddartha"
     end
@@ -129,16 +129,16 @@ describe "OM::XML::Accessors" do
       AccessorTest.accessor_xpath( :abstract ).should == '//oxns:abstract'
     end   
     # Note: Ruby array indexes begin from 0.  In xpath queries (which start from 1 instead of 0), this will be translated accordingly.
-    it "should prepend the xpath for any parent nodes, inserting calls to xpath:position() function where necessary" do
-      AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference" and position()=1]/oxns:role[position()=2]/oxns:roleTerm[@type="text"]'
+    it "should prepend the xpath for any parent nodes, inserting calls to xpath array lookup where necessary" do
+      AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
     end
     it "should return nil if no accessor_info is available" do
       AccessorTest.accessor_xpath( :sample_undeclared_accessor ).should == nil
     end
     it "should be idempotent" do
-      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
-      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
-      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[position()=3]/oxns:title"
+      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+      AccessorTest.accessor_xpath( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
     end
   end
   
