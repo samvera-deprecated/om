@@ -47,22 +47,10 @@ module OM::XML::PropertyValueOperators
     
   end
   
-  def property_value_update(opts={})
-    parent_select = Array( opts[:parent_select] )
-    child_index = opts[:child_index]
-    template = opts[:template]
-    new_value = opts[:value]
-    xpath_select = opts[:select]
-    
-    if !xpath_select.nil?
-      node = lookup(xpath_select, nil).first
-    else
-      parent_nodeset = lookup(parent_select[0], parent_select[1])
-      node = node_from_set(parent_nodeset, child_index)
-    end
-    
+  def property_value_update(node_select,child_index,new_value,opts={})
+    # template = opts.fetch(:template,nil)
+    node = lookup(node_select, nil)[child_index]
     node.content = new_value
-    
   end
   
   # def property_value_set(property_ref, query_opts, node_index, new_value)

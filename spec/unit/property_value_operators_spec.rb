@@ -65,6 +65,53 @@ describe "OM::XML::PropertyValueOperators" do
   
   end
   
+  
+  describe ".update_properties" do
+    it "should update the xml according to the lookups in the given hash" do
+      properties_update_hash = {[{":person"=>"0"}, "role", "text"]=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
+      @sample.update_properties(properties_update_hash)
+      
+      person_0_roles = @sample.lookup([{:person=>0}, :role, :text])
+      person_0_roles[0].text.should == "role1"
+      person_0_roles[1].text.should == "role2"
+      person_0_roles[2].text.should == "role3"
+      
+      person_1_family_names = @sample.lookup([{:person=>1}, :family_name])
+      person_1_family_names.length.should == 1
+      person_1_family_names.first.text.should == "Andronicus"
+      
+      person_1_given_names = @sample.lookup([{:person=>1}, :given_name])
+      person_1_given_names.first.text.should == "Titus"
+      
+      person_1_roles = @sample.lookup([{:person=>1}, :role, :text])
+      person_1_roles[0].text.should == "otherrole1"
+      person_1_roles[1].text.should == "otherrole2"
+    end
+    it "should call property_value_update if the corresponding node already exists" do
+      @sample.expects(:property_value_update).with([:title_info, :main_title], 0, "My New Title")
+      @sample.update_properties( {[:title_info, :main_title] => "My New Title"} )
+    end
+    it "should call property_values_append if the corresponding node does not already exist or if the requested index is -1" do
+      expected_args = {
+        :parent_select => [:person] ,
+        :child_index => 0,
+        :template => [:person, :role],
+        :values => ["My New Role"]
+      }
+      @sample.expects(:property_values_append).with(expected_args).times(2)
+      @sample.update_properties( {[{:person=>0}, :role] => {"4"=>"My New Role"}} )
+      @sample.update_properties( {[{:person=>0}, :role] => {"-1"=>"My New Role"}} )
+    end
+    it "should call property_value_delete where appropriate"
+
+    it "should destringify the field key/lookup pointer" do
+      @sample.expects(:property_value_update).with( [{:person=>0}, :role], "the role" ).times(3)
+      @sample.update_properties( { [{":person"=>"0"}, "role"]=>"the role" } )
+      @sample.update_properties( { [{"person"=>"0"}, "role"]=>"the role" } )
+      @sample.update_properties( { [{:person=>0}, :role]=>"the role" } )
+    end
+  end
+  
   describe ".property_values_append" do
 	
   	it "looks up the parent using :parent_select, uses :child_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
@@ -153,21 +200,21 @@ describe "OM::XML::PropertyValueOperators" do
   describe ".property_value_update" do
 
     it "should accept an xpath as :parent_select" do
-	    sample_xpath = '//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="text"]'
-	    @sample.property_value_update(      
-        :parent_select =>sample_xpath,
-        :child_index => 1,
-        :value => "donor"
-      )
-      @sample.ng_xml.xpath(sample_xpath, @sample.ox_namespaces)[1].text.should == "donor"
+	    sample_xpath = '//oxns:name[@type="personal"][4]/oxns:role/oxns:roleTerm[@type="text"]'
+	    @sample.property_value_update(sample_xpath,1,"artist")
+      
+      # @sample.property_value_update(      
+      #         :parent_select =>sample_xpath,
+      #         :child_index => 1,
+      #         :value => "donor"
+      #       )
+      
+      @sample.ng_xml.xpath(sample_xpath, @sample.ox_namespaces)[1].text.should == "artist"
     end
     
     it "if :select is provided, should update the first node provided by that xpath statement" do
-      sample_xpath = '//oxns:name[@type="personal" and position()=1]/oxns:namePart[@type="given"]'
-      @sample.property_value_update(
-        :select =>sample_xpath,
-        :value => "Timmeh"
-      )
+      sample_xpath = '//oxns:name[@type="personal"][1]/oxns:namePart[@type="given"]'
+      @sample.property_value_update(sample_xpath,0,"Timmeh")
       @sample.ng_xml.xpath(sample_xpath, @sample.ox_namespaces).first.text.should == "Timmeh"
     end
     
