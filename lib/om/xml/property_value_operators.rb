@@ -10,12 +10,60 @@ module OM::XML::PropertyValueOperators
     return result
   end
   
+  # 
+  # example properties values hash: {[{":person"=>"0"}, "role", "text"]=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
+  def update_properties(params={})
+    result = params.dup
+    params.each_pair do |property_pointer,new_values|
+      pointer = OM.destringify(property_pointer)
+      template = OM.pointers_to_flat_array(pointer,false)
+      
+      # unless new_values.kind_of?(Hash)
+      #   new_values = {0=>new_values}
+      # end
+      case new_values
+      when Hash
+      when Array
+        nv = new_values.dup
+        new_values = {}
+        nv.each {|v| new_values[nv.index(v)] = v}
+      else
+        new_values = {0=>new_values}
+      end
+      
+      result[property_pointer] = new_values.dup
+      p new_values
+      current_values = property_values(pointer)
+      new_values.delete_if do |y,z| 
+        if current_values[y.to_i]==z and y.to_i > -1
+          true
+        else
+          false
+        end
+      end 
+
+      new_values.each do |y,z| 
+        xpath = self.class.accessor_xpath(*pointer)
+        if xpath.nil? then debugger end
+        if retrieve(*pointer)[y.to_i].nil? || y.to_i == -1
+          property_values_append(:parent_select=>xpath,:child_index=>0,:template=>template,:values=>z)
+        else
+          property_value_update(xpath, y.to_i, z)
+        end
+      end
+      # current_values.delete_if {|x| x == :delete || x == "" || x == nil}
+      # instance_eval("#{field_accessor_method}=(current_values)") #write it back to the ds
+      # result[field_name].delete("-1")
+    end
+    return result
+  end
+  
   def property_values_append(opts={})
     parent_select = Array( opts[:parent_select] )
     child_index = opts[:child_index]
     template = opts[:template]
     new_values = Array( opts[:values] )
-    
+  
     # If template is a string, use it as the template, otherwise use it as arguments to builder_template
     unless template.instance_of?(String)
       template_args = Array(template)
@@ -31,7 +79,7 @@ module OM::XML::PropertyValueOperators
     parent_node = node_from_set(parent_nodeset, child_index)
     
     if parent_node.nil?
-      raise OX::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :child_index #{child_index.inspect}"
+      raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :child_index #{child_index.inspect}"
     end
     
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
