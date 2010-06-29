@@ -17,7 +17,7 @@ module OM::XML::Accessors
       parent_names.each do |parent_name|
         destination = destination[parent_name][:children]
       end
-      
+
       destination[accessor_name] = accessor_opts
       
       # Recursively call insert_accessor for any children
@@ -36,6 +36,26 @@ module OM::XML::Accessors
         end
       end
         
+    end
+    
+    # Generates accessors from the object's @properties hash.
+    # If no properties have been declared, it doesn't do anything.
+    def generate_accessors_from_properties
+      if self.properties.nil? || self.properties.empty?
+        return nil
+      end
+      @accessors ||= {}
+      self.properties.each_pair do |property_ref, property_info|
+        insert_accessor_from_property(property_ref, property_info)
+      end
+    end
+    
+    # Recurses through a property's info and convenience methods, adding accessors as necessary
+    def insert_accessor_from_property(property_ref, property_info, parent_names=[])
+      insert_accessor(property_ref,{:relative_xpath => property_info[:xpath_relative], :children=>[]}, parent_names)
+      property_info.fetch(:convenience_methods,{}).each_pair do |cm_name, cm_info|
+        insert_accessor_from_property(cm_name, cm_info, parent_names+[property_ref] )
+      end
     end
     
     # Returns the configuration info for the selected accessor.
@@ -154,25 +174,8 @@ module OM::XML::Accessors
       pointers_to_flat_array(pointers, true).join("_")
     end
     
-    # @pointers pointers array that you would pass into other Accessor methods
-    # @include_indices (default: true) if set to false, parent indices will be excluded from the array
-    # Converts an array of accessor pointers into a flat array.
-    # ie. [{:conference=>0}, {:role=>1}, :text] becomes [:conference, 0, :role, 1, :text]
-    #   if include_indices is set to false,
-    #     [{:conference=>0}, {:role=>1}, :text] becomes [:conference, :role, :text]
     def pointers_to_flat_array(pointers, include_indices=true)
-      flat_array = []
-      pointers.each do |pointer|
-        if pointer.kind_of?(Hash)
-          flat_array << pointer.keys.first
-          if include_indices 
-            flat_array << pointer.values.first
-          end
-        else
-          flat_array << pointer
-        end
-      end
-      return flat_array
+      OM.pointers_to_flat_array(pointers, include_indices)
     end
     
   end

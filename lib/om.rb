@@ -34,6 +34,27 @@ module OM
       return params
     end
   end
+  
+  # @pointers pointers array that you would pass into other Accessor methods
+  # @include_indices (default: true) if set to false, parent indices will be excluded from the array
+  # Converts an array of accessor pointers into a flat array.
+  # ie. [{:conference=>0}, {:role=>1}, :text] becomes [:conference, 0, :role, 1, :text]
+  #   if include_indices is set to false,
+  #     [{:conference=>0}, {:role=>1}, :text] becomes [:conference, :role, :text]
+  def self.pointers_to_flat_array(pointers, include_indices=true)
+    flat_array = []
+    pointers.each do |pointer|
+      if pointer.kind_of?(Hash)
+        flat_array << pointer.keys.first
+        if include_indices 
+          flat_array << pointer.values.first
+        end
+      else
+        flat_array << pointer
+      end
+    end
+    return flat_array
+  end
 end
 
 module OM::XML; end
