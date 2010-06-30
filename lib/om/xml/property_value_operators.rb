@@ -17,6 +17,7 @@ module OM::XML::PropertyValueOperators
     params.each_pair do |property_pointer,new_values|
       pointer = OM.destringify(property_pointer)
       template = OM.pointers_to_flat_array(pointer,false)
+      hn = self.class.accessor_hierarchical_name(*pointer)
       
       # unless new_values.kind_of?(Hash)
       #   new_values = {0=>new_values}
@@ -31,8 +32,9 @@ module OM::XML::PropertyValueOperators
         new_values = {0=>new_values}
       end
       
-      result[property_pointer] = new_values.dup
-      p new_values
+      result.delete(property_pointer)
+      result[hn] = new_values.dup
+      
       current_values = property_values(pointer)
       new_values.delete_if do |y,z| 
         if current_values[y.to_i]==z and y.to_i > -1

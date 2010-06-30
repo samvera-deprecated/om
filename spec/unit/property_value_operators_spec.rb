@@ -83,8 +83,8 @@ describe "OM::XML::PropertyValueOperators" do
     end
     it "should update the xml according to the lookups in the given hash" do
       properties_update_hash = {[{":person"=>"0"}, "role", "text"]=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
-      @article.update_properties(properties_update_hash)
-      
+      result = @article.update_properties(properties_update_hash)
+      result.should == {"person_0_role_text"=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, "person_1_family_name"=>{0=>"Andronicus"},"person_1_given_name"=>{0=>"Titus"}, "person_1_role_text"=>{0=>"otherrole1",1=>"otherrole2"}}
       person_0_roles = @article.retrieve({:person=>0}, :role, :text)
       person_0_roles[0].text.should == "role1"
       person_0_roles[1].text.should == "role2"

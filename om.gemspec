@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Zumwalt"]
-  s.date = %q{2010-06-28}
+  s.date = %q{2010-06-29}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
   s.email = %q{matt.zumwalt@yourmediashelf.com}
   s.extra_rdoc_files = [
@@ -43,6 +43,7 @@ Gem::Specification.new do |s|
      "spec/unit/accessors_spec.rb",
      "spec/unit/container_spec.rb",
      "spec/unit/generator_spec.rb",
+     "spec/unit/om_spec.rb",
      "spec/unit/properties_spec.rb",
      "spec/unit/property_value_operators_spec.rb",
      "spec/unit/validation_spec.rb",
