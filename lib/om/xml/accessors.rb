@@ -45,7 +45,10 @@ module OM::XML::Accessors
         return nil
       end
       @accessors ||= {}
-      self.properties.each_pair do |property_ref, property_info|
+      # Skip the :unresolved portion of the properties hash
+      accessorizables = self.properties.dup
+      accessorizables.delete(:unresolved)
+      accessorizables.each_pair do |property_ref, property_info|
         insert_accessor_from_property(property_ref, property_info)
       end
     end
