@@ -85,6 +85,9 @@ module OM::XML::Accessors
     
     
     def accessor_xpath(*pointers)
+      if pointers.first.kind_of?(String)
+        return pointers.first
+      end
       
       keys = []
       xpath = "//"
@@ -191,7 +194,11 @@ module OM::XML::Accessors
   # Currently, indexes must be integers.
   def retrieve(*pointers)
     xpath = self.class.accessor_xpath(*pointers)    
-    ng_xml.xpath(xpath, "oxns"=>"http://www.loc.gov/mods/v3")    
+    if xpath.nil?
+      return nil
+    else
+      return ng_xml.xpath(xpath, "oxns"=>"http://www.loc.gov/mods/v3") 
+    end   
   end
   
 end

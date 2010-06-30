@@ -89,6 +89,14 @@ describe "OM::XML::Accessors" do
       @sample.retrieve( {:title_info=>1}, :language ).first.text.should == "finnish"
     end
     
+    it "should support xpath queries as the pointer" do
+      @sample.retrieve('//oxns:name[@type="personal"][1]/oxns:namePart[1]').first.text.should == "FAMILY NAME"
+    end
+    
+    it "should return nil if the xpath fails to generate" do
+      @sample.retrieve( {:foo=>20}, :bar ).should == nil
+    end
+    
   end
 
   describe "generated accessor methods" do
@@ -123,6 +131,9 @@ describe "OM::XML::Accessors" do
     # Note: Ruby array indexes begin from 0.  In xpath queries (which start from 1 instead of 0), this will be translated accordingly.
     it "should prepend the xpath for any parent nodes, inserting calls to xpath array lookup where necessary" do
       AccessorTest.accessor_xpath( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+    end
+    it "should support xpath queries as argument" do
+      AccessorTest.accessor_xpath('//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
     end
     it "should return nil if no accessor_info is available" do
       AccessorTest.accessor_xpath( :sample_undeclared_accessor ).should == nil

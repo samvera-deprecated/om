@@ -4,38 +4,45 @@ require "logger"
 class OM::XML::ParentNodeNotFoundError < RuntimeError; end
 module OM::XML::PropertyValueOperators
   
-  def property_values(lookup_args)
+  def property_values(*lookup_args)
     result = []
-    lookup(lookup_args).each {|node| result << node.text }
+    retrieve(*lookup_args).each {|node| result << node.text }
     return result
   end
   
   # 
   # example properties values hash: {[{":person"=>"0"}, "role", "text"]=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
   def update_properties(params={})
+    # remove any fields from params that this datastream doesn't recognize    
+    params.delete_if do |field_key,new_values| 
+      if field_key.kind_of?(String)
+        true
+      else
+        self.class.accessor_xpath(*OM.destringify(field_key) ).nil?
+      end
+    end
+    
     result = params.dup
+    
     params.each_pair do |property_pointer,new_values|
       pointer = OM.destringify(property_pointer)
       template = OM.pointers_to_flat_array(pointer,false)
       hn = self.class.accessor_hierarchical_name(*pointer)
       
-      # unless new_values.kind_of?(Hash)
-      #   new_values = {0=>new_values}
-      # end
       case new_values
       when Hash
       when Array
         nv = new_values.dup
         new_values = {}
-        nv.each {|v| new_values[nv.index(v)] = v}
+        nv.each {|v| new_values[nv.index(v).to_s] = v}
       else
-        new_values = {0=>new_values}
+        new_values = {"0"=>new_values}
       end
       
       result.delete(property_pointer)
       result[hn] = new_values.dup
       
-      current_values = property_values(pointer)
+      current_values = property_values(*pointer)
       new_values.delete_if do |y,z| 
         if current_values[y.to_i]==z and y.to_i > -1
           true
@@ -43,12 +50,16 @@ module OM::XML::PropertyValueOperators
           false
         end
       end 
-
-      new_values.each do |y,z| 
-        xpath = self.class.accessor_xpath(*pointer)
-        if xpath.nil? then debugger end
+      xpath = self.class.accessor_xpath(*pointer)
+      parent_pointer = pointer.dup
+      parent_pointer.pop
+      parent_xpath = self.class.accessor_xpath(*parent_pointer)
+      new_values.each do |y,z|         
         if retrieve(*pointer)[y.to_i].nil? || y.to_i == -1
-          property_values_append(:parent_select=>xpath,:child_index=>0,:template=>template,:values=>z)
+          result[hn].delete(y)
+          property_values_append(:parent_select=>parent_xpath,:child_index=>0,:template=>template,:values=>z)
+          new_array_index = retrieve(*pointer).length - 1
+          result[hn][new_array_index.to_s] = z
         else
           property_value_update(xpath, y.to_i, z)
         end
