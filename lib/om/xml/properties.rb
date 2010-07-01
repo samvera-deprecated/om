@@ -133,11 +133,20 @@ module OM::XML::Properties
       prefix = "oxns"
       property_info[:path] ||= "" 
       path = property_info[:path]
-      path_array = Array( path )
+      unless path.kind_of?(Hash)
+        path = Array( path )
+      end
       template = ""
       template << "//" unless opts[:relative]
       template << "#{prefix}:"
-      template << delimited_list(path_array, "/#{prefix}:")
+      
+      if path.kind_of?(Hash)
+        if path.has_key?(:attribute)
+          template = "@"+path[:attribute]
+        end
+      else
+        template << delimited_list(path, "/#{prefix}:")
+      end
 
       predicates = []   
       default_content_path = property_info.has_key?(:default_content_path) ? property_info[:default_content_path] : ""
@@ -175,13 +184,18 @@ module OM::XML::Properties
             end
           elsif opts[:constraints].has_key?(:path)
             constraint_predicates = []
-            if opts.has_key?(:subelement_of)
-              constraint_path = "#{prefix}:#{opts[:constraints][:path]}"
-              if opts[:constraints].has_key?(:default_content_path)
-                constraint_path << "/#{prefix}:#{opts[:constraints][:default_content_path]}"
-              end 
+            
+            constraints_path_arg = opts[:constraints][:path]
+            if constraints_path_arg.kind_of?(Hash)
+              if constraints_path_arg.has_key?(:attribute)
+                constraint_path = "@"+constraints_path_arg[:attribute]
+              end
             else
-             constraint_path = "#{prefix}:#{opts[:constraints][:path]}"
+             constraint_path = "#{prefix}:#{constraints_path_arg}"
+            end
+            if opts.has_key?(:subelement_of) && opts[:constraints].has_key?(:default_content_path)
+              # constraint_path = "#{prefix}:#{opts[:constraints][:path]}"
+                constraint_path << "/#{prefix}:#{opts[:constraints][:default_content_path]}" 
             end
             arguments_for_contains_function << constraint_path
             

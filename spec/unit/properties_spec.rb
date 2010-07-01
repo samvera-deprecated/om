@@ -15,9 +15,15 @@ describe "OM::XML::Properties" do
       # root :mods_collection, :path=>"modsCollection", 
       #           :attributes=>[],
       #           :subelements => :mods
-                     
-      root_property :mods, "mods", "http://www.loc.gov/mods/v3", :attributes=>["id", "version"], :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"          
                 
+                  
+      root_property :mods, "mods", "http://www.loc.gov/mods/v3", :attributes=>["id", "version"], :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"          
+      
+      property :title_info, :path=>"titleInfo", 
+                  :convenience_methods => {
+                    :main_title => {:path=>"title"},
+                    :language => {:path=>{:attribute=>"lang"}},                    
+                  }
                 
       property :name_, :path=>"name", 
                   :attributes=>[:xlink, :lang, "xml:lang", :script, :transliteration, {:type=>["personal", "enumerated", "corporate"]} ],
@@ -125,6 +131,12 @@ describe "OM::XML::Properties" do
       FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath].should == '//oxns:name/oxns:role'
       FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath_relative].should == 'oxns:role'
       FakeOxMods.properties[:name_][:convenience_methods][:role][:xpath_constrained].should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
+    end
+    
+    it "supports treating attributes as properties" do
+      FakeOxMods.properties[:title_info][:convenience_methods][:language][:xpath].should == '//oxns:titleInfo/@lang'
+      FakeOxMods.properties[:title_info][:convenience_methods][:language][:xpath_relative].should == '@lang'
+      FakeOxMods.properties[:title_info][:convenience_methods][:language][:xpath_constrained].should == '//oxns:titleInfo[contains(@lang, "#{constraint_value}")]'.gsub('"', '\"')
     end
     
     it "should create an accessor for the created property" do
