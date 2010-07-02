@@ -43,7 +43,25 @@ describe "OM::XML::Properties" do
                   :attributes=>[ { "type"=>["text", "code"] } , "authority"],
                   :default_content_path => "roleTerm"
                   
-                  
+      property :journal, :path=>'relatedItem', :attributes=>{:type=>"host"},
+                  :subelements=>[:title_info, :origin_info, :issue],
+                  :convenience_methods => {
+                    :issn => {:path=>"identifier", :attributes=>{:type=>"issn"}},
+                  }   
+
+      property :issue, :path=>'part',
+                  :subelements=>[:start_page, :end_page],
+                  :convenience_methods => {
+                    :volume => {:path=>"detail", :attributes=>{:type=>"volume"}},
+                    :level => {:path=>"detail", :attributes=>{:type=>"level"}},
+                    # Hack to support provisional spot for start & end page (nesting was too deep for this version of OM)
+                    :citation_start_page => {:path=>"pages", :attributes=>{:type=>"start"}},
+                    :citation_end_page => {:path=>"pages", :attributes=>{:type=>"end"}},
+                    :foo => {:path=>"foo", :attributes=>{:type=>"ness"}},
+                    :publication_date => {:path=>"date"}
+                  }
+      property :start_page, :path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start"
+      property :end_page, :path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end"    
     end
     
     class FakeOtherOx < Nokogiri::XML::Document
@@ -139,17 +157,24 @@ describe "OM::XML::Properties" do
       FakeOxMods.properties[:title_info][:convenience_methods][:language][:xpath_constrained].should == '//oxns:titleInfo[contains(@lang, "#{constraint_value}")]'.gsub('"', '\"')
     end
     
-    it "should create an accessor for the created property" do
-      pending
-      FakeOXMods.accessors.should have_key(:name_)
+    it "should support deep nesting of properties" do
+      pending "requires property method to be recursive"
+      
+      FakeOxMods.properties[:journal][:convenience_methods][:issue][:convenience_methods][:volume].should == {:xpath_constrained=>"//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]", :path=>"detail", :attributes=>{:type=>"volume"}, :xpath=>"//oxns:part/oxns:detail[@type=\"volume\"]", :xpath_relative=>"oxns:detail[@type=\"volume\"]"}
+      prop_info = FakeOxMods.property_info_for([:journal, :issue, :volume])
+      prop_info[:xpath_constrained].should == "//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
+      prop_info[:xpath].should == "//oxns:part/oxns:detail[@type=\"volume\"]"
+      prop_info[:xpath_relative].should == "oxns:detail[@type=\"volume\"]"
     end
     
-    it "should create accessors for subelements" do
-      pending
-      FakeOXMods.accessors[:name_][:children][:role][:children].should have_key(:family_name)
+    it "should support even deeper nesting of properties" do
+      pending "requires property method to be recursive"
+      
+      FakeOxMods.properties[:journal][:convenience_methods][:issue][:convenience_methods][:start_page].should == {:xpath_constrained=>"//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]", :path=>"detail", :attributes=>{:type=>"volume"}, :xpath=>"//oxns:part/oxns:detail[@type=\"volume\"]", :xpath_relative=>"oxns:detail[@type=\"volume\"]"}
+      FakeOxMods.property_info_for([:journal, :issue, :end_page]).should == ""      
     end
     
-    it "should not overwrite default property info when adding a variant property" do
+    it "should not overwrite default property info when adding a variant property" do      
       FakeOxMods.properties[:name_].should_not equal(FakeOxMods.properties[:person])
       FakeOxMods.properties[:name_][:convenience_methods].should_not equal(FakeOxMods.properties[:person][:convenience_methods])
 
@@ -259,6 +284,13 @@ describe "OM::XML::Properties" do
       marcrelator_role_builder_template = 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }'  
       FakeOxMods.builder_template([:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
       FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
+    end
+    
+    it "should work with deeply nested properties" do
+      pending "requires property method to be recursive"
+      
+      FakeOxMods.builder_template([:journal, :issue, :volume]).should == "fixme"
+      FakeOxMods.builder_template([:journal, :issue, :start_page]).should == "fixme"
     end
     
   end
