@@ -60,6 +60,7 @@ describe "OM::XML::Accessors" do
   before(:each) do
     article_xml = fixture( File.join("mods_articles", "hydrangea_article1.xml") )
     @sample = AccessorTest.from_xml(article_xml)
+    @sample.stubs(:ox_namespaces).returns("oxns"=>"http://www.loc.gov/mods/v3")
   end
   
   describe '#accessor' do
