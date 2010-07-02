@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{om}
-  s.version = "0.1.7"
+  s.version = "0.1.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Zumwalt"]
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "container_spec.rb",
      "lib/om.rb",
      "lib/om/xml.rb",
      "lib/om/xml/accessors.rb",
@@ -38,6 +39,7 @@ Gem::Specification.new do |s|
      "spec/fixtures/mods-3-2.xsd",
      "spec/fixtures/mods_articles/hydrangea_article1.xml",
      "spec/fixtures/test_dummy_mods.xml",
+     "spec/integration/rights_metadata_integration_example_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/unit/accessors_spec.rb",
@@ -55,7 +57,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.}
   s.test_files = [
-    "spec/spec_helper.rb",
+    "spec/integration/rights_metadata_integration_example_spec.rb",
+     "spec/spec_helper.rb",
      "spec/unit/accessors_spec.rb",
      "spec/unit/container_spec.rb",
      "spec/unit/generator_spec.rb",
