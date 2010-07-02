@@ -200,7 +200,7 @@ module OM::XML::Accessors
     if xpath.nil?
       return nil
     else
-      return ng_xml.xpath(xpath, "oxns"=>"http://www.loc.gov/mods/v3") 
+      return ng_xml.xpath(xpath, ox_namespaces) 
     end   
   end
   
