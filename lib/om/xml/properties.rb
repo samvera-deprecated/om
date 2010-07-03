@@ -263,14 +263,14 @@ module OM::XML::Properties
     end
 
     def property_info_for(property_ref)
-      if property_ref.instance_of?(Array) && property_ref.length == 1
+      if property_ref.instance_of?(Array) && property_ref.length < 2
         property_ref = property_ref[0]      
       end
       if property_ref.instance_of?(Symbol)
         property_info = properties[property_ref]
       elsif property_ref.kind_of?(Array)
-        prop_ref = property_ref[0]
-        cm_name = property_ref[1]
+        prop_ref = property_ref[property_ref.length-2]
+        cm_name = property_ref[property_ref.length-1]
         if properties.has_key?(prop_ref)
           property_info = properties[prop_ref][:convenience_methods][cm_name]
         end

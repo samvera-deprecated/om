@@ -50,16 +50,19 @@ describe "OM::XML::Properties" do
                   }   
 
       property :issue, :path=>'part',
-                  :subelements=>[:start_page, :end_page],
+                  :subelements=>[:start_page, :end_page, :volume],
                   :convenience_methods => {
-                    :volume => {:path=>"detail", :attributes=>{:type=>"volume"}},
-                    :level => {:path=>"detail", :attributes=>{:type=>"level"}},
+                    # :volume => {:path=>"detail", :attributes=>{:type=>"volume"}},
+                    :level => {:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number"},
                     # Hack to support provisional spot for start & end page (nesting was too deep for this version of OM)
                     :citation_start_page => {:path=>"pages", :attributes=>{:type=>"start"}},
                     :citation_end_page => {:path=>"pages", :attributes=>{:type=>"end"}},
                     :foo => {:path=>"foo", :attributes=>{:type=>"ness"}},
                     :publication_date => {:path=>"date"}
                   }
+                  
+      property :volume, :path=>"detail", :attributes=>{:type=>"volume"}, :subelements=>"number"
+      
       property :start_page, :path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start"
       property :end_page, :path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end"    
     end
@@ -283,14 +286,16 @@ describe "OM::XML::Properties" do
       
       marcrelator_role_builder_template = 'xml.role( :type=>\'code\', :authority=>\'marcrelator\' ) { xml.roleTerm( \'#{builder_new_value}\' ) }'  
       FakeOxMods.builder_template([:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
-      FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template
+      FakeOxMods.builder_template([:person,:role], {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ).should == marcrelator_role_builder_template      
     end
     
-    it "should work with deeply nested properties" do
-      pending "requires property method to be recursive"
-      
-      FakeOxMods.builder_template([:journal, :issue, :volume]).should == "fixme"
-      FakeOxMods.builder_template([:journal, :issue, :start_page]).should == "fixme"
+    it "should work with deeply nested properties" do      
+      FakeOxMods.builder_template([:issue, :volume]).should == "xml.detail( '\#{builder_new_value}', :type=>'volume' )"
+      FakeOxMods.builder_template([:volume, :number]).should == "xml.number( '\#{builder_new_value}' )"
+      FakeOxMods.builder_template([:journal, :issue, :level]).should == "xml.detail( :type=>'number' ) { xml.number( '\#{builder_new_value}' ) }"
+      FakeOxMods.builder_template([:journal, :issue, :volume]).should == "xml.detail( '\#{builder_new_value}', :type=>'volume' )"
+      FakeOxMods.builder_template([:journal, :issue, :volume, :number]).should == "xml.number( '\#{builder_new_value}' )"
+      FakeOxMods.builder_template([:journal, :issue, :start_page]).should == "xml.extent( :unit=>'pages' ) { xml.start( '\#{builder_new_value}' ) }"
     end
     
   end
