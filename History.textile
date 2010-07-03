@@ -1,3 +1,7 @@
+0.1.9
+
+Improving support for deeply nested nodes (still needs work though)
+
 0.1.5
 
 * root_property now inserts an entry into the properties hash
