@@ -1,3 +1,7 @@
+0.1.10
+
+Improving generation of constrained xpath queries
+
 0.1.9
 
 Improving support for deeply nested nodes (still needs work though)
