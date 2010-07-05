@@ -202,11 +202,11 @@ describe "OM::XML::Properties" do
       @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
       @fixturemods.lookup(:person, :role=>"donor")
       
-      # @fixturemods.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]', @fixturemods.ox_namespaces)
-      # @fixturemods.lookup([:person,:date])
+      # 
+      # This is the way we want to move towards... (currently implementing part of this in accessor_constrained_xpath)
+      # @fixturemods.ng_xml.expects(:xpath).with('//oxns:relatedItem/oxns:identifier[@type=\'issn\'] and contains("123-ABC-44567")]', @fixturemods.ox_namespaces)
+      # @fixturemods.lookup([:journal, :issn], "123-ABC-44567")
       
-      # @fixturemods.expects(:xpath).with('//oxns:name[contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
-      # @fixturemods.lookup([:person,:date], "2010")
     end
   
   end
@@ -254,7 +254,12 @@ describe "OM::XML::Properties" do
       FakeOxMods.generate_xpath(opts1,  :variations=>{:attributes=>{:type=>"personal"}, :subelement_path=>["role", "roleTerm"] } ).should == '//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm'
       
       FakeOxMods.generate_xpath( opts3, :variations=>{:attributes=>{:type=>"date"}} ).should == '//oxns:name/oxns:namePart[@type="date"]'
+      FakeOxMods.generate_xpath( opts3, :variations=>{:attributes=>{:type=>"date"}}, :constraints=>:default ).should == '//oxns:name/oxns:namePart[@type="date" and contains("#{constraint_value}")]'
+
+      FakeOxMods.generate_xpath( {:path=>["relatedItem", "identifier"]}, :variations=>{:attributes=>{:type=>"issn"}}, :constraints=>:default ).should == '//oxns:relatedItem/oxns:identifier[@type="issn" and contains("#{constraint_value}")]'
+
     end
+    
     
     it "should support relative paths" do
       relative_opts = {:path=>"namePart"}

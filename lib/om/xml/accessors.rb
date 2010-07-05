@@ -140,6 +140,12 @@ module OM::XML::Accessors
       return xpath
     end
     
+    def accessor_constrained_xpath(pointers, constraint)
+      constraint_function = "contains(., \"#{constraint}\")"
+      xpath = self.accessor_xpath(*pointers)
+      xpath = self.add_predicate(xpath, constraint_function)
+    end
+    
     # Adds xpath xpath node index predicate to the end of your xpath query
     # Example: 
     # add_node_index_predicate("//oxns:titleInfo",0)
@@ -161,13 +167,17 @@ module OM::XML::Accessors
     # add_position_predicate("//oxns:titleInfo[@lang=\"finnish\"]",0)
     # => "//oxns:titleInfo[@lang=\"finnish\" and position()=1]"
     def add_position_predicate(xpath_query, array_index_value)
-      modified_query = xpath_query.dup
       position_function = "position()=#{array_index_value + 1}"
-      
-      if xpath_query.include?("]")
-        modified_query.insert(xpath_query.rindex("]"), " and #{position_function}")
+      self.add_predicate(xpath_query, position_function)
+    end
+    
+    def add_predicate(xpath_query, predicate)
+      modified_query = xpath_query.dup
+      # if xpath_query.include?("]")
+      if xpath_query[xpath_query.length-1..xpath_query.length] == "]"
+        modified_query.insert(xpath_query.rindex("]"), " and #{predicate}")
       else
-        modified_query << "[#{position_function}]"
+        modified_query << "[#{predicate}]"
       end
       return modified_query
     end

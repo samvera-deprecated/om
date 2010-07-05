@@ -146,6 +146,14 @@ describe "OM::XML::Accessors" do
     end
   end
   
+  describe "#accessor_constrained_xpath" do
+    it 'should append contains("#{constraint_value}") to query' do
+      # @sample.class.accessor_constrained_xpath_template([:journal, :issn]).should == '//oxns:relatedItem[@type="host"]/oxns:identifier[@type="issn" and contains("#{constraint_value}")]'
+      @sample.class.accessor_constrained_xpath([:journal, :issn], "123-456-ABC").should == '//oxns:relatedItem[@type="host"]/oxns:identifier[@type="issn" and contains(., "123-456-ABC")]'
+      @sample.class.accessor_constrained_xpath([:journal, :title], "My Journal Title").should == '//oxns:relatedItem[@type="host"]/oxns:titleInfo/oxns:title[contains(., "My Journal Title")]'
+    end
+  end
+  
   describe "#accessor_generic_name" do
     it "should generate a generic accessor name based on an array of pointers" do
       AccessorTest.accessor_generic_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_role_text"
