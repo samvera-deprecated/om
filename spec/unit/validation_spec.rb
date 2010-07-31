@@ -65,6 +65,7 @@ describe "OM::XML::Validation" do
 
   describe "#file_from_url" do
     it "should retrieve a file from the provided url over HTTP" do
+      ValidationTest.expects(:open).with("http://google.com")
       ValidationTest.send(:file_from_url, "http://google.com")
     end
     it "should raise an error if the url is invalid" do
