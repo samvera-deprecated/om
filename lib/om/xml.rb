@@ -5,6 +5,10 @@ require "om/xml/properties"
 require "om/xml/property_value_operators"
 require "om/xml/generator"
 
+require "om/xml/mapper"
+require "om/xml/mapper_xpath_generator"
+
+
 module OM::XML
   
   attr_accessor :ng_xml
