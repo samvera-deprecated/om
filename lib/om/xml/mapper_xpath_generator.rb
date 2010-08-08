@@ -3,8 +3,15 @@ module OM::XML::MapperXpathGenerator
   def self.generate_relative_xpath(mapper)
     template = ""
     predicates = []
+    
+    if mapper.namespace_prefix.nil?
+      complete_prefix = ""
+    else
+      complete_prefix = mapper.namespace_prefix + ":"
+    end
+    
     unless mapper.namespace_prefix.nil?
-      template << mapper.namespace_prefix + ":"
+      template << complete_prefix
     end
     
     unless mapper.attributes.nil?
@@ -28,14 +35,19 @@ module OM::XML::MapperXpathGenerator
   end
   
   def self.generate_constrained_xpath(mapper)
+    if mapper.namespace_prefix.nil?
+      complete_prefix = ""
+    else
+      complete_prefix = mapper.namespace_prefix + ":"
+    end
+    
     absolute = generate_absolute_xpath(mapper)
     constraint_predicates = []
     
     arguments_for_contains_function = []
 
     unless mapper.default_content_path.nil?
-      default_content_path = property_info[:default_content_path]
-      arguments_for_contains_function << "#{prefix}:#{default_content_path}"
+      arguments_for_contains_function << "#{complete_prefix}#{mapper.default_content_path}"
     end
     # elsif opts[:constraints].has_key?(:path)
     #   constraints_path_arg = opts[:constraints][:path]
@@ -65,7 +77,8 @@ module OM::XML::MapperXpathGenerator
   
     contains_function = "contains(#{delimited_list(arguments_for_contains_function)})"
         
-    return add_predicate(absolute, contains_function)
+    template = add_predicate(absolute, contains_function)
+    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
   end
     
   def self.generate_xpath(mapper, type)
