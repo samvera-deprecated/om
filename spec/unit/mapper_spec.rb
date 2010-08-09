@@ -19,18 +19,41 @@ describe "OM::XML::Mapper" do
   
   describe '#from_node' do
     it "should create a mapper from a nokogiri node" do
-      node = Nokogiri::XML::Document.parse( '<mapper name="first_name" path="namePart"><attribute name="type" value="given"/><attribute name="another_attribute" value="myval"/></mapper>' ).root
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.mapper(:name=>"person", :path=>"name") {
+          xml.attribute(:name=>"type", :value=>"personal")
+          xml.mapper(:name=>"first_name", :path=>"namePart") {
+            xml.attribute(:name=>"type", :value=>"given")
+            xml.attribute(:name=>"another_attribute", :value=>"myval")
+          }
+        }
+      end
+      # node = Nokogiri::XML::Document.parse( '<mapper name="first_name" path="namePart"><attribute name="type" value="given"/><attribute name="another_attribute" value="myval"/></mapper>' ).root
+      node = builder.doc.root
       mapper = OM::XML::Mapper.from_node(node)
-      mapper.name.should == :first_name
-      mapper.path.should == "namePart"
-      mapper.attributes.should == {:type=>"given", :another_attribute=>"myval"}
+      mapper.name.should == :person
+      mapper.path.should == "name"
+      mapper.attributes.should == {:type=>"personal"}
       mapper.internal_xml.should == node
+            
+      child = mapper.children[:first_name]
+
+      child.name.should == :first_name
+      child.path.should == "namePart"
+      child.attributes.should == {:type=>"given", :another_attribute=>"myval"}
+      child.internal_xml.should == node.xpath("./mapper").first
     end
   end
   
-  describe "mapper_set" do
-    it "should keep track of the MapperSet that the current object belongs to" do
-      
+  describe ".retrieve_mapper" do
+    it "should crawl down into mapper children to find the desired mapper" do
+      mock_role = mock("mapper", :children =>{:text=>"the target"})
+      mock_conference = mock("mapper", :children =>{:role=>mock_role})   
+      @test_mapper.expects(:children).returns({:conference=>mock_conference})   
+      @test_mapper.retrieve_mapper(:conference, :role, :text).should == "the target"
+    end
+    it "should return an empty hash if no mapper can be found" do
+      @test_mapper.retrieve_mapper(:journal, :issue, :end_page).should == nil
     end
   end
   
@@ -57,22 +80,22 @@ describe "OM::XML::Mapper" do
     end
   end
   describe ".children" do
-    it "should return an array of Mappers that are the children of the current object" do
+    it "should return a hash of Mappers that are the children of the current object, indexed by name" do
       @test_raw_mapper.add_child(@test_mapper)
-      @test_raw_mapper.children.should == [@test_mapper]
+      @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
     end
   end
   describe ".set_parent" do
     it "should insert the mapper into the given parent" do
       @test_mapper.set_parent(@test_raw_mapper)
       @test_mapper.ancestors.should include(@test_raw_mapper)
-      @test_raw_mapper.children.should include(@test_mapper)
+      @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
     end
   end
   describe ".add_child" do
     it "should insert the given mapper into the current mappers children" do
       @test_raw_mapper.add_child(@test_mapper)
-      @test_raw_mapper.children.should include(@test_mapper)
+      @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
       @test_mapper.ancestors.should include(@test_raw_mapper)
     end
   end
