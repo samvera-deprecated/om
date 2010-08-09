@@ -17,6 +17,23 @@ describe "OM::XML::Mapper" do
     end
   end
   
+  describe '#from_node' do
+    it "should create a mapper from a nokogiri node" do
+      node = Nokogiri::XML::Document.parse( '<mapper name="first_name" path="namePart"><attribute name="type" value="given"/><attribute name="another_attribute" value="myval"/></mapper>' ).root
+      mapper = OM::XML::Mapper.from_node(node)
+      mapper.name.should == :first_name
+      mapper.path.should == "namePart"
+      mapper.attributes.should == {:type=>"given", :another_attribute=>"myval"}
+      mapper.internal_xml.should == node
+    end
+  end
+  
+  describe "mapper_set" do
+    it "should keep track of the MapperSet that the current object belongs to" do
+      
+    end
+  end
+  
   describe 'inner_xml' do
     it "should be a kind of Nokogiri::XML::Node" do
       pending
@@ -34,16 +51,30 @@ describe "OM::XML::Mapper" do
   end
 
   describe ".ancestors" do
-    it "should return an array of Mappers that are the ancestors of the current object, ordered from the top/root of the hierarchy"
+    it "should return an array of Mappers that are the ancestors of the current object, ordered from the top/root of the hierarchy" do
+      @test_raw_mapper.set_parent(@test_mapper)
+      @test_raw_mapper.ancestors.should == [@test_mapper]
+    end
   end
   describe ".children" do
-    it "should return an array of Mappers that are the children of the current object"
+    it "should return an array of Mappers that are the children of the current object" do
+      @test_raw_mapper.add_child(@test_mapper)
+      @test_raw_mapper.children.should == [@test_mapper]
+    end
   end
   describe ".set_parent" do
-    it "should insert the mapper into the given parent"
+    it "should insert the mapper into the given parent" do
+      @test_mapper.set_parent(@test_raw_mapper)
+      @test_mapper.ancestors.should include(@test_raw_mapper)
+      @test_raw_mapper.children.should include(@test_mapper)
+    end
   end
   describe ".add_child" do
-    it "should insert the given mapper into the current mappers children"
+    it "should insert the given mapper into the current mappers children" do
+      @test_raw_mapper.add_child(@test_mapper)
+      @test_raw_mapper.children.should include(@test_mapper)
+      @test_mapper.ancestors.should include(@test_raw_mapper)
+    end
   end
   
   describe ".generate" do
@@ -62,7 +93,10 @@ describe "OM::XML::Mapper" do
   end
   
   describe ".regenerate" do
-    it "should call .generate"
+    it "should call .generate" do
+      @test_mapper.expects(:generate)
+      @test_mapper.regenerate
+    end
   end
   
   describe "update_xpath_values" do
