@@ -11,7 +11,7 @@ begin
     gem.homepage = "http://github.com/mediashelf/om"
     gem.authors = ["Matt Zumwalt"]
     
-    gem.add_dependency('nokogiri')
+    gem.add_dependency('nokogiri', ">= 1.4.2")
     gem.add_dependency('facets')
     
     gem.add_development_dependency "rspec", ">= 1.2.9"

@@ -1,42 +1,25 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require "om"
 
-describe "OM::XML::Mapper::Builder" do
+describe "OM::XML::Term::Builder" do
   
   before(:each) do
-    @test_mapping = OM::XML::Mapping.new(:namePart)
+    @test_builder = OM::XML::Term::Builder.new
+    @test_builder_2 = OM::XML::Term::Builder.new
   end
   
   describe '#new' do
-    it "should populate the xpath values if no options are provided" do
-      local_mapping = OM::XML::Mapping.new(:namePart)
-      local_mapping.xpath_relative.should be_nil
-      local_mapping.xpath.should be_nil
-      local_mapping.xpath_constrained.should be_nil
-    end
-    it "should cache the xpath values if options are provided" do
-      local_mapping = OM::XML::Mapping.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
-      local_mapping.xpath_relative.should_not be_nil
-      local_mapping.xpath.should_not be_nil
-      local_mapping.xpath_constrained.should_not be_nil
-    end
   end
   
-  describe 'inner_xml' do
-    it "should be a kind of Nokogiri::XML::Node" do
-      @test_mapping.inner_xml.should be_kind_of(Nokogiri::XML::Node)
-    end
-  end
-  
-  describe "configuration methods"
+  describe "configuration methods" do
     it "should set the corresponding .settings value return the mapping object" do
       [:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path].each do |method_name|
         @test_mapping.send(method_name, "#{method_name.to_s}foo").should == @test_mapping
         @test_mapping.settings[method_name].should == "#{method_name.to_s}foo"
       end
     end
-    it "should be chainable"
-      test_builder = OM::XML::Mapper::Builder.new.index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
+    it "should be chainable" do
+      test_builder = OM::XML::Term::Builder.new.index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
       resulting_settings = test_builder.settings
       resulting_settings[:index_as].should == [:facetable, :searchable, :sortable, :displayable]
       resulting_settings[:required].should == true 
@@ -57,15 +40,37 @@ describe "OM::XML::Mapper::Builder" do
     end
   end
   
-  describe "build" do
-    it "should build a Mapper with the given settings" do
-      test_builder = OM::XML::Mapper::Builder.new.index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
+  
+  describe ".children" do
+    it "should return a hash of Term Builders that are the children of the current object, indexed by name" do
+      @test_builder.add_child(@test_builder_2)
+      @test_builder.children[@test_builder_2.name].should == @test_builder_2
+    end
+  end
+  
+  describe ".add_child" do
+    it "should insert the given Term Builder into the current Term Builder's children" do
+      @test_builder.add_child(@test_builder_2)
+      @test_builder.children[@test_builder_2.name].should == @test_builder_2
+      @test_builder.ancestors.should include(@test_builder_2)
+    end
+  end
+  
+  describe ".build" do
+    it "should build a Term with the given settings" do
+      test_builder = OM::XML::Term::Builder.new.index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
 
-      result = test_builder.build.should be_instance_of OM::XML::Mapper
+      result = test_builder.build.should be_instance_of OM::XML::Term
       resulting_settings = MappingsTest.mappings[:namePart].settings
       resulting_settings[:index_as].should == [:facetable, :searchable, :sortable, :displayable]
       resulting_settings[:required].should == true 
       resulting_settings[:type].should == :text
+    end
+    it "should work recursively, calling .build on any of its children" do
+      mock1 = mock("Builder", :build)
+      mock2 = mock("Builder", :build)
+      @test_builder.expects(:children).returns({:mock1=>mock1, :mock2=>mock2})
+      @test_builder.build
     end
   end
 

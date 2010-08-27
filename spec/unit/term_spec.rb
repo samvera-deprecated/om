@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require "om"
 
-describe "OM::XML::Mapper" do
+describe "OM::XML::Term" do
   
   before(:each) do
-    @test_mapper = OM::XML::Mapper.new(:namePart, {}).generate
-    @test_raw_mapper = OM::XML::Mapper.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    @test_mapper = OM::XML::Term.new(:namePart, {}).generate
+    @test_raw_mapper = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
   end
   
   describe '#new' do
@@ -15,11 +15,31 @@ describe "OM::XML::Mapper" do
     it "should set path from mapper name if no path is provided" do
       @test_mapper.path.should == "namePart"
     end
+    it "should populate the xpath values if no options are provided" do
+      local_mapping = OM::XML::Term.new(:namePart)
+      local_mapping.xpath_relative.should be_nil
+      local_mapping.xpath.should be_nil
+      local_mapping.xpath_constrained.should be_nil
+    end
+    it "should cache the xpath values if options are provided" do
+      local_mapping = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+      local_mapping.xpath_relative.should_not be_nil
+      local_mapping.xpath.should_not be_nil
+      local_mapping.xpath_constrained.should_not be_nil
+    end
+  end
+  
+  describe 'inner_xml' do
+    it "should be a kind of Nokogiri::XML::Node" do
+      pending
+      @test_mapping.inner_xml.should be_kind_of(Nokogiri::XML::Node)
+    end
   end
   
   describe '#from_node' do
     it "should create a mapper from a nokogiri node" do
-      builder = Nokogiri::XML::Builder.new do |xml|
+      pending "probably should do this in the Builder"
+      ng_builder = Nokogiri::XML::Builder.new do |xml|
         xml.mapper(:name=>"person", :path=>"name") {
           xml.attribute(:name=>"type", :value=>"personal")
           xml.mapper(:name=>"first_name", :path=>"namePart") {
@@ -29,8 +49,8 @@ describe "OM::XML::Mapper" do
         }
       end
       # node = Nokogiri::XML::Document.parse( '<mapper name="first_name" path="namePart"><attribute name="type" value="given"/><attribute name="another_attribute" value="myval"/></mapper>' ).root
-      node = builder.doc.root
-      mapper = OM::XML::Mapper.from_node(node)
+      node = ng_builder.doc.root
+      mapper = OM::XML::Term.from_node(node)
       mapper.name.should == :person
       mapper.path.should == "name"
       mapper.attributes.should == {:type=>"personal"}
@@ -43,6 +63,10 @@ describe "OM::XML::Mapper" do
       child.attributes.should == {:type=>"given", :another_attribute=>"myval"}
       child.internal_xml.should == node.xpath("./mapper").first
     end
+  end
+  
+  describe ".label" do
+    it "should default to the mapper name with underscores converted to spaces"
   end
   
   describe ".retrieve_mapper" do
@@ -73,14 +97,25 @@ describe "OM::XML::Mapper" do
     end
   end
 
+  describe ".context" do
+    it "should track the Vocabulary that the mapper and its ancestors belong to" do
+      @test_raw_mapper.context.should be_instance_of OM::XML::Terminology
+    end
+  end
   describe ".ancestors" do
-    it "should return an array of Mappers that are the ancestors of the current object, ordered from the top/root of the hierarchy" do
+    it "should return an array of Terms that are the ancestors of the current object, ordered from the top/root of the hierarchy" do
       @test_raw_mapper.set_parent(@test_mapper)
       @test_raw_mapper.ancestors.should == [@test_mapper]
     end
   end
+  describe ".parent" do
+    it "should retrieve the immediate parent of the given object from the ancestors array" do
+      @test_mapper.expects(:ancestors).returns(["ancestor1","ancestor2","ancestor3"])
+      @test_mapper.parent.should == "ancestor3"
+    end
+  end
   describe ".children" do
-    it "should return a hash of Mappers that are the children of the current object, indexed by name" do
+    it "should return a hash of Terms that are the children of the current object, indexed by name" do
       @test_raw_mapper.add_child(@test_mapper)
       @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
     end
@@ -101,7 +136,7 @@ describe "OM::XML::Mapper" do
   end
   
   describe ".generate" do
-    it "should set up the Mapper based on the current settings and return the current object" do
+    it "should set up the Term based on the current settings and return the current object" do
       @test_raw_mapper.generate.should == @test_raw_mapper
     end
     it "should populate the xpath values if options are provided" do

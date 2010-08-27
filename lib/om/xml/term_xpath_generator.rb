@@ -1,4 +1,4 @@
-module OM::XML::MapperXpathGenerator
+module OM::XML::TermXpathGenerator
   
   def self.generate_relative_xpath(mapper)
     template = ""

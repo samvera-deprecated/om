@@ -1,4 +1,8 @@
-class OM::XML::Mapper
+class OM::XML::Term
+  
+  class Builder
+  end
+  
   attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix
   attr_accessor :children, :ancestors, :internal_xml
   def initialize(name, opts={})
@@ -76,9 +80,9 @@ class OM::XML::Mapper
   end
   
   def update_xpath_values
-    self.xpath = OM::XML::MapperXpathGenerator.generate_absolute_xpath(self)
-    self.xpath_constrained = OM::XML::MapperXpathGenerator.generate_constrained_xpath(self)
-    self.xpath_relative = OM::XML::MapperXpathGenerator.generate_relative_xpath(self)
+    self.xpath = OM::XML::TermXpathGenerator.generate_absolute_xpath(self)
+    self.xpath_constrained = OM::XML::TermXpathGenerator.generate_constrained_xpath(self)
+    self.xpath_relative = OM::XML::TermXpathGenerator.generate_relative_xpath(self)
     return self
   end
   

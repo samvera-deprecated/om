@@ -15,59 +15,56 @@ describe "OM::XML::Properties" do
       # root :mods_collection, :path=>"modsCollection", 
       #           :attributes=>[],
       #           :subelements => :mods
-           
-      # p = Property.new("namePart", :required=>:true, :type=>:string)
-      # p.index_as = [:facetable, :searchable, :sortable]
-      # parent_property << p
-           
-      # b.property("namePart").index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:string)  
+                
+                  
+      root_property :mods, "mods", "http://www.loc.gov/mods/v3", :attributes=>["id", "version"], :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"          
       
-      OM::XML::Builder.new do |b|
-        b.mods(:xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd") {
-          i.lookup(:title, :attribute=>"lang")
-          b.title_info(:path=>"titleInfo") {
-            b.main_title(:path=>"title")
-            b.language(:path=>{:attribute=>"lang"})
-          }          
-          # b.title(:path=>"titleInfo", :default_content_path=>"title") {
-          #   b.@language(:path=>{:attribute=>"lang"})
-          # }
-          b.name_ {
-            b.namePart(:index_as=>[:facetable, :searchable, :sortable, :displayable], :required=>:true, :type=>:string)
-            b.affiliation
-            b.displayForm
-            b.role!
-            b.description
-            b.date(:path=>"namePart", :attributes=>{:type=>"date"})
-            b.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
-            b.given_name(:path=>"namePart", :attributes=>{:type=>"given"})
-            b.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
-          }            
+      property :title_info, :path=>"titleInfo", 
+                  :convenience_methods => {
+                    :main_title => {:path=>"title"},
+                    :language => {:path=>{:attribute=>"lang"}},                    
+                  }
+                
+      property :name_, :path=>"name", 
+                  :attributes=>[:xlink, :lang, "xml:lang", :script, :transliteration, {:type=>["personal", "enumerated", "corporate"]} ],
+                  :subelements=>["namePart", "displayForm", "affiliation", :role, "description"],
+                  :default_content_path => "namePart",
+                  :convenience_methods => {
+                    :date => {:path=>"namePart", :attributes=>{:type=>"date"}},
+                    :family_name => {:path=>"namePart", :attributes=>{:type=>"family"}},
+                    :given_name => {:path=>"namePart", :attributes=>{:type=>"given"}},
+                    :terms_of_address => {:path=>"namePart", :attributes=>{:type=>"termsOfAddress"}}
+                  }
+                  
+      property :person, :variant_of=>:name_, :attributes=>{:type=>"personal"}
+      
+      property :role, :path=>"role",
+                  :parents=>[:name_],
+                  :attributes=>[ { "type"=>["text", "code"] } , "authority"],
+                  :default_content_path => "roleTerm"
+                  
+      property :journal, :path=>'relatedItem', :attributes=>{:type=>"host"},
+                  :subelements=>[:title_info, :origin_info, :issue],
+                  :convenience_methods => {
+                    :issn => {:path=>"identifier", :attributes=>{:type=>"issn"}},
+                  }   
 
-          b.person(:variant_of=>:name_, :attributes=>{:type=>"personal"})
-          
-          b.role {
-            b.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
-            b.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
-          }
-          b.journal(:path=>'relatedItem', :attributes=>{:type=>"host"}) {
-            b.title_info
-            b.origin_info(:path=>"originInfo")
-            b.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-            b.issue!
-          }
-          b.issue(:path=>"part") {
-            volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number"
-            b.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
-            b.start_page(:path=>"pages", :attributes=>{:type=>"start"})
-            b.end_page(:path=>"pages", :attributes=>{:type=>"end"})
-            # b.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
-            # b.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
-            b.publication_date(:path=>"date")
-          }
-        }
-      end      
-
+      property :issue, :path=>'part',
+                  :subelements=>[:start_page, :end_page, :volume],
+                  :convenience_methods => {
+                    # :volume => {:path=>"detail", :attributes=>{:type=>"volume"}},
+                    :level => {:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number"},
+                    # Hack to support provisional spot for start & end page (nesting was too deep for this version of OM)
+                    :citation_start_page => {:path=>"pages", :attributes=>{:type=>"start"}},
+                    :citation_end_page => {:path=>"pages", :attributes=>{:type=>"end"}},
+                    :foo => {:path=>"foo", :attributes=>{:type=>"ness"}},
+                    :publication_date => {:path=>"date"}
+                  }
+                  
+      property :volume, :path=>"detail", :attributes=>{:type=>"volume"}, :subelements=>"number"
+      
+      property :start_page, :path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start"
+      property :end_page, :path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end"    
     end
     
     class FakeOtherOx < Nokogiri::XML::Document
@@ -164,9 +161,9 @@ describe "OM::XML::Properties" do
     end
     
     it "should support deep nesting of properties" do
-      # pending "requires property method to be recursive"
-      FakeOxMods.properties[:journal][:convenience_methods][:issue][:convenience_methods][:volume].should_not be_empty
-      FakeOxMods.properties[:journal][:convenience_methods][:issue][:convenience_methods][:volume].should == FakeOxMods.property_info_for([:journal, :issue, :volume])
+      pending "requires property method to be recursive"
+      
+      FakeOxMods.properties[:journal][:convenience_methods][:issue][:convenience_methods][:volume].should == {:xpath_constrained=>"//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]", :path=>"detail", :attributes=>{:type=>"volume"}, :xpath=>"//oxns:part/oxns:detail[@type=\"volume\"]", :xpath_relative=>"oxns:detail[@type=\"volume\"]"}
       prop_info = FakeOxMods.property_info_for([:journal, :issue, :volume])
       prop_info[:xpath_constrained].should == "//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
       prop_info[:xpath].should == "//oxns:part/oxns:detail[@type=\"volume\"]"
@@ -174,7 +171,7 @@ describe "OM::XML::Properties" do
     end
     
     it "should support even deeper nesting of properties" do
-      # pending "requires property method to be recursive"
+      pending "requires property method to be recursive"
       
       FakeOxMods.properties[:journal][:convenience_methods][:issue][:convenience_methods][:start_page].should == {:xpath_constrained=>"//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]", :path=>"detail", :attributes=>{:type=>"volume"}, :xpath=>"//oxns:part/oxns:detail[@type=\"volume\"]", :xpath_relative=>"oxns:detail[@type=\"volume\"]"}
       FakeOxMods.property_info_for([:journal, :issue, :end_page]).should == ""      
