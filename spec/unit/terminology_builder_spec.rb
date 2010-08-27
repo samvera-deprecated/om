@@ -9,7 +9,7 @@ describe "OM::XML::Terminology::Builder" do
     
     describe '#new' do
       it "should process the input block, creating a new Term Builder for each entry" do
-        OM::XML::Terminology::Builder.new do |xml|
+        OM::XML::Terminology::Builder.new do |t|
           t.mods(:xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd") {
             t.title_info(:path=>"titleInfo") {
               t.main_title(:path=>"title", :label=>"title")
@@ -88,6 +88,7 @@ describe "OM::XML::Terminology::Builder" do
     
     describe ".root" do
       it "should accept options for the root node, such as namespace(s)  and schema and those values should impact the resulting Terminology" do
+        pending
         @test_vocabulary.root(:xmlns => 'one:two', 'xmlns:foo' => 'bar', :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
         
         @test_vocabulary.schema.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
