@@ -31,7 +31,11 @@ module OM::XML::TermXpathGenerator
   
   def self.generate_absolute_xpath(mapper)
     relative = generate_relative_xpath(mapper)
-    return "//#{relative}"
+    if mapper.parent.nil?
+      return "//#{relative}"
+    else
+      return mapper.parent.absolute_xpath + "/" + relative
+    end
   end
   
   def self.generate_constrained_xpath(mapper)

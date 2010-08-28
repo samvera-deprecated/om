@@ -15,64 +15,66 @@ describe "OM::XML::TermXpathGeneratorSpec" do
   end
   
   before(:each) do
-    @test_mapper = OM::XML::Term.new(:terms_of_address, :path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
-    @test_mapper_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    @test_term = OM::XML::Term.new(:terms_of_address, :path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+    @test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    @test_role_text = OM::XML::Term.new(:role_text, :path=>"roleTerm", :attributes=>{:type=>"text"})
+    
   end
   
   describe "generate_xpath" do
     it "should generate an xpath based on the given mapper and options" do
-      OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with(@test_mapper)
-      OM::XML::TermXpathGenerator.generate_xpath(@test_mapper, :absolute)
+      OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with(@test_term)
+      OM::XML::TermXpathGenerator.generate_xpath(@test_term, :absolute)
       
-      OM::XML::TermXpathGenerator.expects(:generate_relative_xpath).with(@test_mapper)
-      OM::XML::TermXpathGenerator.generate_xpath(@test_mapper, :relative)
+      OM::XML::TermXpathGenerator.expects(:generate_relative_xpath).with(@test_term)
+      OM::XML::TermXpathGenerator.generate_xpath(@test_term, :relative)
       
-      OM::XML::TermXpathGenerator.expects(:generate_constrained_xpath).with(@test_mapper)
-      OM::XML::TermXpathGenerator.generate_xpath(@test_mapper, :constrained)
+      OM::XML::TermXpathGenerator.expects(:generate_constrained_xpath).with(@test_term)
+      OM::XML::TermXpathGenerator.generate_xpath(@test_term, :constrained)
     end
   end
     
   describe "generate_relative_xpath" do
     it "should generate a relative xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_relative_xpath(@test_mapper).should == 'oxns:namePart[@type="termsOfAddress"]'
+      OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'oxns:namePart[@type="termsOfAddress"]'
     end
     it "should support mappers without namespaces" do
-      @test_mapper.namespace_prefix = nil
-      OM::XML::TermXpathGenerator.generate_relative_xpath(@test_mapper).should == 'namePart[@type="termsOfAddress"]'
+      @test_term.namespace_prefix = nil
+      OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
     end
   end
   
   describe "generate_absolute_xpath" do
     it "should generate an absolute xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_mapper).should == '//oxns:namePart[@type="termsOfAddress"]'
+      OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress"]'
     end
     it "should prepend the xpath for any parent nodes" do  
       mock_parent_mapper = mock("Term", :absolute_xpath=>'//oxns:name[@type="conference"]/oxns:role')
-      @test_mapper_with_default_path.expects(:parent).returns(mock_parent_mapper)
-      OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_mapper_with_default_path).should == '//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]'
+      @test_role_text.stubs(:parent).returns(mock_parent_mapper)
+      OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text).should == '//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]'
     end
   end
 
   describe "generate_constrained_xpath" do
     it "should generate a constrained xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_mapper).should == '//oxns:namePart[@type="termsOfAddress" and contains(":::constraint_value:::")]' 
+      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress" and contains("#{constraint_value}")]' 
     end
   end
   
   it "should support mappers without namespaces" do
-    @test_mapper.namespace_prefix = nil
-    OM::XML::TermXpathGenerator.generate_relative_xpath(@test_mapper).should == 'namePart[@type="termsOfAddress"]'
-    OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_mapper).should == '//namePart[@type="termsOfAddress"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_mapper).should == '//namePart[@type="termsOfAddress" and contains(":::constraint_value:::")]' 
+    @test_term.namespace_prefix = nil
+    OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
+    OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//namePart[@type="termsOfAddress"]'
+    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains("#{constraint_value}")]' 
   end
   
   it "should support mappers with default_content_path" do
     pending "need to implement mapper_set first"
-    #@test_mapper_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    #@test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
     
-    OM::XML::TermXpathGenerator.generate_relative_xpath(@test_mapper_with_default_path).should == 'oxns:detail[@type="volume"]'
-    OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_mapper_with_default_path).should == '//oxns:detail[@type="volume"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_mapper_with_default_path).should == "//oxns:detail[contains(oxns:number[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
+    OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term_with_default_path).should == 'oxns:detail[@type="volume"]'
+    OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term_with_default_path).should == '//oxns:detail[@type="volume"]'
+    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term_with_default_path).should == "//oxns:detail[contains(oxns:number[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
   end
   
 end
