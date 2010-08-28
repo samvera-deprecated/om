@@ -84,7 +84,7 @@ describe "OM::XML::Term" do
   
   describe "getters/setters" do
     it "should set the corresponding .settings value and return the current value" do
-      [:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
+      [:path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
         @test_mapper.send(method_name.to_s+"=", "#{method_name.to_s}foo").should == "#{method_name.to_s}foo"
         @test_mapper.send(method_name).should == "#{method_name.to_s}foo"        
       end
