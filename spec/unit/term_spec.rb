@@ -21,12 +21,6 @@ describe "OM::XML::Term" do
       local_mapping.xpath.should be_nil
       local_mapping.xpath_constrained.should be_nil
     end
-    it "should cache the xpath values if options are provided" do
-      local_mapping = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
-      local_mapping.xpath_relative.should_not be_nil
-      local_mapping.xpath.should_not be_nil
-      local_mapping.xpath_constrained.should_not be_nil
-    end
   end
   
   describe 'inner_xml' do
@@ -96,11 +90,9 @@ describe "OM::XML::Term" do
       end
     end
   end
-
-  describe ".context" do
-    it "should track the Vocabulary that the mapper and its ancestors belong to" do
-      @test_raw_mapper.context.should be_instance_of OM::XML::Terminology
-    end
+  it "should have a .terminology attribute accessor" do
+    @test_raw_mapper.should respond_to :terminology
+    @test_raw_mapper.should respond_to :terminology=
   end
   describe ".ancestors" do
     it "should return an array of Terms that are the ancestors of the current object, ordered from the top/root of the hierarchy" do
@@ -110,7 +102,8 @@ describe "OM::XML::Term" do
   end
   describe ".parent" do
     it "should retrieve the immediate parent of the given object from the ancestors array" do
-      @test_mapper.expects(:ancestors).returns(["ancestor1","ancestor2","ancestor3"])
+      # @test_mapper.expects(:ancestors).returns(["ancestor1","ancestor2","ancestor3"])
+      @test_mapper.ancestors = ["ancestor1","ancestor2","ancestor3"]
       @test_mapper.parent.should == "ancestor3"
     end
   end

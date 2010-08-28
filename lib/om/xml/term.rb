@@ -4,7 +4,7 @@ class OM::XML::Term
   end
   
   attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix
-  attr_accessor :children, :ancestors, :internal_xml
+  attr_accessor :children, :ancestors, :internal_xml, :terminology
   def initialize(name, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
@@ -77,6 +77,10 @@ class OM::XML::Term
   def add_child(child_mapper)
     child_mapper.ancestors << self
     @children[child_mapper.name] = child_mapper    
+  end
+  
+  def parent
+    ancestors.last
   end
   
   def update_xpath_values
