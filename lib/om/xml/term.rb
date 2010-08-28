@@ -1,9 +1,42 @@
 class OM::XML::Term
   
   class Builder
+    attr_accessor :name, :settings, :children
+    
+    def initialize(name)
+      @name = name
+      @settings = {:path=>"",:required=>false, :data_type=>:string}
+      @children = {}
+    end
+    
+    def add_child(child)
+      @children[child.name] = child
+    end
+    
+    def build
+      term = OM::XML::Term.new(self.name)
+      @settings.each do |name, values|  
+        if term.respond_to?(name.to_s+"=")
+          term.instance_variable_set("@#{name}", values)
+        end
+      end
+      @children.each_value do |child|
+        term.add_child child.build
+      end
+      return term
+    end
+    
+    # Any unknown method calls will add an entry to the settings hash and return the current object
+    def method_missing method, *args, &block 
+      if args.length == 1
+        args = args.first
+      end
+      @settings[method] = args
+      return self
+    end
   end
   
-  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix
+  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix
   attr_accessor :children, :ancestors, :internal_xml, :terminology
   def initialize(name, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
