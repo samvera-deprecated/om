@@ -64,4 +64,26 @@ class OM::XML::Terminology
     end
     
   end
+  
+  # Terminology Class Definition
+  
+  attr_accessor :root_terms, :root_term
+  
+  def initialize
+    @root_terms = {}
+  end
+  
+  # Add a term to the root of the terminology
+  def add_term(term)
+    @root_terms[term.name] = term
+  end
+  
+  def retrieve_term(*args)
+    current_term = root_terms[args.delete_at(0)]
+    args.each do |arg|
+      current_term = current_term.retrieve_child(arg)
+    end
+    return current_term
+  end
+  
 end

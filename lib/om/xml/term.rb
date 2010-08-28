@@ -112,6 +112,10 @@ class OM::XML::Term
     @children[child_mapper.name] = child_mapper    
   end
   
+  def retrieve_child(child_name)
+    @children.fetch(child_name)
+  end
+  
   def parent
     ancestors.last
   end

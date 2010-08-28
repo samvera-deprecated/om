@@ -113,6 +113,12 @@ describe "OM::XML::Term" do
       @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
     end
   end
+  describe ".retrieve_child" do
+    it "should fetch the child identified by the given name" do
+      @test_raw_mapper.add_child(@test_mapper)
+      @test_raw_mapper.retrieve_child(@test_mapper.name).should == @test_raw_mapper.children[@test_mapper.name]
+    end
+  end
   describe ".set_parent" do
     it "should insert the mapper into the given parent" do
       @test_mapper.set_parent(@test_raw_mapper)
