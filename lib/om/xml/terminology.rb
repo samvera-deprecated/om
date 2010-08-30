@@ -13,56 +13,40 @@ class OM::XML::Terminology
     #   end
     def initialize(options = {}, root = nil, &block)
       
-      @context  = nil
-      @arity    = nil
-      @ns       = nil
+      @root_term_builders = []
+      @cur_term_builder = nil
       
-      return unless block_given?
-
-      # This is directly copying behavior from Nokogiri 1.4.2
-      # If the builder block is not set up to take any inputs, assume that "self" was used to refer to the builder within the block 
-      # Otherwise, yield self into the block.
-      #
-      #
-      # ie. this is passing a block that does not take any inputs (block.arity == 0):
-      # Builder.new do
-      #   self.foo {
-      #     self.bar
-      #   }
-      # end
-      #
-      # This is passing in a block that takes one input (block.arity == 1):
-      # Builder.new do |xml|
-      #   xml.foo {
-      #     xml.bar
-      #   }
-      # end
-      
-      @arity = block.arity
-      if @arity <= 0
-        @context = eval('self', block.binding)
-        instance_eval(&block)
-      else
-        yield self
-      end
-      
+      yield self if block_given?
     end
     
     def method_missing method, *args, &block # :nodoc:
-      if @context && @context.respond_to?(method)
-        @context.send(method, *args, &block)
+      parent_builder = @cur_term_builder
+      @cur_term_builder = OM::XML::Term::Builder.new(method.to_s.sub(/[_!]$/, ''))
+      
+      # Attach to parent
+      if parent_builder
+        parent_builder.add_child @cur_term_builder
       else
-        # node = @doc.create_element(method.to_s.sub(/[_!]$/, ''),*args) { |n|
-        #   # Set up the namespace
-        #   if @ns
-        #     n.namespace = @ns
-        #     @ns = nil
-        #   end
-        # }
-        insert(node, &block)
+        @root_term_builders << @cur_term_builder
       end
+      
+      # Apply options
+      opts = args.shift
+      @cur_term_builder.settings.merge!(opts) if opts
+      
+      # Parse children
+      yield if block
+      
+      @cur_term_builder = parent_builder
     end
     
+    def build
+      terminology = OM::XML::Terminology.new
+      @root_term_builders.each do |root_builder|
+        terminology.add_term root_builder.build
+      end
+      terminology
+    end
   end
   
   # Terminology Class Definition

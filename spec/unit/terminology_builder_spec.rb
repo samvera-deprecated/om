@@ -9,7 +9,7 @@ describe "OM::XML::Terminology::Builder" do
     
     describe '#new' do
       it "should process the input block, creating a new Term Builder for each entry" do
-        OM::XML::Terminology::Builder.new do |t|
+        terminology = OM::XML::Terminology::Builder.new do |t|
           t.mods(:xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd") {
             t.title_info(:path=>"titleInfo") {
               t.main_title(:path=>"title", :label=>"title")
@@ -46,7 +46,7 @@ describe "OM::XML::Terminology::Builder" do
               t.issue!
             }
             t.issue(:path=>"part") {
-              volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+              t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
               t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
               t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
               t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
@@ -55,8 +55,12 @@ describe "OM::XML::Terminology::Builder" do
               t.publication_date(:path=>"date")
             }
           }
-        end
+        end.build
+        terminology.retrieve_term('mods').should be_instance_of OM::XML::Term
+        terminology.retrieve_term('mods', 'name', 'date').should be_instance_of OM::XML::Term
+        terminology.retrieve_term('mods', 'name', 'date').path.should == 'namePart'
       end
+      it "should resove :refs"
       it "should pass arguments to .root through to the Terminology that's being built" 
       it "should return an instance of OM::XML::Terminology::Builder" do
         OM::XML::Terminology::Builder.new.should be_instance_of OM::XML::Terminology::Builder
