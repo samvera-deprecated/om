@@ -121,11 +121,11 @@ class OM::XML::Term
   
   # Generates absolute, relative, and constrained xpaths for the term, setting xpath, xpath_relative, and xpath_constrained accordingly.
   # Also triggers update_xpath_values! on all child nodes, as their absolute paths rely on those of their parent nodes.
-  def update_xpath_values!
+  def generate_xpath_queries!
     self.xpath = OM::XML::TermXpathGenerator.generate_absolute_xpath(self)
     self.xpath_constrained = OM::XML::TermXpathGenerator.generate_constrained_xpath(self)
     self.xpath_relative = OM::XML::TermXpathGenerator.generate_relative_xpath(self)
-    self.children.each {|child| child.update_xpath_values! }
+    self.children.each {|child| child.generate_xpath_queries! }
     return self
   end
   
