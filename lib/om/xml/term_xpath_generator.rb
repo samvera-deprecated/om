@@ -20,7 +20,16 @@ module OM::XML::TermXpathGenerator
       end
     end
     
-    template << mapper.path
+    if mapper.path.kind_of?(Hash)
+      if mapper.path.has_key?(:attribute)
+        base_path = "@"+mapper.path[:attribute]
+      else
+        raise "#{mapper.path} is an invalid path for an OM::XML::Term.  You should provide either a string or {:attributes=>XXX}"
+      end
+    else
+      base_path = mapper.path
+    end
+    template << base_path
     
     unless predicates.empty? 
       template << "["+ delimited_list(predicates, " and ")+"]"
@@ -34,7 +43,7 @@ module OM::XML::TermXpathGenerator
     if mapper.parent.nil?
       return "//#{relative}"
     else
-      return mapper.parent.absolute_xpath + "/" + relative
+      return mapper.parent.xpath_absolute + "/" + relative
     end
   end
   

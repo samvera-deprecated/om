@@ -18,7 +18,14 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     @test_term = OM::XML::Term.new(:terms_of_address, :path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
     @test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
     @test_role_text = OM::XML::Term.new(:role_text, :path=>"roleTerm", :attributes=>{:type=>"text"})
-    
+    @test_lang_attribute = OM::XML::Term.new(:language, :path=>{:attribute=>"lang"})
+  end
+  
+  it "should support terms that are pointers to attribute values" do
+    pending
+    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :absolute).should == "//@lang"
+    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :relative).should == "//@lang"
+    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained).should == '//@lang[contains("#{constraint_value}"]'
   end
   
   describe "generate_xpath" do
@@ -49,7 +56,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress"]'
     end
     it "should prepend the xpath for any parent nodes" do  
-      mock_parent_mapper = mock("Term", :absolute_xpath=>'//oxns:name[@type="conference"]/oxns:role')
+      mock_parent_mapper = mock("Term", :xpath_absolute=>'//oxns:name[@type="conference"]/oxns:role')
       @test_role_text.stubs(:parent).returns(mock_parent_mapper)
       OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text).should == '//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]'
     end

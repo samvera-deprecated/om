@@ -174,7 +174,7 @@ describe "OM::XML::Term" do
     it "should trigger update on any child objects" do
       mock_child = mock("child term")
       mock_child.expects(:generate_xpath_queries!).times(3)
-      @test_mapper.expects(:children).returns([mock_child, mock_child, mock_child])
+      @test_mapper.expects(:children).returns({1=>mock_child, 2=>mock_child, 3=>mock_child})
       @test_mapper.generate_xpath_queries!
     end
   end

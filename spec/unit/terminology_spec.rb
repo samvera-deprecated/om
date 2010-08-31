@@ -19,7 +19,7 @@ describe "OM::XML::Terminology" do
 
       t.title_info(:path=>"titleInfo") {
         t.main_title(:path=>"title", :label=>"title")
-        t.language(:path=>{:attribute=>"lang"})
+        # t.language(:path=>{:attribute=>"lang"})
       }          
       # t.title(:path=>"titleInfo", :default_content_path=>"title") {
       #   t.@language(:path=>{:attribute=>"lang"})
