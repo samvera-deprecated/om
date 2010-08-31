@@ -55,13 +55,17 @@ describe "OM::XML::Term::Builder" do
   end
   
   describe ".build" do
-    it "should build a Term with the given settings" do
+    it "should build a Term with the given settings and generate its xpath values" do
       test_builder = OM::XML::Term::Builder.new("requiredTextFacet").index_as([:facetable, :searchable, :sortable, :displayable]).required(true).data_type(:text)  
       result = test_builder.build
       result.should be_instance_of OM::XML::Term
       result.index_as.should == [:facetable, :searchable, :sortable, :displayable]
       result.required.should == true 
       result.data_type.should == :text
+      
+      result.xpath.should == OM::XML::TermXpathGenerator.generate_absolute_xpath(result)
+      result.xpath_constrained.should == OM::XML::TermXpathGenerator.generate_constrained_xpath(result)
+      result.xpath_relative.should == OM::XML::TermXpathGenerator.generate_relative_xpath(result)
     end
     it "should set path to match name if it is empty" do
       @test_builder.settings[:path].should be_nil

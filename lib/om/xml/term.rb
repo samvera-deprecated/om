@@ -26,6 +26,7 @@ class OM::XML::Term
       @children.each_value do |child|
         term.add_child child.build
       end
+      term.update_xpath_values
       return term
     end
     
@@ -94,15 +95,6 @@ class OM::XML::Term
     return target
   end
   
-  def generate
-    self.update_xpath_values
-    return self
-  end
-  
-  def regenerate
-    self.generate
-  end
-  
   #  insert the mapper into the given parent
   def set_parent(parent_mapper)
     parent_mapper.children[@name] = self
@@ -127,10 +119,13 @@ class OM::XML::Term
     @is_root_term
   end
   
-  def update_xpath_values
+  # Generates absolute, relative, and constrained xpaths for the term, setting xpath, xpath_relative, and xpath_constrained accordingly.
+  # Also triggers update_xpath_values! on all child nodes, as their absolute paths rely on those of their parent nodes.
+  def update_xpath_values!
     self.xpath = OM::XML::TermXpathGenerator.generate_absolute_xpath(self)
     self.xpath_constrained = OM::XML::TermXpathGenerator.generate_constrained_xpath(self)
     self.xpath_relative = OM::XML::TermXpathGenerator.generate_relative_xpath(self)
+    self.children.each {|child| child.update_xpath_values! }
     return self
   end
   
