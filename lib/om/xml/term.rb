@@ -5,7 +5,7 @@ class OM::XML::Term
     
     def initialize(name)
       @name = name
-      @settings = {:path=>"",:required=>false, :data_type=>:string}
+      @settings = {:required=>false, :data_type=>:string}
       @children = {}
     end
     
@@ -13,6 +13,9 @@ class OM::XML::Term
       @children[child.name] = child
     end
     
+    # Builds a new OM::XML::Term based on the Builder object's current settings
+    # If no path has been provided, uses the Builder object's name as the term's path
+    # Recursively builds any children, appending the results as children of the Term that's being built.
     def build
       term = OM::XML::Term.new(self.name)
       @settings.each do |name, values|  
@@ -36,7 +39,7 @@ class OM::XML::Term
     end
   end
   
-  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix
+  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix, :is_root_term
   attr_accessor :children, :ancestors, :internal_xml, :terminology
   def initialize(name, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
@@ -44,7 +47,7 @@ class OM::XML::Term
       instance_variable_set("@#{accessor_name}", opts.fetch(accessor_name, nil) )     
     end
     @name = name
-    if @path.nil?
+    if @path.nil? || @path.empty?
       @path = name.to_s
     end
   end
@@ -109,15 +112,19 @@ class OM::XML::Term
   #  insert the given mapper into the current mappers children
   def add_child(child_mapper)
     child_mapper.ancestors << self
-    @children[child_mapper.name] = child_mapper    
+    @children[child_mapper.name.to_sym] = child_mapper    
   end
   
   def retrieve_child(child_name)
-    @children.fetch(child_name)
+    child = @children.fetch(child_name, nil)
   end
   
   def parent
     ancestors.last
+  end
+  
+  def root_term?
+    @is_root_term
   end
   
   def update_xpath_values

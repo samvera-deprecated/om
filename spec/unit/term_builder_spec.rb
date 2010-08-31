@@ -33,7 +33,6 @@ describe "OM::XML::Term::Builder" do
         @test_builder.settings[:required].should == false
         @test_builder.settings[:data_type].should == :string
         @test_builder.settings[:variant_of].should be_nil
-        @test_builder.settings[:path].should == ""
         @test_builder.settings[:attributes].should be_nil
         @test_builder.settings[:default_content_path].should be_nil
       end
@@ -64,6 +63,10 @@ describe "OM::XML::Term::Builder" do
       result.required.should == true 
       result.data_type.should == :text
     end
+    it "should set path to match name if it is empty" do
+      @test_builder.settings[:path].should be_nil
+      @test_builder.build.path.should == @test_builder.name.to_s
+    end
     it "should work recursively, calling .build on any of its children" do
       built_child1 = OM::XML::Term.new("child1")
       built_child2 = OM::XML::Term.new("child2")
@@ -75,8 +78,8 @@ describe "OM::XML::Term::Builder" do
 
       @test_builder.children = {:mock1=>mock1, :mock2=>mock2}
       result = @test_builder.build
-      result.children["child1"].should == built_child1
-      result.children["child2"].should == built_child2
+      result.children[:child1].should == built_child1
+      result.children[:child2].should == built_child2
       result.children.length.should == 2
     end
   end

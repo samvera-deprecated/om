@@ -3,20 +3,67 @@ require "om"
 
 describe "OM::XML::Terminology" do
   
-    before(:each) do
-      @test_terminology = OM::XML::Terminology.new
+  before(:each) do
+    @test_terminology = OM::XML::Terminology.new
 
-      # @test_root_term = OM::XML::Term.new("name_")
-      
-      @test_root_term = OM::XML::Term.new(:name_)
-      @test_child_term = OM::XML::Term.new(:namePart)
-      @test_root_term.add_child @test_child_term
-      @test_terminology.add_term(@test_root_term)
-      @test_terminology.root_term = @test_root_term
-      
+    # @test_root_term = OM::XML::Term.new("name_")
+
+    @test_root_term = OM::XML::Term.new(:name)
+    @test_child_term = OM::XML::Term.new(:namePart)
+    @test_root_term.add_child @test_child_term
+    @test_terminology.add_term(@test_root_term)
+    @test_terminology.root_term = @test_root_term
+
+    @builder_with_block = OM::XML::Terminology::Builder.new do |t|
+      t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
+
+      t.title_info(:path=>"titleInfo") {
+        t.main_title(:path=>"title", :label=>"title")
+        t.language(:path=>{:attribute=>"lang"})
+      }          
+      # t.title(:path=>"titleInfo", :default_content_path=>"title") {
+      #   t.@language(:path=>{:attribute=>"lang"})
+      # }            
+      # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
+      t.name_ {
+        # this is a namepart
+        t.namePart(:index_as=>[:searchable, :displayable, :facetable, :sortable], :required=>:true, :type=>:string, :label=>"generic name")
+        # affiliations are great
+        t.affiliation
+        t.displayForm
+        t.role(:ref=>[:role])
+        t.description
+        t.date(:path=>"namePart", :attributes=>{:type=>"date"})
+        t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
+        t.given_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+        t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+      }
+      # lookup :person, :first_name        
+      t.person(:variant_of=>:name_, :attributes=>{:type=>"personal"})
+
+      t.role {
+        t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
+        t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
+      }
+      t.journal(:path=>'relatedItem', :attributes=>{:type=>"host"}) {
+        t.title_info
+        t.origin_info(:path=>"originInfo")
+        t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
+        t.issue!
+      }
+      t.issue(:path=>"part") {
+        t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+        t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
+        t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
+        t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
+        # t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
+        # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
+        t.publication_date(:path=>"date")
+      }
     end
-    
-    describe '#new' do
+
+    @test_full_terminology = @builder_with_block.build
+
     end
     
     describe '#from_xml' do
@@ -37,14 +84,33 @@ describe "OM::XML::Terminology" do
     
     describe ".retrieve_term" do
       it "should return the mapper identified by the given pointer" do
-        term = @test_terminology.retrieve_term(:name_, :namePart)
-        term.should == @test_terminology.root_terms[:name_].children[:namePart]
+        term = @test_terminology.retrieve_term(:name, :namePart)
+        term.should == @test_terminology.root_terms[:name].children[:namePart]
         term.should == @test_child_term
       end
-      it "should raise an informative error if the mapper doesn't exist" do
-        pending
-        @test_terminology.retrieve_mapper(:nonexistentTerm, :anotherTermName)
-        message.should == "You attempted to retrieve a mapper using this pointer: [:nonexistentTerm, :anotherTermName] but no mapper exists at that location."
+      it "should build complete terminologies" do
+        @test_full_terminology.retrieve_term(:name, :date).should be_instance_of OM::XML::Term
+        @test_full_terminology.retrieve_term(:name, :date).path.should == 'namePart'
+        @test_full_terminology.retrieve_term(:name, :date).attributes.should == {:type=>"date"}
+        @test_full_terminology.retrieve_term(:name, :affiliation).path.should == 'affiliation'
+        @test_full_terminology.retrieve_term(:name, :date).xpath.should == '//oxns:name/oxns:namePart[@type="date"]'          
+      end
+      it "should support looking up variant Terms" do
+        @test_full_terminology.retrieve_term(:person).path.should == 'name'        
+        @test_full_terminology.retrieve_term(:person).attributes.should == {:type=>"personal"}        
+        @test_full_terminology.retrieve_term(:person, :affiliation).path.should == 'affiliation'
+        @test_full_terminology.retrieve_term(:person, :date).xpath.should == '//oxns:name[type="person"]/oxns:namePart[@type="date"]'          
+      end
+      it "should support including root terms in pointer" do
+        @test_full_terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
+        @test_full_terminology.retrieve_term(:mods, :name, :date).should be_instance_of OM::XML::Term
+        @test_full_terminology.retrieve_term(:mods, :name, :date).path.should == 'namePart'
+        @test_full_terminology.retrieve_term(:mods, :name, :date).attributes.should == {:type=>"date"}
+        @test_full_terminology.retrieve_term(:mods, :name, :date).xpath.should == '//oxns:mods/oxns:name/oxns:namePart[@type="date"]'          
+      end
+      
+      it "should raise an informative error if the desired Term doesn't exist" do
+        lambda { @test_full_terminology.retrieve_term(:name, :date, :nonexistentTerm, :anotherTermName) }.should raise_error(StandardError, "You attempted to retrieve a Term using this pointer: [:name, :date, :nonexistentTerm, :anotherTermName] but no Term exists at that location. Everything is fine until \":nonexistentTerm\", which doesn't exist.") 
       end
     end
     
@@ -61,7 +127,7 @@ describe "OM::XML::Terminology" do
     
     describe ".root_terms" do
       it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do
-        @test_terminology.root_terms[:name_].should == @test_root_term
+        @test_terminology.root_terms[:name].should == @test_root_term
       end 
     end
     

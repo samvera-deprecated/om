@@ -1,6 +1,7 @@
 class OM::XML::Terminology
   class Builder
     
+    attr_accessor :schema, :namespaces
     ###
     # Create a new Terminology Builder object.  +options+ are sent to the top level
     # Document that is being built.  
@@ -12,11 +13,23 @@ class OM::XML::Terminology
     #     ...
     #   end
     def initialize(options = {}, root = nil, &block)
-      
+      @schema = options.fetch(:schema,nil)
+      @namespaces = options.fetch(:namespaces,{})
       @root_term_builders = []
       @cur_term_builder = nil
       
       yield self if block_given?
+    end
+    
+    # Set the root of the Terminology, along with namespace & schema info
+    def root opts, &block
+      @schema = opts.fetch(:schema,nil)
+      opts.select {|k,v| k.to_s.include?("xmlns")}.each do |ns_pair|
+        @namespaces[ns_pair.first.to_s] = ns_pair.last
+      end
+      root_term_builder = OM::XML::Term::Builder.new(opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')).is_root_term(true)
+      @root_term_builders << root_term_builder
+      return root_term_builder
     end
     
     def method_missing method, *args, &block # :nodoc:
@@ -41,7 +54,7 @@ class OM::XML::Terminology
     end
     
     def build
-      terminology = OM::XML::Terminology.new
+      terminology = OM::XML::Terminology.new(:schema=>@schema, :namespaces=>@namespaces)
       @root_term_builders.each do |root_builder|
         terminology.add_term root_builder.build
       end
@@ -51,21 +64,31 @@ class OM::XML::Terminology
   
   # Terminology Class Definition
   
-  attr_accessor :root_terms, :root_term
+  attr_accessor :root_terms, :root_term, :schema, :namespaces
   
-  def initialize
+  def initialize(options={})
+    @schema = options.fetch(:schema,nil)
+    @namespaces = options.fetch(:namespaces,{})
     @root_terms = {}
   end
   
   # Add a term to the root of the terminology
   def add_term(term)
-    @root_terms[term.name] = term
+    @root_terms[term.name.to_sym] = term
   end
   
   def retrieve_term(*args)
-    current_term = root_terms[args.delete_at(0)]
-    args.each do |arg|
+    args_cp = args.dup
+    current_term = root_terms[args_cp.delete_at(0)]
+    if current_term.nil?
+      raise "This Terminology does not have a root term defined that corresponds to \"#{args.first.inspect}\""
+    end
+    args_cp.each do |arg|
       current_term = current_term.retrieve_child(arg)
+      if current_term.nil?
+        raise "You attempted to retrieve a Term using this pointer: #{args.inspect} but no Term exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
+        # raise "This Terminology does not have a term defined that corresponds to \"#{args[0..args.index(arg)].inspect}\""
+      end
     end
     return current_term
   end
