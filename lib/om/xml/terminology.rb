@@ -1,4 +1,8 @@
 class OM::XML::Terminology
+  
+  class BadPointerError < StandardError; end
+  class CircularReferenceError < StandardError; end
+  
   class Builder
     
     attr_accessor :schema, :namespaces
@@ -35,7 +39,7 @@ class OM::XML::Terminology
     
     def method_missing method, *args, &block # :nodoc:
       parent_builder = @cur_term_builder
-      @cur_term_builder = OM::XML::Term::Builder.new(method.to_s.sub(/[_!]$/, ''))
+      @cur_term_builder = OM::XML::Term::Builder.new(method.to_s.sub(/[_!]$/, ''), self)
       
       # Attach to parent
       if parent_builder
@@ -63,12 +67,12 @@ class OM::XML::Terminology
       args_cp = args.dup
       current_term = @root_term_builders[args_cp.delete_at(0)]
       if current_term.nil?
-        raise "This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \"#{args.first.inspect}\""
+        raise OM::XML::Terminology::BadPointerError, "This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \"#{args.first.inspect}\""
       end
       args_cp.each do |arg|
         current_term = current_term.retrieve_child(arg)
         if current_term.nil?
-          raise "You attempted to retrieve a TermBuilder using this pointer: #{args.inspect} but no TermBuilder exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
+          raise OM::XML::Terminology::BadPointerError, "You attempted to retrieve a TermBuilder using this pointer: #{args.inspect} but no TermBuilder exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
         end
       end
       return current_term
@@ -103,12 +107,12 @@ class OM::XML::Terminology
     args_cp = args.dup
     current_term = root_terms[args_cp.delete_at(0)]
     if current_term.nil?
-      raise "This Terminology does not have a root term defined that corresponds to \"#{args.first.inspect}\""
+      raise OM::XML::Terminology::BadPointerError, "This Terminology does not have a root term defined that corresponds to \"#{args.first.inspect}\""
     end
     args_cp.each do |arg|
       current_term = current_term.retrieve_child(arg)
       if current_term.nil?
-        raise "You attempted to retrieve a Term using this pointer: #{args.inspect} but no Term exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
+        raise OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: #{args.inspect} but no Term exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
         # raise "This Terminology does not have a term defined that corresponds to \"#{args[0..args.index(arg)].inspect}\""
       end
     end

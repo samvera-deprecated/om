@@ -18,23 +18,59 @@ class OM::XML::Term
       child = @children.fetch(child_name, nil)
     end
     
-    def resolve_settings(nodes_visited = {})
-      # if @settings[:ref]
-      #   fail if we do not have terminology builder
-      #   fail with circular ref error if nodes_visited[self]
-      #   nodes_visited[self] = true
-      #   @settings = self.terminology_builder.find(@settings[:ref]).resolve_settings(nodes_visited).merge(@settings)
-      #   @settings.delete :ref
-      # end
-      @settings
+    def lookup_refs(nodes_visited=[])
+      result = []
+      if @settings[:ref]
+        # Fail if we do not have terminology builder
+        if self.terminology_builder.nil?
+          raise "Cannot perform lookup_ref for the #{self.name} builder.  It doesn't have a reference to any terminology builder"
+        end
+        begin
+          target = self.terminology_builder.retrieve_term_builder(*@settings[:ref])
+        rescue OM::XML::Terminology::BadPointerError
+          # Clarify message on BadPointerErrors
+          raise OM::XML::Terminology::BadPointerError, "#{self.name} refers to a Term Builder that doesn't exist.  The bad pointer is #{@settings[:ref].inspect}"
+        end
+        
+        # Fail on circular references and return an intelligible error message
+        if nodes_visited.contains?(target)
+          nodes_visited << self
+          nodes_visited << target
+          trail = ""
+          nodes_visited.each_with_index do |node, z|
+            trail << node.name.inspect
+            unless z == nodes_visited.length-1
+              trail << " => "
+            end
+          end
+          raise OM::XML::Terminology::CircularReferenceError, "Circular reference in Terminology: #{trail}"
+        end
+        result << target
+        result.concat( target.lookup_refs(nodes_visited << self) )
+      end
+      return result
     end
+    
+    def resolve_refs!
+    end
+    
+    # def resolve_settings(nodes_visited = {})
+    #   if @settings[:ref]
+    #     fail if we do not have terminology builder
+    #     fail with circular ref error if nodes_visited[self]
+    #     nodes_visited[self] = true
+    #     @settings = self.terminology_builder.find(@settings[:ref]).resolve_settings(nodes_visited).merge(@settings)
+    #     @settings.delete :ref
+    #   end
+    #   @settings
+    # end
     
     # Builds a new OM::XML::Term based on the Builder object's current settings
     # If no path has been provided, uses the Builder object's name as the term's path
     # Recursively builds any children, appending the results as children of the Term that's being built.
     def build
       term = OM::XML::Term.new(self.name)
-      self.resolve_settings.each do |name, values|  
+      self.settings.each do |name, values|  
         if term.respond_to?(name.to_s+"=")
           term.instance_variable_set("@#{name}", values)
         end

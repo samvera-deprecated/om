@@ -3,6 +3,28 @@ require "om"
 
 describe "OM::XML::Term::Builder" do
   
+  before(:all) do
+    @test_terminology_builder = OM::XML::Terminology::Builder.new do |t|
+      t.fruit_trees {
+        t.citrus(:attributes=>{"citric_acid"=>"true"}) 
+        t.stone_fruit(:path=>"prunus", :attributes=>{:genus=>"Prunus"})
+        t.peach(:ref=>[:fruit_trees, :stone_fruit], :attributes=>{:subgenus=>"Amygdalus", :species=>"Prunus persica"})
+        t.nectarine(:ref=>[:fruit_trees, :peach], :attributes=>{:cultivar=>"nectarine"})
+        t.almond(:ref=>[:fruit_trees, :peach], :attributes=>{:species=>"Prunus dulcis"})
+      }
+      t.coconut(:ref=>:pineapple)
+      t.banana(:ref=>:coconut)
+      t.pineapple(:ref=>:banana)
+    end
+    
+    @citrus = @test_terminology_builder.retrieve_term_builder(:fruit_trees, :citrus)
+    @stone_fruit = @test_terminology_builder.retrieve_term_builder(:fruit_trees, :stone_fruit)
+    @peach = @test_terminology_builder.retrieve_term_builder(:fruit_trees, :peach)
+    @nectarine = @test_terminology_builder.retrieve_term_builder(:fruit_trees, :nectarine)
+    @almond = @test_terminology_builder.retrieve_term_builder(:fruit_trees, :almond)
+    @pineapple = @test_terminology_builder.retrieve_term_builder(:pineapple)
+  end
+  
   before(:each) do
     @test_builder = OM::XML::Term::Builder.new("term1")
     @test_builder_2 = OM::XML::Term::Builder.new("term2")
@@ -97,5 +119,63 @@ describe "OM::XML::Term::Builder" do
       result.children.length.should == 2
     end
   end
+  
+  describe ".lookup_refs" do
+    it "should return an empty array if no refs are declared" do
+      @test_builder.lookup_refs.should == []
+    end
+    it "should should look up the referenced TermBuilder from the terminology_builder" do
+       @peach.lookup_refs.should == [@stone_fruit]
+    end
+    it "should support recursive refs" do
+	    @almond.lookup_refs.should == [@peach, @stone_fruit]
+	  end
+  	it "should raise an error if the TermBuilder does not have a reference to a terminology builder" do
+  	  lambda { OM::XML::Term::Builder.new("referrer").ref("bongos").lookup_refs }.should raise_error(StandardError,"Cannot perform lookup_ref for the referrer builder.  It doesn't have a reference to any terminology builder")
+	  end
+    it "should raise an error if the referece points to a nonexistent term builder" do
+      tb = OM::XML::Term::Builder.new("mork",@test_terminology_builder).ref(:characters, :aliens)
+      lambda { tb.lookup_refs }.should raise_error(OM::XML::Terminology::BadPointerError,"#{tb.name} refers to a Term Builder that doesn't exist.  The bad pointer is [:characters, :aliens]")
+    end
+    it "should raise an error with informative error when given circular references" do
+      lambda { @pineapple.lookup_refs }.should raise_error(OM::XML::Terminology::CircularReferenceError,"Circular reference in Terminology: :pineapple => :banana => :coconut => :pineapple")
+    end
+  end
+  
+  describe ".resolve_refs!" do 
+    it "should do nothing if settings don't include a :ref" do
+      settings_pre = @test_builder.settings
+      children_pre = @test_builder.children
 
+      @test_builder.resolve_refs!
+      @test_builder.settings.should == settings_pre
+      @test_builder.children.should == children_pre
+    end
+    it "should should look up the referenced TermBuilder, use its settings and duplicate its children without changing the name or parents" do
+      term_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus)
+      term_builder.resolve_refs!
+      # Make sure children and settings were copied
+      term_builder.settings.should == @citrus.settings
+  	  term_builder.children.should == @citrus.children
+  	  
+  	  # Make sure name and parent of both the term_builder and its target were left alone
+  	  term_builder.name.should == :orange
+  	  @citrus.name.should == :citrus
+  	  term_builder.parent.should == nil
+  	  @citrus.parent.name.should == :fruit_trees
+    end
+
+    # It should not be a problem if multiple TermBuilders refer to the same child TermBuilder since the parent-child relationship is set up after calling TermBuilder.build 
+    it "should result in clean trees of Terms after building" 
+    
+  	it "should preserve any extra settings specific to this builder (for variant terms)" do
+  	  tb = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus).attributes(:color=>"orange").required(true)
+  	  tb.resolve_refs!
+  	  tb.settings.should == @citrus.settings.merge!(:attributes=>{:color=>"orange"}, :required=>true)
+	  end
+	  it "should aggregate all settings from refs, combining them with a cascading approach" do
+	    @almond.resolve_refs!
+	    almond.settings[:attributes].should == {:genus=>"Prunus",:subgenus=>"Amygdalus", :species=>"Prunus dulcis"}
+    end
+  end
 end
