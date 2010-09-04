@@ -9,6 +9,10 @@ describe "OM::XML::Term::Builder" do
   end
   
   describe '#new' do
+   it "should set terminology_builder attribute if provided" do
+     mock_terminology_builder = mock("TerminologyBuilder")
+     OM::XML::Term::Builder.new("term1", mock_terminology_builder).terminology_builder.should == mock_terminology_builder
+   end
   end
   
   describe "configuration methods" do
@@ -46,7 +50,12 @@ describe "OM::XML::Term::Builder" do
       @test_builder.ancestors.should include(@test_builder_2)
     end
   end
-  
+  describe ".retrieve_child" do
+    it "should fetch the child identified by the given name" do
+      @test_builder.add_child(@test_builder_2)
+      @test_builder.retrieve_child(@test_builder_2.name).should == @test_builder.children[@test_builder_2.name]
+    end
+  end
   describe ".children" do
     it "should return a hash of Term Builders that are the children of the current object, indexed by name" do
       @test_builder.add_child(@test_builder_2)

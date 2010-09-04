@@ -15,7 +15,7 @@ class OM::XML::Terminology
     def initialize(options = {}, root = nil, &block)
       @schema = options.fetch(:schema,nil)
       @namespaces = options.fetch(:namespaces,{})
-      @root_term_builders = []
+      @root_term_builders = {}
       @cur_term_builder = nil
       
       yield self if block_given?
@@ -28,7 +28,8 @@ class OM::XML::Terminology
         @namespaces[ns_pair.first.to_s] = ns_pair.last
       end
       root_term_builder = OM::XML::Term::Builder.new(opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')).is_root_term(true)
-      @root_term_builders << root_term_builder
+      @root_term_builders[root_term_builder.name] = root_term_builder
+      
       return root_term_builder
     end
     
@@ -40,7 +41,7 @@ class OM::XML::Terminology
       if parent_builder
         parent_builder.add_child @cur_term_builder
       else
-        @root_term_builders << @cur_term_builder
+        @root_term_builders[@cur_term_builder.name] = @cur_term_builder
       end
       
       # Apply options
@@ -53,9 +54,29 @@ class OM::XML::Terminology
       @cur_term_builder = parent_builder
     end
     
+    def term_builders
+      @root_term_builders
+    end
+    
+    # Returns the TermBuilder corresponding to the given _pointer_.
+    def retrieve_term_builder(*args)
+      args_cp = args.dup
+      current_term = @root_term_builders[args_cp.delete_at(0)]
+      if current_term.nil?
+        raise "This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \"#{args.first.inspect}\""
+      end
+      args_cp.each do |arg|
+        current_term = current_term.retrieve_child(arg)
+        if current_term.nil?
+          raise "You attempted to retrieve a TermBuilder using this pointer: #{args.inspect} but no TermBuilder exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
+        end
+      end
+      return current_term
+    end
+    
     def build
       terminology = OM::XML::Terminology.new(:schema=>@schema, :namespaces=>@namespaces)
-      @root_term_builders.each do |root_builder|
+      @root_term_builders.each_value do |root_builder|
         terminology.add_term root_builder.build
       end
       terminology
@@ -77,6 +98,7 @@ class OM::XML::Terminology
     @root_terms[term.name.to_sym] = term
   end
   
+  # Returns the Term corresponding to the given _pointer_.
   def retrieve_term(*args)
     args_cp = args.dup
     current_term = root_terms[args_cp.delete_at(0)]

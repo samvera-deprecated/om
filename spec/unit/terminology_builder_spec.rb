@@ -31,7 +31,7 @@ describe "OM::XML::Terminology::Builder" do
           t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
         }
         # lookup :person, :first_name        
-        t.person(:variant_of=>:name_, :attributes=>{:type=>"personal"})
+        t.person(:ref=>:name_, :attributes=>{:type=>"personal"})
 
         t.role {
           t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
@@ -63,26 +63,32 @@ describe "OM::XML::Terminology::Builder" do
         OM::XML::Terminology::Builder.new.should be_instance_of OM::XML::Terminology::Builder
       end
       it "should process the input block, creating a new Term Builder for each entry and its children" do
-        @test_full_terminology.root_terms[:journal].should be_instance_of OM::XML::Term
-        @test_full_terminology.root_terms[:journal].path.should == "relatedItem"
-        @test_full_terminology.root_terms[:journal].attributes.should == {:type=>"host"}
+        expected_root_terms = [:mods, :title_info, :issue, :person, :name, :journal, :role]
+        expected_root_terms.each do |name|
+          @builder_with_block.term_builders.should have_key(name)
+        end
+        @builder_with_block.term_builders.length.should == expected_root_terms.length
+        
+        @builder_with_block.term_builders[:journal].should be_instance_of OM::XML::Term::Builder
+        @builder_with_block.term_builders[:journal].settings[:path].should == "relatedItem"
+        @builder_with_block.term_builders[:journal].settings[:attributes].should == {:type=>"host"}
 
-        @test_full_terminology.root_terms[:journal].children[:issn].should be_instance_of OM::XML::Term
-        @test_full_terminology.root_terms[:journal].children[:issn].path.should == "identifier"
-        @test_full_terminology.root_terms[:journal].children[:issn].attributes.should == {:type=>"issn"}
+        @builder_with_block.term_builders[:journal].children[:issn].should be_instance_of OM::XML::Term::Builder
+        @builder_with_block.term_builders[:journal].children[:issn].settings[:path].should == "identifier"
+        @builder_with_block.term_builders[:journal].children[:issn].settings[:attributes].should == {:type=>"issn"}
       end
       it "should clip the underscore off the end of any Term names" do
-        @test_full_terminology.root_terms[:name].should be_instance_of OM::XML::Term
-        @test_full_terminology.root_terms[:name].name.should == "name"
+        @builder_with_block.term_builders[:name].should be_instance_of OM::XML::Term::Builder
+        @builder_with_block.term_builders[:name].name.should == :name
 
-        @test_full_terminology.root_terms[:name].children[:date].should be_instance_of OM::XML::Term
-        @test_full_terminology.root_terms[:name].children[:date].path.should == "namePart"
-        @test_full_terminology.root_terms[:name].children[:date].attributes.should == {:type=>"date"}
+        @builder_with_block.term_builders[:name].children[:date].should be_instance_of OM::XML::Term::Builder
+        @builder_with_block.term_builders[:name].children[:date].settings[:path].should == "namePart"
+        @builder_with_block.term_builders[:name].children[:date].settings[:attributes].should == {:type=>"date"}
       end
       it "should resolve :refs" do
-        @test_full_terminology.root_terms[:name].children[:role].children[:text].should be_instance_of OM::XML::Term
-        @test_full_terminology.root_terms[:name].children[:role].children[:text].path.should == "roleTerm"
-        @test_full_terminology.root_terms[:name].children[:role].children[:text].attributes.should == {:type=>"text"}
+        @builder_with_block.term_builders[:name].children[:role].children[:text].should be_instance_of OM::XML::Term
+        @builder_with_block.term_builders[:name].children[:role].children[:text].settings[:path].should == "roleTerm"
+        @builder_with_block.term_builders[:name].children[:role].children[:text].settings[:attributes].should == {:type=>"text"}
       end
     end
     
@@ -92,6 +98,13 @@ describe "OM::XML::Terminology::Builder" do
         vocab = OM::XML::Terminology.from_xml( fixture("sample_mappings.xml") )
         vocab.should be_instance_of OM::XML::Terminology
         vocab.mappers.should == {}
+      end
+    end
+    
+    describe ".retrieve_term_builder" do
+      it "should support looking up Term Builders by pointer" do
+        expected = @builder_with_block.term_builders[:name].children[:date]
+        @builder_with_block.retrieve_term_builder(:name, :date).should == expected
       end
     end
     

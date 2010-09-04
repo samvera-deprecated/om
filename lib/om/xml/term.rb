@@ -1,10 +1,11 @@
 class OM::XML::Term
   
   class Builder
-    attr_accessor :name, :settings, :children
+    attr_accessor :name, :settings, :children, :terminology_builder
     
-    def initialize(name)
-      @name = name
+    def initialize(name, terminology_builder=nil)
+      @name = name.to_sym
+      @terminology_builder = terminology_builder
       @settings = {:required=>false, :data_type=>:string}
       @children = {}
     end
@@ -13,12 +14,27 @@ class OM::XML::Term
       @children[child.name] = child
     end
     
+    def retrieve_child(child_name)
+      child = @children.fetch(child_name, nil)
+    end
+    
+    def resolve_settings(nodes_visited = {})
+      # if @settings[:ref]
+      #   fail if we do not have terminology builder
+      #   fail with circular ref error if nodes_visited[self]
+      #   nodes_visited[self] = true
+      #   @settings = self.terminology_builder.find(@settings[:ref]).resolve_settings(nodes_visited).merge(@settings)
+      #   @settings.delete :ref
+      # end
+      @settings
+    end
+    
     # Builds a new OM::XML::Term based on the Builder object's current settings
     # If no path has been provided, uses the Builder object's name as the term's path
     # Recursively builds any children, appending the results as children of the Term that's being built.
     def build
       term = OM::XML::Term.new(self.name)
-      @settings.each do |name, values|  
+      self.resolve_settings.each do |name, values|  
         if term.respond_to?(name.to_s+"=")
           term.instance_variable_set("@#{name}", values)
         end
