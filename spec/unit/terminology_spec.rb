@@ -12,7 +12,6 @@ describe "OM::XML::Terminology" do
     @test_child_term = OM::XML::Term.new(:namePart)
     @test_root_term.add_child @test_child_term
     @test_terminology.add_term(@test_root_term)
-    @test_terminology.root_term = @test_root_term
 
     @builder_with_block = OM::XML::Terminology::Builder.new do |t|
       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
@@ -85,7 +84,7 @@ describe "OM::XML::Terminology" do
     describe ".retrieve_term" do
       it "should return the mapper identified by the given pointer" do
         term = @test_terminology.retrieve_term(:name, :namePart)
-        term.should == @test_terminology.root_terms[:name].children[:namePart]
+        term.should == @test_terminology.terms[:name].children[:namePart]
         term.should == @test_child_term
       end
       it "should build complete terminologies" do
@@ -125,18 +124,10 @@ describe "OM::XML::Terminology" do
       end
     end
     
-    describe ".root_terms" do
+    describe ".term_builders" do
       it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do
-        @test_terminology.root_terms[:name].should == @test_root_term
+        @test_terminology.terms[:name].should == @test_root_term
       end 
-    end
-    
-    describe ".root_term" do
-      it "should return the root mapper for the vocabulary" do
-        @test_terminology.root_term.should == @test_root_term
-        # @test_terminology.terms.first.should be_instance_of OM::XML::Term
-      end
-      it "should be private"
     end
   
 end

@@ -134,7 +134,7 @@ describe "OM::XML::Terminology::Builder" do
         
         @test_builder.schema.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
         @test_builder.namespaces.should == { 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
-        @test_builder.instance_variable_get(:@root_term_builders).should include(root_term_builder)      
+        @test_builder.term_builders[:mods].should == root_term_builder      
         
         terminology = @test_builder.build
         terminology.schema.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
