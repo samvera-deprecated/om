@@ -51,24 +51,42 @@ class OM::XML::Term
       return result
     end
     
+    # If a :ref value has been set, looks up the target of that ref and merges the target's settings & children with the current builder's settings & children
+    # operates recursively, so it is possible to apply refs that in turn refer to other nodes.
     def resolve_refs!
+      name_of_last_ref = nil
+      lookup_refs.each_with_index do |ref,z|        
+        @settings = two_layer_merge(@settings, ref.settings)
+        @children.merge!(ref.children)
+        name_of_last_ref = ref.name
+      end
+      if @settings[:path].nil? && !name_of_last_ref.nil?
+        @settings[:path] = name_of_last_ref.to_s
+      end
+      @settings.delete :ref
+      return self
     end
     
-    # def resolve_settings(nodes_visited = {})
-    #   if @settings[:ref]
-    #     fail if we do not have terminology builder
-    #     fail with circular ref error if nodes_visited[self]
-    #     nodes_visited[self] = true
-    #     @settings = self.terminology_builder.find(@settings[:ref]).resolve_settings(nodes_visited).merge(@settings)
-    #     @settings.delete :ref
-    #   end
-    #   @settings
-    # end
+    # Returns a new Hash that merges +downstream_hash+ with +upstream_hash+
+    # similar to calling +upstream_hash+.merge(+downstream_hash+) only it also merges 
+    # any internal values that are themselves Hashes.
+    def two_layer_merge(downstream_hash, upstream_hash)
+      up = upstream_hash.dup
+      dn = downstream_hash.dup
+      up.each_pair do |setting_name, value|
+        if value.kind_of?(Hash) && downstream_hash.has_key?(setting_name)  
+          dn[setting_name] = value.merge(downstream_hash[setting_name])
+          up.delete (setting_name)
+        end
+      end
+      return up.merge(dn)
+    end
     
     # Builds a new OM::XML::Term based on the Builder object's current settings
     # If no path has been provided, uses the Builder object's name as the term's path
     # Recursively builds any children, appending the results as children of the Term that's being built.
     def build
+      self.resolve_refs!
       term = OM::XML::Term.new(self.name)
       self.settings.each do |name, values|  
         if term.respond_to?(name.to_s+"=")

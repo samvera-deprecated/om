@@ -3,10 +3,12 @@ require "om"
 
 describe "OM::XML::Term::Builder" do
   
-  before(:all) do
+  before(:each) do
     @test_terminology_builder = OM::XML::Terminology::Builder.new do |t|
       t.fruit_trees {
-        t.citrus(:attributes=>{"citric_acid"=>"true"}) 
+        t.citrus(:attributes=>{"citric_acid"=>"true"}, :index_as=>[:facetable]) {
+          t.randomness
+        }
         t.stone_fruit(:path=>"prunus", :attributes=>{:genus=>"Prunus"})
         t.peach(:ref=>[:fruit_trees, :stone_fruit], :attributes=>{:subgenus=>"Amygdalus", :species=>"Prunus persica"})
         t.nectarine(:ref=>[:fruit_trees, :peach], :attributes=>{:cultivar=>"nectarine"})
@@ -151,31 +153,38 @@ describe "OM::XML::Term::Builder" do
       @test_builder.settings.should == settings_pre
       @test_builder.children.should == children_pre
     end
-    it "should should look up the referenced TermBuilder, use its settings and duplicate its children without changing the name or parents" do
+    it "should should look up the referenced TermBuilder, use its settings and duplicate its children without changing the name" do
       term_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus)
       term_builder.resolve_refs!
       # Make sure children and settings were copied
-      term_builder.settings.should == @citrus.settings
+      term_builder.settings.should == @citrus.settings.merge(:path=>"citrus")
   	  term_builder.children.should == @citrus.children
   	  
   	  # Make sure name and parent of both the term_builder and its target were left alone
   	  term_builder.name.should == :orange
   	  @citrus.name.should == :citrus
-  	  term_builder.parent.should == nil
-  	  @citrus.parent.name.should == :fruit_trees
     end
-
+    it "should set path based on the ref's path if set" do
+      [@peach,@almond].each { |x| x.resolve_refs! }
+      @peach.settings[:path].should == "prunus"
+      @almond.settings[:path].should == "prunus"
+    end
+    it "should set path based on the first ref's name if no path is set" do
+      orange_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus)
+      orange_builder.resolve_refs!
+      orange_builder.settings[:path].should == "citrus"
+    end
     # It should not be a problem if multiple TermBuilders refer to the same child TermBuilder since the parent-child relationship is set up after calling TermBuilder.build 
     it "should result in clean trees of Terms after building" 
     
   	it "should preserve any extra settings specific to this builder (for variant terms)" do
   	  tb = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus).attributes(:color=>"orange").required(true)
   	  tb.resolve_refs!
-  	  tb.settings.should == @citrus.settings.merge!(:attributes=>{:color=>"orange"}, :required=>true)
+  	  tb.settings.should == {:path=>"citrus", :attributes=>{"citric_acid"=>"true", :color=>"orange"}, :required=>true, :data_type=>:string, :index_as=>[:facetable]}
 	  end
 	  it "should aggregate all settings from refs, combining them with a cascading approach" do
 	    @almond.resolve_refs!
-	    almond.settings[:attributes].should == {:genus=>"Prunus",:subgenus=>"Amygdalus", :species=>"Prunus dulcis"}
+	    @almond.settings[:attributes].should == {:genus=>"Prunus",:subgenus=>"Amygdalus", :species=>"Prunus dulcis"}
     end
   end
 end

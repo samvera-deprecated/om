@@ -39,7 +39,7 @@ describe "OM::XML::Terminology" do
         t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
       }
       # lookup :person, :first_name        
-      t.person(:variant_of=>:name_, :attributes=>{:type=>"personal"})
+      t.person(:ref=>:name, :attributes=>{:type=>"personal"})
 
       t.role {
         t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
@@ -99,7 +99,7 @@ describe "OM::XML::Terminology" do
         @test_full_terminology.retrieve_term(:person).path.should == 'name'        
         @test_full_terminology.retrieve_term(:person).attributes.should == {:type=>"personal"}        
         @test_full_terminology.retrieve_term(:person, :affiliation).path.should == 'affiliation'
-        @test_full_terminology.retrieve_term(:person, :date).xpath.should == '//oxns:name[type="person"]/oxns:namePart[@type="date"]'          
+        @test_full_terminology.retrieve_term(:person, :date).xpath.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'          
       end
       it "should support including root terms in pointer" do
         @test_full_terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term

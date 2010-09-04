@@ -3,7 +3,7 @@ require "om"
 
 describe "OM::XML::Terminology::Builder" do
   
-    before(:all) do
+    before(:each) do
       @test_builder = OM::XML::Terminology::Builder.new
       
       @builder_with_block = OM::XML::Terminology::Builder.new do |t|
@@ -31,7 +31,7 @@ describe "OM::XML::Terminology::Builder" do
           t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
         }
         # lookup :person, :first_name        
-        t.person(:ref=>:name_, :attributes=>{:type=>"personal"})
+        t.person(:ref=>:name, :attributes=>{:type=>"personal"})
 
         t.role {
           t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
@@ -54,7 +54,7 @@ describe "OM::XML::Terminology::Builder" do
         }
       end
 
-      @test_full_terminology = @builder_with_block.build
+      # @test_full_terminology = @builder_with_block.build
       
     end
     
@@ -85,11 +85,6 @@ describe "OM::XML::Terminology::Builder" do
         @builder_with_block.term_builders[:name].children[:date].settings[:path].should == "namePart"
         @builder_with_block.term_builders[:name].children[:date].settings[:attributes].should == {:type=>"date"}
       end
-      it "should resolve :refs" do
-        @builder_with_block.term_builders[:name].children[:role].children[:text].should be_instance_of OM::XML::Term
-        @builder_with_block.term_builders[:name].children[:role].children[:text].settings[:path].should == "roleTerm"
-        @builder_with_block.term_builders[:name].children[:role].children[:text].settings[:attributes].should == {:type=>"text"}
-      end
     end
     
     describe '#from_xml' do
@@ -110,6 +105,16 @@ describe "OM::XML::Terminology::Builder" do
     
     describe "build" do
       it "should generate the new Terminology, calling .build on its Term builders"
+      it "should resolve :refs" do
+        @builder_with_block.retrieve_term_builder(:name, :role).settings[:ref].should == [:role]
+        @builder_with_block.retrieve_term_builder(:role).children[:text].should be_instance_of OM::XML::Term::Builder
+        
+        built_terminology = @builder_with_block.build
+        
+        built_terminology.retrieve_term(:name, :role, :text).should be_instance_of OM::XML::Term
+        built_terminology.retrieve_term(:name, :role, :text).path.should == "roleTerm"
+        built_terminology.retrieve_term(:name, :role, :text).attributes.should == {:type=>"text"}
+      end
     end
     
     describe '.insert_term' do
