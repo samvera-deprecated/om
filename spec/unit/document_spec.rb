@@ -73,34 +73,6 @@ describe "OM::XML::Document" do
   after(:all) do
     Object.send(:remove_const, :DocumentTest)
   end
-  
-  
-  describe ".find_with_value"  do
-    
-    it "should fail gracefully if you try to look up nodes for an undefined property" do
-      @fixturemods.find_with_value(:nobody_home, "Beethoven, Ludwig van").should == []
-    end
-    
-    it "uses the generated xpath queries" do
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
-      @fixturemods.find_with_value(:person)
-      
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
-      @fixturemods.find_with_value(:person, "Beethoven, Ludwig van")
-      
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
-      @fixturemods.find_with_value(:person, :date=>"2010")
-      
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
-      @fixturemods.find_with_value(:person, :role=>"donor")
-      
-      # 
-      # This is the way we want to move towards... (currently implementing part of this in accessor_constrained_xpath)
-      # @fixturemods.ng_xml.expects(:xpath).with('//oxns:relatedItem/oxns:identifier[@type=\'issn\'] and contains("123-ABC-44567")]', @fixturemods.ox_namespaces)
-      # @fixturemods.lookup([:journal, :issn], "123-ABC-44567")
-      
-    end
-  end
     
   describe ".find_by_term" do
     
@@ -114,6 +86,22 @@ describe "OM::XML::Document" do
       @mods_article.find_by_term( {:person=>1} ).first.should == @mods_article.ng_xml.xpath('//oxns:name[@type="personal"][2]', "oxns"=>"http://www.loc.gov/mods/v3").first
       @mods_article.find_by_term( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
       @mods_article.find_by_term( {:person=>1}, :first_name ).first.text.should == "Siddartha"
+    end
+    
+    it "should allow you to search by term pointer" do
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_term(:person)
+    end
+    it "should allow you to constrain your searches" do
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_term(:person, "Beethoven, Ludwig van")
+    end
+    it "should allow you to use complex constraints" do
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_term([:person], :date=>"2010")
+      
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_term([:person], :role=>"donor")
     end
     
     it "should support accessors whose relative_xpath is a lookup array instead of an xpath string" do

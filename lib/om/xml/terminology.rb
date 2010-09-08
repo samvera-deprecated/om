@@ -117,7 +117,7 @@ class OM::XML::Terminology
   end
   
   # Return the appropriate xpath query for retrieving nodes corresponding to +term_pointer+ and +query_constraints+
-  def xpath_query_for( term_pointer, query_constraints={}, opts={} )
+  def xpath_for( term_pointer, query_constraints={}, opts={} )
 
     if term_pointer.instance_of?(String)
       xpath_query = term_pointer

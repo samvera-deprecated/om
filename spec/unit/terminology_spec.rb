@@ -193,30 +193,30 @@ describe "OM::XML::Terminology" do
     end
   end
   
-  describe ".xpath_query_for" do
+  describe ".xpath_for" do
 
     it "retrieves the generated xpath query to match your desires" do    
-      @test_full_terminology.xpath_query_for(:person).should == '//oxns:name[@type="personal"]'
+      @test_full_terminology.xpath_for(:person).should == '//oxns:name[@type="personal"]'
 
-      @test_full_terminology.xpath_query_for(:person, "Beethoven, Ludwig van").should == '//oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
+      @test_full_terminology.xpath_for(:person, "Beethoven, Ludwig van").should == '//oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
 
-      @test_full_terminology.xpath_query_for([:person,:date]).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      @test_full_terminology.xpath_for([:person,:date]).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
 
-      @test_full_terminology.xpath_query_for([:person,:date], "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]'
+      @test_full_terminology.xpath_for([:person,:date], "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]'
     end
     
     it "should support queries with complex constraints" do
       pending
-      @test_full_terminology.xpath_query_for([:person], {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
+      @test_full_terminology.xpath_for([:person], {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
     end
     
     it "should support queries with multiple complex constraints" do
       pending
-      @test_full_terminology.xpath_query_for([:person], {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
+      @test_full_terminology.xpath_for([:person], {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
     end
 
     it "parrots any strings back to you (in case you already have an xpath query)" do
-      @test_full_terminology.xpath_query_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      @test_full_terminology.xpath_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
     end
 
   end
