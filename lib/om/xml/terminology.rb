@@ -31,6 +31,9 @@ class OM::XML::Terminology
       @schema = opts.fetch(:schema,nil)
       opts.select {|k,v| k.to_s.include?("xmlns")}.each do |ns_pair|
         @namespaces[ns_pair.first.to_s] = ns_pair.last
+        if ns_pair.first.to_s == "xmlns"
+          @namespaces["oxns"] = ns_pair.last
+        end
       end
       root_term_builder = OM::XML::Term::Builder.new(opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')).is_root_term(true)
       @term_builders[root_term_builder.name] = root_term_builder
