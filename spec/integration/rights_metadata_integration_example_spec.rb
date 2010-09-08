@@ -7,7 +7,7 @@ describe "OM::XML::Accessors" do
   before(:all) do
     class RightsMDTest
       
-      include OM::XML
+      include OM::XML::Document
           
       terminology = OM::XML::Terminology::Builder.new do |t|
         t.rightsMetadata(:xmlns=>"http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1", :schema=>"http://github.com/projecthydra/schemas/tree/v1/rightsMetadata.xsd") {

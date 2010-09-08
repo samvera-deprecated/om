@@ -63,71 +63,71 @@ describe "OM::XML::Terminology" do
 
     @test_full_terminology = @builder_with_block.build
 
+  end
+    
+  describe '#from_xml' do
+    it "should let you load mappings from an xml file" do
+      pending
+      vocab = OM::XML::Terminology.from_xml( fixture("sample_mappings.xml") )
+      vocab.should be_instance_of OM::XML::Terminology
+      vocab.mappers.should == {}
+    end
+  end
+  
+  describe '#to_xml' do
+    it "should let you serialize mappings to an xml document" do
+      pending
+      TerminologyTest.to_xml.should == ""
+    end
+  end
+  
+  describe ".retrieve_term" do
+    it "should return the mapper identified by the given pointer" do
+      term = @test_terminology.retrieve_term(:name, :namePart)
+      term.should == @test_terminology.terms[:name].children[:namePart]
+      term.should == @test_child_term
+    end
+    it "should build complete terminologies" do
+      @test_full_terminology.retrieve_term(:name, :date).should be_instance_of OM::XML::Term
+      @test_full_terminology.retrieve_term(:name, :date).path.should == 'namePart'
+      @test_full_terminology.retrieve_term(:name, :date).attributes.should == {:type=>"date"}
+      @test_full_terminology.retrieve_term(:name, :affiliation).path.should == 'affiliation'
+      @test_full_terminology.retrieve_term(:name, :date).xpath.should == '//oxns:name/oxns:namePart[@type="date"]'          
+    end
+    it "should support looking up variant Terms" do
+      @test_full_terminology.retrieve_term(:person).path.should == 'name'        
+      @test_full_terminology.retrieve_term(:person).attributes.should == {:type=>"personal"}        
+      @test_full_terminology.retrieve_term(:person, :affiliation).path.should == 'affiliation'
+      @test_full_terminology.retrieve_term(:person, :date).xpath.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'          
+    end
+    it "should support including root terms in pointer" do
+      @test_full_terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
+      @test_full_terminology.retrieve_term(:mods, :name, :date).should be_instance_of OM::XML::Term
+      @test_full_terminology.retrieve_term(:mods, :name, :date).path.should == 'namePart'
+      @test_full_terminology.retrieve_term(:mods, :name, :date).attributes.should == {:type=>"date"}
+      @test_full_terminology.retrieve_term(:mods, :name, :date).xpath.should == '//oxns:mods/oxns:name/oxns:namePart[@type="date"]'          
     end
     
-    describe '#from_xml' do
-      it "should let you load mappings from an xml file" do
-        pending
-        vocab = OM::XML::Terminology.from_xml( fixture("sample_mappings.xml") )
-        vocab.should be_instance_of OM::XML::Terminology
-        vocab.mappers.should == {}
-      end
+    it "should raise an informative error if the desired Term doesn't exist" do
+      lambda { @test_full_terminology.retrieve_term(:name, :date, :nonexistentTerm, :anotherTermName) }.should raise_error(OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: [:name, :date, :nonexistentTerm, :anotherTermName] but no Term exists at that location. Everything is fine until \":nonexistentTerm\", which doesn't exist.") 
     end
-    
-    describe '#to_xml' do
-      it "should let you serialize mappings to an xml document" do
-        pending
-        TerminologyTest.to_xml.should == ""
-      end
+  end
+  
+  describe ".term_xpath" do
+    it "should insert calls to xpath array lookup into parent xpaths if parents argument is provided" do    
+      pending
+      # conference_mapper = TerminologyTest.retrieve_mapper(:conference)
+      # role_mapper =  TerminologyTest.retrieve_mapper(:conference, :role)
+      # text_mapper = TerminologyTest.retrieve_mapper(:conference, :role, :text)
+      TerminologyTest.term_xpath({:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+      # OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with({conference_mapper=>0}, {role_mapper=>1}, text_mapper)
     end
-    
-    describe ".retrieve_term" do
-      it "should return the mapper identified by the given pointer" do
-        term = @test_terminology.retrieve_term(:name, :namePart)
-        term.should == @test_terminology.terms[:name].children[:namePart]
-        term.should == @test_child_term
-      end
-      it "should build complete terminologies" do
-        @test_full_terminology.retrieve_term(:name, :date).should be_instance_of OM::XML::Term
-        @test_full_terminology.retrieve_term(:name, :date).path.should == 'namePart'
-        @test_full_terminology.retrieve_term(:name, :date).attributes.should == {:type=>"date"}
-        @test_full_terminology.retrieve_term(:name, :affiliation).path.should == 'affiliation'
-        @test_full_terminology.retrieve_term(:name, :date).xpath.should == '//oxns:name/oxns:namePart[@type="date"]'          
-      end
-      it "should support looking up variant Terms" do
-        @test_full_terminology.retrieve_term(:person).path.should == 'name'        
-        @test_full_terminology.retrieve_term(:person).attributes.should == {:type=>"personal"}        
-        @test_full_terminology.retrieve_term(:person, :affiliation).path.should == 'affiliation'
-        @test_full_terminology.retrieve_term(:person, :date).xpath.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'          
-      end
-      it "should support including root terms in pointer" do
-        @test_full_terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
-        @test_full_terminology.retrieve_term(:mods, :name, :date).should be_instance_of OM::XML::Term
-        @test_full_terminology.retrieve_term(:mods, :name, :date).path.should == 'namePart'
-        @test_full_terminology.retrieve_term(:mods, :name, :date).attributes.should == {:type=>"date"}
-        @test_full_terminology.retrieve_term(:mods, :name, :date).xpath.should == '//oxns:mods/oxns:name/oxns:namePart[@type="date"]'          
-      end
-      
-      it "should raise an informative error if the desired Term doesn't exist" do
-        lambda { @test_full_terminology.retrieve_term(:name, :date, :nonexistentTerm, :anotherTermName) }.should raise_error(OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: [:name, :date, :nonexistentTerm, :anotherTermName] but no Term exists at that location. Everything is fine until \":nonexistentTerm\", which doesn't exist.") 
-      end
-    end
-    
-    describe ".term_xpath" do
-      it "should insert calls to xpath array lookup into parent xpaths if parents argument is provided" do    
-        pending
-        # conference_mapper = TerminologyTest.retrieve_mapper(:conference)
-        # role_mapper =  TerminologyTest.retrieve_mapper(:conference, :role)
-        # text_mapper = TerminologyTest.retrieve_mapper(:conference, :role, :text)
-        TerminologyTest.term_xpath({:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
-        # OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with({conference_mapper=>0}, {role_mapper=>1}, text_mapper)
-      end
-    end
-    
-    describe ".term_builders" do
-      it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do
-        @test_terminology.terms[:name].should == @test_root_term
-      end 
-    end
+  end
+  
+  describe ".term_builders" do
+    it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do
+      @test_terminology.terms[:name].should == @test_root_term
+    end 
+  end
   
 end

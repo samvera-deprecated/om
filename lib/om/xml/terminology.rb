@@ -46,7 +46,7 @@ class OM::XML::Terminology
       if parent_builder
         parent_builder.add_child @cur_term_builder
       else
-        @term_builders[@cur_term_builder.name] = @cur_term_builder
+        @term_builders [@cur_term_builder.name] = @cur_term_builder
       end
       
       # Apply options

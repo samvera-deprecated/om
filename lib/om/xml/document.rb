@@ -1,0 +1,69 @@
+module OM::XML::Document
+    
+  
+  # Class Methods -- These methods will be available on classes that include this Module 
+  
+  module ClassMethods
+    
+    attr_accessor :terminology
+  
+    # Sets the OM::XML::Terminology for the Document
+    # Expects +&block+ that will be passed into OM::XML::Terminology::Builder.new
+    def set_terminology &block
+      @terminology = OM::XML::Terminology::Builder.new( &block ).build
+    end
+    
+    # Returns any namespaces defined by the Class' Terminology
+    def ox_namespaces
+      if @terminology.nil?
+        return {}
+      else
+        return @terminology.namespaces
+      end
+    end
+    
+  end
+  
+  # Instance Methods -- These methods will be available on instances of classes that include this module
+  
+  attr_accessor :ox_namespaces
+  
+  def self.included(klass)
+    klass.extend(ClassMethods)
+  
+    klass.send(:include, OM::XML::Container)
+  end
+  
+  # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
+  def find_with_value( property_ref, query_opts={}, opts={} )
+    xpath_query = self.class.terminology.constrained_xpath_for( property_ref, query_opts, opts )
+    
+    if xpath_query.nil?
+      result = []
+    else
+      result = ng_xml.xpath(xpath_query, ox_namespaces)
+    end
+    
+    return result
+  end
+  
+
+  # +term_pointer+ Variable length array of values in format [:accessor_name, :accessor_name ...] or [{:accessor_name=>index}, :accessor_name ...]
+  # example: [:person, 1, :first_name]
+  # Currently, indexes must be integers.
+  def find_by_term(*term_pointer)
+    xpath = self.class.terminology.xpath_for(*term_pointer)    
+    if xpath.nil?
+      return nil
+    else
+      return ng_xml.xpath(xpath, ox_namespaces) 
+    end   
+  end
+  
+  # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
+  # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your Terminology's root term config
+  def ox_namespaces
+    @ox_namespaces ||= ng_xml.namespaces.merge(self.class.ox_namespaces)
+  end
+  
+end
