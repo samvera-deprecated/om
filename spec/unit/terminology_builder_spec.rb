@@ -115,6 +115,9 @@ describe "OM::XML::Terminology::Builder" do
         built_terminology.retrieve_term(:name, :role, :text).path.should == "roleTerm"
         built_terminology.retrieve_term(:name, :role, :text).attributes.should == {:type=>"text"}
       end
+      it "should set up namespaces" do
+        @builder_with_block.build.namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3", "xmlns:ns2"=>"http://www.w3.org/1999/xlink", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns:ns3"=>"http://www.loc.gov/mods/v3"}
+      end
     end
     
     describe '.insert_term' do

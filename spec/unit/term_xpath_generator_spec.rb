@@ -22,10 +22,9 @@ describe "OM::XML::TermXpathGeneratorSpec" do
   end
   
   it "should support terms that are pointers to attribute values" do
-    pending
     OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :absolute).should == "//@lang"
-    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :relative).should == "//@lang"
-    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained).should == '//@lang[contains("#{constraint_value}"]'
+    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :relative).should == "@lang"
+    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained).should == '//@lang[contains("#{constraint_value}")]'.gsub('"', '\"')  
   end
   
   describe "generate_xpath" do
@@ -64,7 +63,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   describe "generate_constrained_xpath" do
     it "should generate a constrained xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress" and contains("#{constraint_value}")]' 
+      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress" and contains("#{constraint_value}")]'.gsub('"', '\"')   
     end
   end
   
@@ -72,7 +71,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     @test_term.namespace_prefix = nil
     OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
     OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//namePart[@type="termsOfAddress"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains("#{constraint_value}")]' 
+    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains("#{constraint_value}")]'.gsub('"', '\"')   
   end
   
   it "should support mappers with default_content_path" do
@@ -81,7 +80,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     
     OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term_with_default_path).should == 'oxns:detail[@type="volume"]'
     OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term_with_default_path).should == '//oxns:detail[@type="volume"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term_with_default_path).should == "//oxns:detail[contains(oxns:number[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
+    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term_with_default_path).should == '//oxns:detail[contains(oxns:number[@type="volume"], "#{constraint_value}")]'.gsub('"', '\"')  
   end
   
 end

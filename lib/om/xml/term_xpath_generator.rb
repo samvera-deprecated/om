@@ -10,16 +10,6 @@ module OM::XML::TermXpathGenerator
       complete_prefix = mapper.namespace_prefix + ":"
     end
     
-    unless mapper.namespace_prefix.nil?
-      template << complete_prefix
-    end
-    
-    unless mapper.attributes.nil?
-      mapper.attributes.each_pair do |attr_name, attr_value|
-        predicates << "@#{attr_name}=\"#{attr_value}\""
-      end
-    end
-    
     if mapper.path.kind_of?(Hash)
       if mapper.path.has_key?(:attribute)
         base_path = "@"+mapper.path[:attribute]
@@ -27,9 +17,18 @@ module OM::XML::TermXpathGenerator
         raise "#{mapper.path} is an invalid path for an OM::XML::Term.  You should provide either a string or {:attributes=>XXX}"
       end
     else
+      unless mapper.namespace_prefix.nil?
+        template << complete_prefix
+      end
       base_path = mapper.path
     end
     template << base_path
+    
+    unless mapper.attributes.nil?
+      mapper.attributes.each_pair do |attr_name, attr_value|
+        predicates << "@#{attr_name}=\"#{attr_value}\""
+      end
+    end
     
     unless predicates.empty? 
       template << "["+ delimited_list(predicates, " and ")+"]"
@@ -91,7 +90,7 @@ module OM::XML::TermXpathGenerator
     contains_function = "contains(#{delimited_list(arguments_for_contains_function)})"
         
     template = add_predicate(absolute, contains_function)
-    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
+    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }.gsub('"', '\"')
   end
     
   def self.generate_xpath(mapper, type)

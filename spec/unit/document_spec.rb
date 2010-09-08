@@ -77,6 +77,10 @@ describe "OM::XML::Document" do
   
   describe ".find_with_value"  do
     
+    it "should fail gracefully if you try to look up nodes for an undefined property" do
+      @fixturemods.find_with_value(:nobody_home, "Beethoven, Ludwig van").should == []
+    end
+    
     it "uses the generated xpath queries" do
       @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
       @fixturemods.find_with_value(:person)
@@ -99,6 +103,11 @@ describe "OM::XML::Document" do
   end
     
   describe ".find_by_term" do
+    
+    it "should fail gracefully if you try to look up nodes for an undefined property" do
+      @fixturemods.find_by_term(:nobody_home).should == []
+    end
+    
     it "should use Nokogiri to retrieve a NodeSet corresponding to the combination of accessor keys and array/nodeset indexes" do
       @mods_article.find_by_term( :person ).length.should == 2
       

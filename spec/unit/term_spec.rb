@@ -169,7 +169,7 @@ describe "OM::XML::Term" do
       
       @test_raw_mapper.xpath_relative.should == 'oxns:detail[@type="volume"]'
       @test_raw_mapper.xpath.should == '//oxns:detail[@type="volume"]'
-      @test_raw_mapper.xpath_constrained.should == '//oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'
+      @test_raw_mapper.xpath_constrained.should == '//oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"') 
     end
     it "should trigger update on any child objects" do
       mock_child = mock("child term")

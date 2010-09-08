@@ -18,7 +18,7 @@ describe "OM::XML::Terminology" do
 
       t.title_info(:path=>"titleInfo") {
         t.main_title(:path=>"title", :label=>"title")
-        # t.language(:path=>{:attribute=>"lang"})
+        t.language(:path=>{:attribute=>"lang"})
       }          
       # t.title(:path=>"titleInfo", :default_content_path=>"title") {
       #   t.@language(:path=>{:attribute=>"lang"})
@@ -48,7 +48,7 @@ describe "OM::XML::Terminology" do
         t.title_info
         t.origin_info(:path=>"originInfo")
         t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-        t.issue!
+        t.issue(:ref=>[:issue])
       }
       t.issue(:path=>"part") {
         t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
@@ -65,6 +65,75 @@ describe "OM::XML::Terminology" do
 
   end
     
+  describe "basics" do
+
+    it "constructs xpath queries for finding properties" do
+      @test_full_terminology.retrieve_term(:name).xpath.should == '//oxns:name'   
+      @test_full_terminology.retrieve_term(:name).xpath_relative.should == 'oxns:name'  
+      
+      @test_full_terminology.retrieve_term(:person).xpath.should == '//oxns:name[@type="personal"]'
+      @test_full_terminology.retrieve_term(:person).xpath_relative.should == 'oxns:name[@type="personal"]'
+    end
+
+    it "constructs templates for value-driven searches" do
+      @test_full_terminology.retrieve_term(:name).xpath_constrained.should == '//oxns:name[contains("#{constraint_value}")]'.gsub('"', '\"')  
+      @test_full_terminology.retrieve_term(:person).xpath_constrained.should == '//oxns:name[@type="personal" and contains("#{constraint_value}")]'.gsub('"', '\"')
+      
+      # Example of how you could use these templates:
+      constraint_value = "SAMPLE CONSTRAINT VALUE"
+      constrained_query = eval( '"' + @test_full_terminology.retrieve_term(:person).xpath_constrained + '"' )
+      constrained_query.should == '//oxns:name[@type="personal" and contains("SAMPLE CONSTRAINT VALUE")]'
+    end
+
+    it "constructs xpath queries & templates for nested terms" do
+      name_date_term = @test_full_terminology.retrieve_term(:name, :date)
+      name_date_term.xpath.should == '//oxns:name/oxns:namePart[@type="date"]'
+      name_date_term.xpath_relative.should == 'oxns:namePart[@type="date"]'
+      name_date_term.xpath_constrained.should == '//oxns:name/oxns:namePart[@type="date" and contains("#{constraint_value}")]'.gsub('"', '\"') 
+      # name_date_term.xpath_constrained.should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'.gsub('"', '\"') 
+      
+      person_date_term = @test_full_terminology.retrieve_term(:person, :date)
+      person_date_term.xpath.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      person_date_term.xpath_relative.should == 'oxns:namePart[@type="date"]'
+      person_date_term.xpath_constrained.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("#{constraint_value}")]'.gsub('"', '\"')
+      # person_date_term.xpath_constrained.should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'.gsub('"', '\"')
+    end
+
+    it "supports subelements that are specified using a :ref" do   
+      role_term = @test_full_terminology.retrieve_term(:name, :role)
+      role_term.xpath.should == '//oxns:name/oxns:role'
+      role_term.xpath_relative.should == 'oxns:role'
+      role_term.xpath_constrained.should == '//oxns:name/oxns:role[contains("#{constraint_value}")]'.gsub('"', '\"')
+      # role_term.xpath_constrained.should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
+    end
+
+    it "supports treating attributes as properties" do    
+      language_term = @test_full_terminology.retrieve_term(:title_info, :language)
+      language_term.xpath.should == '//oxns:titleInfo/@lang'
+      language_term.xpath_relative.should == '@lang'
+      language_term.xpath_constrained.should == '//oxns:titleInfo/@lang[contains("#{constraint_value}")]'.gsub('"', '\"')
+    end
+
+    it "should support deep nesting of properties" do
+      volume_term = @test_full_terminology.retrieve_term(:journal, :issue, :volume)
+      volume_term.xpath.should == "//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\"]"
+      volume_term.xpath_relative.should == "oxns:detail[@type=\"volume\"]"
+      # volume_term.xpath_constrained.should == "//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
+      volume_term.xpath_constrained.should == '//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"')
+    end
+
+    it "should not overwrite default property info when adding a variant property" do  
+      name_term = @test_full_terminology.retrieve_term(:name)
+      person_term = @test_full_terminology.retrieve_term(:person)
+          
+      name_term.should_not equal(person_term)
+      name_term.xpath.should_not equal(person_term.xpath)
+      name_term.children.should_not equal(person_term.children)
+      name_term.children[:date].xpath_constrained.should_not equal(person_term.children[:date].xpath_constrained)
+    end
+
+  end
+  
   describe '#from_xml' do
     it "should let you load mappings from an xml file" do
       pending
@@ -122,6 +191,34 @@ describe "OM::XML::Terminology" do
       TerminologyTest.term_xpath({:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
       # OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with({conference_mapper=>0}, {role_mapper=>1}, text_mapper)
     end
+  end
+  
+  describe ".xpath_query_for" do
+
+    it "retrieves the generated xpath query to match your desires" do    
+      @test_full_terminology.xpath_query_for(:person).should == '//oxns:name[@type="personal"]'
+
+      @test_full_terminology.xpath_query_for(:person, "Beethoven, Ludwig van").should == '//oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
+
+      @test_full_terminology.xpath_query_for([:person,:date]).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+
+      @test_full_terminology.xpath_query_for([:person,:date], "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]'
+    end
+    
+    it "should support queries with complex constraints" do
+      pending
+      @test_full_terminology.xpath_query_for([:person], {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
+    end
+    
+    it "should support queries with multiple complex constraints" do
+      pending
+      @test_full_terminology.xpath_query_for([:person], {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
+    end
+
+    it "parrots any strings back to you (in case you already have an xpath query)" do
+      @test_full_terminology.xpath_query_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+    end
+
   end
   
   describe ".term_builders" do
