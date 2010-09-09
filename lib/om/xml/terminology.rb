@@ -41,6 +41,11 @@ class OM::XML::Terminology
       return root_term_builder
     end
     
+    # Returns an array of Terms that have been marked as "root" terms
+    def root_term_builders
+      @term_builders.values.select {|term_builder| term_builder.settings[:is_root_term] == true }
+    end
+    
     def method_missing method, *args, &block # :nodoc:
       parent_builder = @cur_term_builder
       @cur_term_builder = OM::XML::Term::Builder.new(method.to_s.sub(/[_!]$/, ''), self)
@@ -80,6 +85,10 @@ class OM::XML::Terminology
     
     def build
       terminology = OM::XML::Terminology.new(:schema=>@schema, :namespaces=>@namespaces)
+      root_term_builders.each do |root_term_builder| 
+        root_term_builder.children = self.term_builders.dup 
+        root_term_builder.children.delete(root_term_builder.name)
+      end 
       @term_builders.each_value do |root_builder|
         terminology.add_term root_builder.build
       end
@@ -108,12 +117,12 @@ class OM::XML::Terminology
     current_term = terms[args_cp.delete_at(0)]
     if current_term.nil?
       raise OM::XML::Terminology::BadPointerError, "This Terminology does not have a root term defined that corresponds to \"#{args.first.inspect}\""
-    end
-    args_cp.each do |arg|
-      current_term = current_term.retrieve_child(arg)
-      if current_term.nil?
-        raise OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: #{args.inspect} but no Term exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
-        # raise "This Terminology does not have a term defined that corresponds to \"#{args[0..args.index(arg)].inspect}\""
+    else
+      args_cp.each do |arg|
+        current_term = current_term.retrieve_child(arg)
+        if current_term.nil?
+          raise OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: #{args.inspect} but no Term exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
+        end
       end
     end
     return current_term
@@ -145,6 +154,11 @@ class OM::XML::Terminology
       end
     end
     return xpath_query
+  end
+  
+  # Returns an array of Terms that have been marked as "root" terms
+  def root_terms
+    terms.values.select {|term| term.is_root_term? }
   end
   
 end

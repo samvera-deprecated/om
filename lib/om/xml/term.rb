@@ -185,8 +185,8 @@ class OM::XML::Term
     ancestors.last
   end
   
-  def root_term?
-    @is_root_term
+  def is_root_term?
+    @is_root_term == true
   end
   
   def xpath_absolute

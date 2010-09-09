@@ -115,6 +115,20 @@ describe "OM::XML::Terminology::Builder" do
         built_terminology.retrieve_term(:name, :role, :text).path.should == "roleTerm"
         built_terminology.retrieve_term(:name, :role, :text).attributes.should == {:type=>"text"}
       end
+      it "should put copies of the entire terminology under any root terms" do
+        @builder_with_block.root_term_builders.should include(@builder_with_block.retrieve_term_builder(:mods))
+        
+        built_terminology = @builder_with_block.build
+        expected_keys = [:title_info, :issue, :person, :name, :journal, :role]
+        
+        built_terminology.retrieve_term(:mods).children.length.should == expected_keys.length
+        expected_keys.each do |key|
+          built_terminology.retrieve_term(:mods).children.keys.should include(key)
+        end
+        built_terminology.retrieve_term(:mods, :name, :role, :text).should be_instance_of OM::XML::Term
+        built_terminology.retrieve_term(:mods, :person, :role, :text).should be_instance_of OM::XML::Term
+
+      end
       it "should set up namespaces" do
         @builder_with_block.build.namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3", "xmlns:ns2"=>"http://www.w3.org/1999/xlink", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns:ns3"=>"http://www.loc.gov/mods/v3"}
       end
@@ -144,6 +158,16 @@ describe "OM::XML::Terminology::Builder" do
         terminology.namespaces.should == { 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
         terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
         terminology.retrieve_term(:mods).root_term?.should == true
+      end
+      it "should work within a builder block" do
+        @builder_with_block.term_builders[:mods].settings[:is_root_term].should == true
+      end
+    end
+    
+    describe ".root_term_builders" do
+      it "should return the terms that have been marked root" do
+        @builder_with_block.root_term_builders.length.should == 1
+        @builder_with_block.root_term_builders.first.should == @builder_with_block.term_builders[:mods]
       end
     end
     

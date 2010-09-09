@@ -6,12 +6,12 @@ describe "OM::XML::Terminology" do
   before(:each) do
     @test_terminology = OM::XML::Terminology.new
 
-    # @test_root_term = OM::XML::Term.new("name_")
+    # @test_name = OM::XML::Term.new("name_")
 
-    @test_root_term = OM::XML::Term.new(:name)
+    @test_name = OM::XML::Term.new(:name)
     @test_child_term = OM::XML::Term.new(:namePart)
-    @test_root_term.add_child @test_child_term
-    @test_terminology.add_term(@test_root_term)
+    @test_name.add_child @test_child_term
+    @test_terminology.add_term(@test_name)
 
     @builder_with_block = OM::XML::Terminology::Builder.new do |t|
       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
@@ -205,6 +205,11 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xpath_for([:person,:date], "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]'
     end
     
+    it "supports including root terms in term pointer" do
+      @test_full_terminology.xpath_for([:mods, :person]).should == '//oxns:mods/oxns:name[@type="personal"]'
+      @test_full_terminology.xpath_for([:mods, :person], "Beethoven, Ludwig van").should == '//oxns:mods/oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
+    end
+    
     it "should support queries with complex constraints" do
       pending
       @test_full_terminology.xpath_for([:person], {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
@@ -223,8 +228,15 @@ describe "OM::XML::Terminology" do
   
   describe ".term_builders" do
     it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do
-      @test_terminology.terms[:name].should == @test_root_term
+      @test_terminology.terms[:name].should == @test_name
     end 
+  end
+  
+  describe ".root_terms" do
+    it "should return the terms that have been marked root" do
+      @test_full_terminology.root_terms.length.should == 1
+      @test_full_terminology.root_terms.first.should == @test_full_terminology.terms[:mods]
+    end
   end
   
 end
