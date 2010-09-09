@@ -128,13 +128,19 @@ class OM::XML::Terminology
     return current_term
   end
   
-  # Return the appropriate xpath query for retrieving nodes corresponding to +term_pointer+ and +query_constraints+
-  def xpath_for( term_pointer, query_constraints={}, opts={} )
-
-    if term_pointer.instance_of?(String)
-      xpath_query = term_pointer
+  # Return the appropriate xpath query for retrieving nodes corresponding to the term identified by +pointers+.
+  # If the last argument is a String or a Hash, it will be used to add +constraints+ to the resulting xpath query.
+  def xpath_for(*pointers)
+    if pointers.length == 1 && pointers.first.instance_of?(String)
+      xpath_query = pointers.first
     else
-      term = retrieve_term( *Array(term_pointer) )
+      query_constraints = nil
+      
+      if pointers.length > 1 && !pointers.last.kind_of?(Symbol)
+        query_constraints = pointers.pop
+      end
+
+      term = retrieve_term( *pointers )
 
       if !term.nil?
         if query_constraints.kind_of?(String)
@@ -154,6 +160,13 @@ class OM::XML::Terminology
       end
     end
     return xpath_query
+  end
+  
+  # Use the current terminology to generate an xpath with (optional) node indexes for each of the term pointers.
+  # Ex.  terminology.xpath_with_indexes({:conference=>0}, {:role=>1}, :text ) 
+  #      will yield an xpath like this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+  def xpath_with_indexes(*pointers)
+    OM::XML::TermXpathGenerator.generate_xpath_with_indexes(self, *pointers)
   end
   
   # Returns an array of Terms that have been marked as "root" terms

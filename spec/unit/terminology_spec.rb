@@ -39,6 +39,7 @@ describe "OM::XML::Terminology" do
       }
       # lookup :person, :first_name        
       t.person(:ref=>:name, :attributes=>{:type=>"personal"})
+      t.conference(:ref=>:name, :attributes=>{:type=>"conference"})
 
       t.role {
         t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
@@ -195,35 +196,52 @@ describe "OM::XML::Terminology" do
   
   describe ".xpath_for" do
 
-    it "retrieves the generated xpath query to match your desires" do    
+    it "should retrieve the generated xpath query to match your desires" do    
       @test_full_terminology.xpath_for(:person).should == '//oxns:name[@type="personal"]'
 
       @test_full_terminology.xpath_for(:person, "Beethoven, Ludwig van").should == '//oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
 
-      @test_full_terminology.xpath_for([:person,:date]).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      @test_full_terminology.xpath_for(:person, :date).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
 
-      @test_full_terminology.xpath_for([:person,:date], "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]'
+      @test_full_terminology.xpath_for(:person, :date, "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]'
     end
     
-    it "supports including root terms in term pointer" do
-      @test_full_terminology.xpath_for([:mods, :person]).should == '//oxns:mods/oxns:name[@type="personal"]'
-      @test_full_terminology.xpath_for([:mods, :person], "Beethoven, Ludwig van").should == '//oxns:mods/oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
+    it "should support including root terms in term pointer" do
+      @test_full_terminology.xpath_for(:mods, :person).should == '//oxns:mods/oxns:name[@type="personal"]'
+      @test_full_terminology.xpath_for(:mods, :person, "Beethoven, Ludwig van").should == '//oxns:mods/oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]'
     end
     
     it "should support queries with complex constraints" do
       pending
-      @test_full_terminology.xpath_for([:person], {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
+      @test_full_terminology.xpath_for(:person, {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
     end
     
     it "should support queries with multiple complex constraints" do
       pending
-      @test_full_terminology.xpath_for([:person], {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
+      @test_full_terminology.xpath_for(:person, {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
     end
 
-    it "parrots any strings back to you (in case you already have an xpath query)" do
+    it "should parrot any strings back to you (in case you already have an xpath query)" do
       @test_full_terminology.xpath_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
     end
-
+  end
+  
+  describe ".xpath_with_indexes" do
+    it "should return the xpath given in the call to #accessor" do
+      @test_full_terminology.xpath_with_indexes( :title_info ).should == '//oxns:titleInfo'
+    end   
+    it "should support xpath queries as argument" do
+      @test_full_terminology.xpath_with_indexes('//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
+    end
+    # Note: Ruby array indexes begin from 0.  In xpath queries (which start from 1 instead of 0), this will be translated accordingly.
+    it "should prepend the xpath for any parent nodes, inserting calls to xpath array lookup where necessary" do
+      @test_full_terminology.xpath_with_indexes( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+    end
+    it "should be idempotent" do
+      @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+      @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+      @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+    end
   end
   
   describe ".term_builders" do

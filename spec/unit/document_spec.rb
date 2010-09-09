@@ -32,8 +32,8 @@ describe "OM::XML::Document" do
           t.role(:ref=>[:role])
           t.description
           t.date(:path=>"namePart", :attributes=>{:type=>"date"})
-          t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
-          t.given_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+          t.last_name(:path=>"namePart", :attributes=>{:type=>"family"})
+          t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
           t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
         }
         # lookup :person, :first_name        
@@ -81,49 +81,51 @@ describe "OM::XML::Document" do
   end
   
   
-  describe ".find_by_term" do
-    
+  describe ".find_by_terms_and_value" do
     it "should fail gracefully if you try to look up nodes for an undefined property" do
-      @fixturemods.find_by_term(:nobody_home).should == []
+      pending "better to get an informative error?"
+      @fixturemods.find_by_terms_and_value(:nobody_home).should == []
     end
-    
-    it "should use Nokogiri to retrieve a NodeSet corresponding to the combination of accessor keys and array/nodeset indexes" do
-      @mods_article.find_by_term( :person ).length.should == 2
-      
-      @mods_article.find_by_term( {:person=>1} ).first.should == @mods_article.ng_xml.xpath('//oxns:name[@type="personal"][2]', "oxns"=>"http://www.loc.gov/mods/v3").first
-      @mods_article.find_by_term( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
-      @mods_article.find_by_term( {:person=>1}, :first_name ).first.text.should == "Siddartha"
+    it "should use Nokogiri to retrieve a NodeSet corresponding to the term pointers" do
+      @mods_article.find_by_terms_and_value( :person ).length.should == 2
     end
-    
+
     it "should allow you to search by term pointer" do
       @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]', @fixturemods.ox_namespaces)
-      @fixturemods.find_by_term(:person)
+      @fixturemods.find_by_terms_and_value(:person)
     end
     it "should allow you to constrain your searches" do
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart, "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
-      @fixturemods.find_by_term(:person, "Beethoven, Ludwig van")
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_terms_and_value(:person, "Beethoven, Ludwig van")
     end
     it "should allow you to use complex constraints" do
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]', @fixturemods.ox_namespaces)
-      @fixturemods.find_by_term([:person], :date=>"2010")
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_terms_and_value(:person, :date=>"2010")
       
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor")]', @fixturemods.ox_namespaces)
-      @fixturemods.find_by_term([:person], :role=>"donor")
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:role[contains("donor")]', @fixturemods.ox_namespaces)
+      @fixturemods.find_by_terms_and_value(:person, :role=>"donor")
     end
-    
+  end
+  describe ".find_by_term" do
+    it "should support term pointers with nodeset indexes" do
+      @mods_article.find_by_terms( {:person=>1} ).first.should == @mods_article.ng_xml.xpath('//oxns:name[@type="personal"][2]', "oxns"=>"http://www.loc.gov/mods/v3").first
+      @mods_article.find_by_terms( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
+      @mods_article.find_by_terms( {:person=>1}, :first_name ).first.text.should == "Siddartha"
+    end
     it "should support accessors whose relative_xpath is a lookup array instead of an xpath string" do
       # pending "this only impacts scenarios where we want to display & edit"
       DocumentTest.terminology.retrieve_term(:title_info, :language).path.should == {:attribute=>"lang"}
       # @sample.retrieve( :title, 1 ).first.text.should == "Artikkelin otsikko Hydrangea artiklan 1"
-      @mods_article.find_by_term( {:title_info=>1}, :language ).first.text.should == "finnish"
+      @mods_article.find_by_terms( {:title_info=>1}, :language ).first.text.should == "finnish"
     end
     
     it "should support xpath queries as the pointer" do
-      @mods_article.find_by_term('//oxns:name[@type="personal"][1]/oxns:namePart[1]').first.text.should == "FAMILY NAME"
+      @mods_article.find_by_terms('//oxns:name[@type="personal"][1]/oxns:namePart[1]').first.text.should == "FAMILY NAME"
     end
     
     it "should return nil if the xpath fails to generate" do
-      @mods_article.find_by_term( {:foo=>20}, :bar ).should == nil
+      pending "Can't decide if it's better to return nil or raise an error.  Choosing informative errors for now."
+      @mods_article.find_by_terms( {:foo=>20}, :bar ).should == nil
     end
   
   end

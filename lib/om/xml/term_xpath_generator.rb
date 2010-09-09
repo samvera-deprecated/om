@@ -92,7 +92,7 @@ module OM::XML::TermXpathGenerator
     template = add_predicate(absolute, contains_function)
     return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }.gsub('"', '\"')
   end
-    
+  
   def self.generate_xpath(mapper, type)
     case type
     when :relative
@@ -103,6 +103,50 @@ module OM::XML::TermXpathGenerator
       self.generate_constrained_xpath(mapper)
     end
   end
+  
+  # Use the given +terminology+ to generate an xpath with (optional) node indexes for each of the term pointers.
+  # Ex.  OM::XML::TermXpathGenerator.xpath_with_indexes(my_terminology, {:conference=>0}, {:role=>1}, :text ) 
+  #      will yield an xpath similar to this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+  def self.generate_xpath_with_indexes(terminology, *pointers)
+    if pointers.first.kind_of?(String)
+      return pointers.first
+    end
+    
+    keys = []
+    xpath = "//"
+    pointers.each do |pointer|
+      
+      if pointer.kind_of?(Hash)
+        k = pointer.keys.first
+        index = pointer[k]
+      else
+        k = pointer
+        index = nil
+      end
+      
+      keys << k
+      
+      pointer_index = pointers.index(pointer)
+      term = terminology.retrieve_term(*keys)  
+      
+      # Return nil if there is no term to work with
+      if term.nil? then return nil end
+              
+      relative_path = term.xpath_relative
+      
+        unless index.nil?
+          relative_path = add_node_index_predicate(relative_path, index)
+        end
+      
+      if pointer_index > 0
+        relative_path = "/"+relative_path
+      end
+      xpath << relative_path 
+    end
+    
+    return xpath
+  end
+  
   
   def self.delimited_list( values_array, delimiter=", ")
     result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)

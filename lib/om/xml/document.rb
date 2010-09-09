@@ -35,24 +35,22 @@ module OM::XML::Document
   end
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
-  def find_with_value( property_ref, query_opts={}, opts={} )
-    xpath_query = self.class.terminology.constrained_xpath_for( property_ref, query_opts, opts )
-    
-    if xpath_query.nil?
-      result = []
+  def find_by_terms_and_value(*term_pointer)
+    xpath = self.class.terminology.xpath_for(*term_pointer)    
+    if xpath.nil?
+      return nil
     else
-      result = ng_xml.xpath(xpath_query, ox_namespaces)
+      return ng_xml.xpath(xpath, ox_namespaces) 
     end
-    
-    return result
   end
   
 
   # +term_pointer+ Variable length array of values in format [:accessor_name, :accessor_name ...] or [{:accessor_name=>index}, :accessor_name ...]
+  # example: {:person => 1}, :first_name
   # example: [:person, 1, :first_name]
   # Currently, indexes must be integers.
-  def find_by_term(*term_pointer)
-    xpath = self.class.terminology.xpath_for(*term_pointer)    
+  def find_by_terms(*term_pointer)
+    xpath = self.class.terminology.xpath_with_indexes(*term_pointer)    
     if xpath.nil?
       return nil
     else
