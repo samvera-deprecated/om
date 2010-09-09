@@ -174,4 +174,16 @@ class OM::XML::Terminology
     terms.values.select {|term| term.is_root_term? }
   end
   
+  def self.term_generic_name(*pointers)
+    pointers_to_flat_array(pointers, false).join("_")
+  end
+  
+  def self.term_hierarchical_name(*pointers)
+    pointers_to_flat_array(pointers, true).join("_")
+  end
+  
+  def self.pointers_to_flat_array(pointers, include_indices=true)
+    OM.pointers_to_flat_array(pointers, include_indices)
+  end
+  
 end

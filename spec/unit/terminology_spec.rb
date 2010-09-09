@@ -243,6 +243,20 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
     end
   end
+
+  describe "#term_generic_name" do
+    it "should generate a generic accessor name based on an array of pointers" do
+      OM::XML::Terminology.term_generic_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_role_text"
+      OM::XML::Terminology.term_generic_name( *[{:conference=>0}, {:role=>1}, :text] ).should == "conference_role_text"      
+    end
+  end
+
+  describe "#term_hierarchical_name" do
+    it "should generate a specific accessor name based on an array of pointers and indexes" do
+      OM::XML::Terminology.term_hierarchical_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_0_role_1_text"
+      OM::XML::Terminology.term_hierarchical_name( *[{:conference=>0}, {:role=>1}, :text] ).should == "conference_0_role_1_text"
+    end
+  end
   
   describe ".term_builders" do
     it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do

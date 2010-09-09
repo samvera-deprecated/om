@@ -106,8 +106,9 @@ describe "OM::XML::Document" do
       @fixturemods.find_by_terms_and_value(:person, :role=>"donor")
     end
   end
-  describe ".find_by_term" do
-    it "should support term pointers with nodeset indexes" do
+  describe ".find_by_terms" do
+    it "should use Nokogiri to retrieve a NodeSet corresponding to the combination of term pointers and array/nodeset indexes" do
+      @mods_article.find_by_terms( :person ).length.should == 2
       @mods_article.find_by_terms( {:person=>1} ).first.should == @mods_article.ng_xml.xpath('//oxns:name[@type="personal"][2]', "oxns"=>"http://www.loc.gov/mods/v3").first
       @mods_article.find_by_terms( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
       @mods_article.find_by_terms( {:person=>1}, :first_name ).first.text.should == "Siddartha"
@@ -127,7 +128,15 @@ describe "OM::XML::Document" do
       pending "Can't decide if it's better to return nil or raise an error.  Choosing informative errors for now."
       @mods_article.find_by_terms( {:foo=>20}, :bar ).should == nil
     end
-  
+
+    it "should support terms that point to attributes instead of nodes" do
+      @mods_article.find_by_terms( {:title_info=>1}, :language ).first.text.should == "finnish"
+    end
+
+    it "should support xpath queries as the pointer" do
+      @mods_article.find_by_terms('//oxns:name[@type="personal"][1]/oxns:namePart[1]').first.text.should == "FAMILY NAME"
+    end
+
   end
    
 end
