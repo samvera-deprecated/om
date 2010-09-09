@@ -193,6 +193,28 @@ class OM::XML::Term
     @xpath
   end
   
+  # +term_pointers+ reference to the property you want to generate a builder template for
+  # @opts
+  def xml_builder_template(extra_opts = {})
+    extra_attributes = extra_opts.fetch(:attributes, {})  
+
+    node_options = []
+    node_child_template = ""
+    if !self.default_content_path.nil?
+      node_child_options = ["\':::builder_new_value:::\'"]
+      node_child_template = " { xml.#{self.default_content_path}( #{OM::XML.delimited_list(node_child_options)} ) }"
+    else
+      node_options = ["\':::builder_new_value:::\'"]
+    end
+    if !self.attributes.nil?
+      self.attributes.merge(extra_attributes).each_pair do |k,v|
+        node_options << ":#{k}=>\'#{v}\'"
+      end
+    end
+    template = "xml.#{self.path}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
+    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
+  end
+  
   # Generates absolute, relative, and constrained xpaths for the term, setting xpath, xpath_relative, and xpath_constrained accordingly.
   # Also triggers update_xpath_values! on all child nodes, as their absolute paths rely on those of their parent nodes.
   def generate_xpath_queries!

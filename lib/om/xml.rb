@@ -15,6 +15,13 @@ module OM::XML
   
   attr_accessor :ng_xml
   
+  # Module Methods -- These methods can be called directly on the Module itself
+  
+  # Transforms an array of values into a string delimited by +delimiter+
+  def self.delimited_list( values_array, delimiter=", ")
+    result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
+  end
+  
   # Class Methods -- These methods will be available on classes that include this Module 
   
   module ClassMethods
@@ -47,5 +54,6 @@ module OM::XML
     klass.send(:include, OM::XML::PropertyValueOperators)
     klass.send(:include, OM::XML::Generator)
   end
+  
   
 end

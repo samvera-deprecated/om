@@ -4,16 +4,19 @@ require "om"
 describe "OM::XML::Term" do
   
   before(:each) do
-    @test_mapper = OM::XML::Term.new(:namePart, {}).generate_xpath_queries!
-    @test_raw_mapper = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    @test_name_part = OM::XML::Term.new(:namePart, {}).generate_xpath_queries!
+    @test_volume = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    @test_date = OM::XML::Term.new(:namePart, :attributes=>{:type=> "date"})
+    @test_affiliation = OM::XML::Term.new(:affiliation)
+    @test_role_code = OM::XML::Term.new(:roleTerm, :attributes=>{:type=>"code"})
   end
   
   describe '#new' do
     it "should set default values" do
-      @test_mapper.namespace_prefix.should == "oxns"
+      @test_name_part.namespace_prefix.should == "oxns"
     end
     it "should set path from mapper name if no path is provided" do
-      @test_mapper.path.should == "namePart"
+      @test_name_part.path.should == "namePart"
     end
     it "should populate the xpath values if no options are provided" do
       local_mapping = OM::XML::Term.new(:namePart)
@@ -67,94 +70,111 @@ describe "OM::XML::Term" do
     it "should crawl down into mapper children to find the desired mapper" do
       mock_role = mock("mapper", :children =>{:text=>"the target"})
       mock_conference = mock("mapper", :children =>{:role=>mock_role})   
-      @test_mapper.expects(:children).returns({:conference=>mock_conference})   
-      @test_mapper.retrieve_mapper(:conference, :role, :text).should == "the target"
+      @test_name_part.expects(:children).returns({:conference=>mock_conference})   
+      @test_name_part.retrieve_mapper(:conference, :role, :text).should == "the target"
     end
     it "should return an empty hash if no mapper can be found" do
-      @test_mapper.retrieve_mapper(:journal, :issue, :end_page).should == nil
+      @test_name_part.retrieve_mapper(:journal, :issue, :end_page).should == nil
     end
   end
   
   describe 'inner_xml' do
     it "should be a kind of Nokogiri::XML::Node" do
       pending
-      @test_mapper.inner_xml.should be_kind_of(Nokogiri::XML::Node)
+      @test_name_part.inner_xml.should be_kind_of(Nokogiri::XML::Node)
     end
   end
   
   describe "getters/setters" do
     it "should set the corresponding .settings value and return the current value" do
       [:path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
-        @test_mapper.send(method_name.to_s+"=", "#{method_name.to_s}foo").should == "#{method_name.to_s}foo"
-        @test_mapper.send(method_name).should == "#{method_name.to_s}foo"        
+        @test_name_part.send(method_name.to_s+"=", "#{method_name.to_s}foo").should == "#{method_name.to_s}foo"
+        @test_name_part.send(method_name).should == "#{method_name.to_s}foo"        
       end
     end
   end
   it "should have a .terminology attribute accessor" do
-    @test_raw_mapper.should respond_to :terminology
-    @test_raw_mapper.should respond_to :terminology=
+    @test_volume.should respond_to :terminology
+    @test_volume.should respond_to :terminology=
   end
   describe ".ancestors" do
     it "should return an array of Terms that are the ancestors of the current object, ordered from the top/root of the hierarchy" do
-      @test_raw_mapper.set_parent(@test_mapper)
-      @test_raw_mapper.ancestors.should == [@test_mapper]
+      @test_volume.set_parent(@test_name_part)
+      @test_volume.ancestors.should == [@test_name_part]
     end
   end
   describe ".parent" do
     it "should retrieve the immediate parent of the given object from the ancestors array" do
-      # @test_mapper.expects(:ancestors).returns(["ancestor1","ancestor2","ancestor3"])
-      @test_mapper.ancestors = ["ancestor1","ancestor2","ancestor3"]
-      @test_mapper.parent.should == "ancestor3"
+      # @test_name_part.expects(:ancestors).returns(["ancestor1","ancestor2","ancestor3"])
+      @test_name_part.ancestors = ["ancestor1","ancestor2","ancestor3"]
+      @test_name_part.parent.should == "ancestor3"
     end
   end
   describe ".children" do
     it "should return a hash of Terms that are the children of the current object, indexed by name" do
-      @test_raw_mapper.add_child(@test_mapper)
-      @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
+      @test_volume.add_child(@test_name_part)
+      @test_volume.children[@test_name_part.name].should == @test_name_part
     end
   end
   describe ".retrieve_child" do
     it "should fetch the child identified by the given name" do
-      @test_raw_mapper.add_child(@test_mapper)
-      @test_raw_mapper.retrieve_child(@test_mapper.name).should == @test_raw_mapper.children[@test_mapper.name]
+      @test_volume.add_child(@test_name_part)
+      @test_volume.retrieve_child(@test_name_part.name).should == @test_volume.children[@test_name_part.name]
     end
   end
   describe ".set_parent" do
     it "should insert the mapper into the given parent" do
-      @test_mapper.set_parent(@test_raw_mapper)
-      @test_mapper.ancestors.should include(@test_raw_mapper)
-      @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
+      @test_name_part.set_parent(@test_volume)
+      @test_name_part.ancestors.should include(@test_volume)
+      @test_volume.children[@test_name_part.name].should == @test_name_part
     end
   end
   describe ".add_child" do
     it "should insert the given mapper into the current mappers children" do
-      @test_raw_mapper.add_child(@test_mapper)
-      @test_raw_mapper.children[@test_mapper.name].should == @test_mapper
-      @test_mapper.ancestors.should include(@test_raw_mapper)
+      @test_volume.add_child(@test_name_part)
+      @test_volume.children[@test_name_part.name].should == @test_name_part
+      @test_name_part.ancestors.should include(@test_volume)
     end
   end
   
   describe "generate_xpath_queries!" do
     it "should return the current object" do
-      @test_mapper.generate_xpath_queries!.should == @test_mapper
+      @test_name_part.generate_xpath_queries!.should == @test_name_part
     end
     it "should regenerate the xpath values" do      
-      @test_raw_mapper.xpath_relative.should be_nil
-      @test_raw_mapper.xpath.should be_nil
-      @test_raw_mapper.xpath_constrained.should be_nil
+      @test_volume.xpath_relative.should be_nil
+      @test_volume.xpath.should be_nil
+      @test_volume.xpath_constrained.should be_nil
       
-      @test_raw_mapper.generate_xpath_queries!.should == @test_raw_mapper
+      @test_volume.generate_xpath_queries!.should == @test_volume
       
-      @test_raw_mapper.xpath_relative.should == 'oxns:detail[@type="volume"]'
-      @test_raw_mapper.xpath.should == '//oxns:detail[@type="volume"]'
-      @test_raw_mapper.xpath_constrained.should == '//oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"') 
+      @test_volume.xpath_relative.should == 'oxns:detail[@type="volume"]'
+      @test_volume.xpath.should == '//oxns:detail[@type="volume"]'
+      @test_volume.xpath_constrained.should == '//oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"') 
     end
     it "should trigger update on any child objects" do
       mock_child = mock("child term")
       mock_child.expects(:generate_xpath_queries!).times(3)
-      @test_mapper.expects(:children).returns({1=>mock_child, 2=>mock_child, 3=>mock_child})
-      @test_mapper.generate_xpath_queries!
+      @test_name_part.expects(:children).returns({1=>mock_child, 2=>mock_child, 3=>mock_child})
+      @test_name_part.generate_xpath_queries!
     end
+  end
+  
+  describe "#xml_builder_template" do
+    
+    it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
+      @test_date.xml_builder_template.should == 'xml.namePart( \'#{builder_new_value}\', :type=>\'date\' )'
+      @test_affiliation.xml_builder_template.should == 'xml.affiliation( \'#{builder_new_value}\' )'
+    end
+    it "should accept extra options" do
+      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', :type=>\'code\', :authority=>\'marcrelator\' )'  
+      @test_role_code.xml_builder_template(:attributes=>{"authority"=>"marcrelator"}).should == marcrelator_role_xml_builder_template
+    end
+    
+    it "should work for nodes with default_content_path" do      
+      @test_volume.xml_builder_template.should == "xml.detail( :type=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
+    end
+    
   end
   
 end
