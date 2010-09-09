@@ -54,10 +54,10 @@ describe "OM::XML::Terminology" do
       t.issue(:path=>"part") {
         t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
         t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
-        t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
-        t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
-        # t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
-        # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
+        # t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
+        # t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
+        t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
+        t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
         t.publication_date(:path=>"date")
       }
     end
@@ -242,6 +242,27 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
       @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
     end
+  end
+  
+  describe "#xml_builder_template" do
+    
+    it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
+      @test_full_terminology.xml_builder_template(:person,:date).should == 'xml.namePart( \'#{builder_new_value}\', :type=>\'date\' )'
+      @test_full_terminology.xml_builder_template(:name,:affiliation).should == 'xml.affiliation( \'#{builder_new_value}\' )'
+    end
+    it "should accept extra options" do
+      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', :type=>\'code\', :authority=>\'marcrelator\' )'  
+      @test_full_terminology.xml_builder_template(:role, :code, {:attributes=>{"authority"=>"marcrelator"}} ).should == marcrelator_role_xml_builder_template
+      @test_full_terminology.xml_builder_template(:person, :role, :code, {:attributes=>{"authority"=>"marcrelator"}} ).should == marcrelator_role_xml_builder_template      
+    end
+    
+    it "should work with deeply nested properties" do      
+      @test_full_terminology.xml_builder_template(:issue, :volume).should == "xml.detail( :type=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
+      @test_full_terminology.xml_builder_template(:journal, :issue, :level).should == "xml.detail( :type=>'number' ) { xml.number( '\#{builder_new_value}' ) }"
+      @test_full_terminology.xml_builder_template(:journal, :issue, :volume).should == "xml.detail( :type=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
+      @test_full_terminology.xml_builder_template(:journal, :issue, :start_page).should == "xml.extent( :unit=>'pages' ) { xml.start( '\#{builder_new_value}' ) }"
+    end
+    
   end
 
   describe "#term_generic_name" do

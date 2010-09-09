@@ -134,28 +134,6 @@ describe "OM::XML::Term" do
     end
   end
   
-  # describe ".generate" do
-  #   it "should set up the Term based on the current settings and return the current object" do
-  #     @test_raw_mapper.generate.should == @test_raw_mapper
-  #   end
-  #   it "should populate the xpath values if options are provided" do
-  #     @test_raw_mapper.xpath_relative.should be_nil
-  #     @test_raw_mapper.xpath.should be_nil
-  #     @test_raw_mapper.xpath_constrained.should be_nil
-  #     @test_raw_mapper.generate
-  #     @test_raw_mapper.xpath_relative.should_not be_nil
-  #     @test_raw_mapper.xpath.should_not be_nil
-  #     @test_raw_mapper.xpath_constrained.should_not be_nil
-  #   end
-  # end
-  
-  # describe ".regenerate" do
-  #   it "should call .generate" do
-  #     @test_mapper.expects(:generate)
-  #     @test_mapper.regenerate
-  #   end
-  # end
-  
   describe "generate_xpath_queries!" do
     it "should return the current object" do
       @test_mapper.generate_xpath_queries!.should == @test_mapper

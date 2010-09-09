@@ -169,6 +169,41 @@ class OM::XML::Terminology
     OM::XML::TermXpathGenerator.generate_xpath_with_indexes(self, *pointers)
   end
   
+  # +term_pointers+ reference to the property you want to generate a builder template for
+  # @opts
+  def xml_builder_template(*term_pointers)
+    
+    extra_opts = {}
+    
+    if term_pointers.length > 1 && !term_pointers.last.kind_of?(Symbol)
+      extra_opts = term_pointers.pop
+    end
+    extra_attributes = extra_opts.fetch(:attributes, {})
+    
+    
+    term = retrieve_term(*term_pointers)
+    
+    # prop_info = property_info.merge(opts)     
+
+    node_options = []
+    node_child_template = ""
+    if !term.default_content_path.nil?
+      node_child_options = ["\':::builder_new_value:::\'"]
+      node_child_template = " { xml.#{term.default_content_path}( #{delimited_list(node_child_options)} ) }"
+    else
+      node_options = ["\':::builder_new_value:::\'"]
+    end
+    # if opts.has_key?(:attributes) ...
+    # ...
+    if !term.attributes.nil?
+      term.attributes.merge(extra_attributes).each_pair do |k,v|
+        node_options << ":#{k}=>\'#{v}\'"
+      end
+    end
+    template = "xml.#{term.path}( #{delimited_list(node_options)} )" + node_child_template
+    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
+  end
+  
   # Returns an array of Terms that have been marked as "root" terms
   def root_terms
     terms.values.select {|term| term.is_root_term? }
@@ -184,6 +219,10 @@ class OM::XML::Terminology
   
   def self.pointers_to_flat_array(pointers, include_indices=true)
     OM.pointers_to_flat_array(pointers, include_indices)
+  end
+  
+  def delimited_list( values_array, delimiter=", ")
+    result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
   end
   
 end
