@@ -129,9 +129,6 @@ describe "OM::XML::Terminology::Builder" do
         built_terminology.retrieve_term(:mods, :person, :role, :text).should be_instance_of OM::XML::Term
 
       end
-      it "should set up namespaces" do
-        @builder_with_block.build.namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3", "xmlns:ns2"=>"http://www.w3.org/1999/xlink", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns:ns3"=>"http://www.loc.gov/mods/v3"}
-      end
     end
     
     describe '.insert_term' do
@@ -150,14 +147,14 @@ describe "OM::XML::Terminology::Builder" do
         root_term_builder.settings[:is_root_term].should == true
         
         @test_builder.schema.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
-        @test_builder.namespaces.should == { 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
+        @test_builder.namespaces.should == { "oxns"=>"one:two", 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
         @test_builder.term_builders[:mods].should == root_term_builder      
         
         terminology = @test_builder.build
         terminology.schema.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
-        terminology.namespaces.should == { 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
+        terminology.namespaces.should == { "oxns"=>"one:two", 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
         terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
-        terminology.retrieve_term(:mods).root_term?.should == true
+        terminology.retrieve_term(:mods).is_root_term?.should == true
       end
       it "should work within a builder block" do
         @builder_with_block.term_builders[:mods].settings[:is_root_term].should == true
