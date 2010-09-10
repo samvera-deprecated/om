@@ -20,7 +20,6 @@ module OM::XML::TermValueOperators
         true
       else
         !self.class.terminology.has_term?(*OM.destringify(term_pointer))
-        # self.class.terminology.xpath_with_indexes(*OM.destringify(field_key) ).nil?
       end
     end
     
@@ -31,6 +30,7 @@ module OM::XML::TermValueOperators
       template = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
       
+      # Sanitize new_values to always be a hash with indexes
       case new_values
       when Hash
       when Array
@@ -41,9 +41,11 @@ module OM::XML::TermValueOperators
         new_values = {"0"=>new_values}
       end
       
+      # Populate the response hash appropriately.
       result.delete(term_pointer)
       result[hn] = new_values.dup
       
+      # Skip any submitted values if the new value matches the current values
       current_values = term_values(*pointer)
       new_values.delete_if do |y,z| 
         if current_values[y.to_i]==z and y.to_i > -1
@@ -52,10 +54,13 @@ module OM::XML::TermValueOperators
           false
         end
       end 
+      
       xpath = self.class.terminology.xpath_with_indexes(*pointer)
       parent_pointer = pointer.dup
       parent_pointer.pop
       parent_xpath = self.class.terminology.xpath_with_indexes(*parent_pointer)
+      
+      # If the value doesn't exist yet, append it.  Otherwise, update the existing value.
       new_values.each do |y,z|         
         if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
           result[hn].delete(y)
