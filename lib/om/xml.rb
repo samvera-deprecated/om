@@ -9,6 +9,7 @@ require "om/xml/terminology"
 require "om/xml/term"
 require "om/xml/term_xpath_generator"
 require "om/xml/node_generator"
+require "om/xml/term_value_operators"
 require "om/xml/document"
 
 

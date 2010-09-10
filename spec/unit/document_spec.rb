@@ -95,14 +95,14 @@ describe "OM::XML::Document" do
       @fixturemods.find_by_terms_and_value(:person)
     end
     it "should allow you to constrain your searches" do
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains("Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal" and contains(., "Beethoven, Ludwig van")]', @fixturemods.ox_namespaces)
       @fixturemods.find_by_terms_and_value(:person, "Beethoven, Ludwig van")
     end
     it "should allow you to use complex constraints" do
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains("2010")]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains(., "2010")]', @fixturemods.ox_namespaces)
       @fixturemods.find_by_terms_and_value(:person, :date=>"2010")
       
-      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:role[contains("donor")]', @fixturemods.ox_namespaces)
+      @fixturemods.ng_xml.expects(:xpath).with('//oxns:name[@type="personal"]/oxns:role[contains(., "donor")]', @fixturemods.ox_namespaces)
       @fixturemods.find_by_terms_and_value(:person, :role=>"donor")
     end
   end

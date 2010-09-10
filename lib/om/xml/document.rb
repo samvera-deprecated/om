@@ -32,6 +32,7 @@ module OM::XML::Document
     klass.extend(ClassMethods)
   
     klass.send(:include, OM::XML::Container)
+    klass.send(:include, OM::XML::TermValueOperators)
   end
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet

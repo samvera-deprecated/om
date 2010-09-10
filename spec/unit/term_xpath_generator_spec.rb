@@ -4,14 +4,15 @@ require "om"
 describe "OM::XML::TermXpathGeneratorSpec" do
 
   before(:all) do
-    # builder = OM::XML::Terminology::Builder.new do |m|
-    #   m.conference(:attributes=>{:type=>"conference"}) {
-    #     m.role {
-    #       m.roleTerm(:attributes=>:type=>"text")
-    #     }
-    #   }
-    # end
-    # @nested_mappings = builder.build    
+    builder = OM::XML::Terminology::Builder.new do |t|
+      t.name_ {
+        t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
+        t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+      }
+      # lookup :person, :first_name        
+      t.person(:ref=>:name, :attributes=>{:type=>"personal"})
+    end
+    @sample_terminology = builder.build    
   end
   
   before(:each) do
@@ -24,7 +25,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
   it "should support terms that are pointers to attribute values" do
     OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :absolute).should == "//@lang"
     OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :relative).should == "@lang"
-    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained).should == '//@lang[contains("#{constraint_value}")]'.gsub('"', '\"')  
+    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained).should == '//@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"')  
   end
   
   describe "generate_xpath" do
@@ -63,7 +64,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   describe "generate_constrained_xpath" do
     it "should generate a constrained xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress" and contains("#{constraint_value}")]'.gsub('"', '\"')   
+      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//oxns:namePart[@type="termsOfAddress" and contains(., "#{constraint_value}")]'.gsub('"', '\"')   
     end
   end
   
@@ -71,7 +72,20 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     @test_term.namespace_prefix = nil
     OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
     OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//namePart[@type="termsOfAddress"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains("#{constraint_value}")]'.gsub('"', '\"')   
+    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains(., "#{constraint_value}")]'.gsub('"', '\"')   
+  end
+  
+  describe "generate_xpath_with_indexes" do
+    it "should accept multiple constraints" do
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, :person, {:first_name=>"Tim", :family_name=>"Berners-Lee"} )
+      # expect an xpath that looks like this: '//oxns:name[@type="personal" and contains(oxns:namePart[@type="family"], "Berners-Lee") and contains(oxns:namePart[@type="given"], "Tim")]'
+      # can't use string comparison because the contains functions can arrive in any order
+      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"given\"\], \"Tim\"\).*\]/ )  
+      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"family\"\], \"Berners-Lee\"\).*\]/ )  
+    end
+    it "should support xpath queries as argument" do
+      OM::XML::TermXpathGenerator.generate_xpath_with_indexes(@sample_terminology, '//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
+    end
   end
   
   it "should support mappers with default_content_path" do

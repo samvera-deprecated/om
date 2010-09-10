@@ -58,37 +58,19 @@ module OM::XML::TermXpathGenerator
     
     arguments_for_contains_function = []
 
-    unless mapper.default_content_path.nil?
+    if !mapper.default_content_path.nil?
       arguments_for_contains_function << "#{complete_prefix}#{mapper.default_content_path}"
     end
-    # elsif opts[:constraints].has_key?(:path)
-    #   constraints_path_arg = opts[:constraints][:path]
-    #   if constraints_path_arg.kind_of?(Hash)
-    #     if constraints_path_arg.has_key?(:attribute)
-    #       constraint_path = "@"+constraints_path_arg[:attribute]
-    #     end
-    #   else
-    #    constraint_path = "#{prefix}:#{constraints_path_arg}"
-    #   end
-    #   if opts.has_key?(:subelement_of) && opts[:constraints].has_key?(:default_content_path)
-    #     # constraint_path = "#{prefix}:#{opts[:constraints][:path]}"
-    #       constraint_path << "/#{prefix}:#{opts[:constraints][:default_content_path]}" 
-    #   end
-    #   arguments_for_contains_function << constraint_path
-    #   
-    #   if opts[:constraints].has_key?(:attributes) && opts[:constraints][:attributes].kind_of?(Hash)
-    #     opts[:constraints][:attributes].each_pair do |attr_name, attr_value|
-    #       constraint_predicates << "@#{attr_name}=\"#{attr_value}\""
-    #     end
-    #   end    
-      # unless constraint_predicates.empty?
-      #   arguments_for_contains_function.last << "[#{delimited_list(constraint_predicates)}]"
-      # end
+      
+    # If no subelements have been specified to search within, set contains function to search within the current node
+    if arguments_for_contains_function.empty?
+      arguments_for_contains_function << "."
+    end
     
     arguments_for_contains_function << "\":::constraint_value:::\""
   
     contains_function = "contains(#{delimited_list(arguments_for_contains_function)})"
-        
+
     template = add_predicate(absolute, contains_function)
     return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }.gsub('"', '\"')
   end
@@ -108,9 +90,19 @@ module OM::XML::TermXpathGenerator
   # Ex.  OM::XML::TermXpathGenerator.xpath_with_indexes(my_terminology, {:conference=>0}, {:role=>1}, :text ) 
   #      will yield an xpath similar to this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
   def self.generate_xpath_with_indexes(terminology, *pointers)
-    if pointers.first.kind_of?(String)
-      return pointers.first
+    query_constraints = nil
+    
+    if pointers.length > 1 && !pointers.last.kind_of?(Symbol)
+      query_constraints = pointers.pop
     end
+
+    if pointers.length == 1 && pointers.first.instance_of?(String)
+      return xpath_query = pointers.first
+    end
+      
+    # if pointers.first.kind_of?(String)
+    #   return pointers.first
+    # end
     
     keys = []
     xpath = "//"
@@ -134,14 +126,30 @@ module OM::XML::TermXpathGenerator
               
       relative_path = term.xpath_relative
       
-        unless index.nil?
-          relative_path = add_node_index_predicate(relative_path, index)
-        end
+      unless index.nil?
+        relative_path = add_node_index_predicate(relative_path, index)
+      end
       
       if pointer_index > 0
         relative_path = "/"+relative_path
       end
       xpath << relative_path 
+    end
+    
+    final_term = terminology.retrieve_term(*keys) 
+    
+    if query_constraints.kind_of?(Hash)
+      contains_functions = []
+      query_constraints.each_pair do |k,v|
+        if k.instance_of?(Symbol)
+          constraint_path = final_term.children[k].xpath_relative
+        else
+          constraint_path = k
+        end
+        contains_functions << "contains(#{constraint_path}, \"#{v}\")"
+      end
+      
+      xpath = add_predicate(xpath, delimited_list(contains_functions, " and ") )
     end
     
     return xpath
