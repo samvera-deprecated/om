@@ -151,6 +151,19 @@ describe "OM::XML::Terminology" do
     end
   end
   
+  describe ".has_term?" do
+    it "should return true if the specified term does exist in the terminology" do
+      @test_full_terminology.has_term?(:journal,:issue,:end_page).should be_true
+    end
+    it "should support term_pointers with array indexes in them (ignoring the indexes)" do
+      @test_full_terminology.has_term?(:title_info, :main_title).should be_true
+      @test_full_terminology.has_term?({:title_info=>"0"}, :main_title).should be_true
+    end
+    it "should return false if the specified term does not exist in the terminology" do
+      @test_full_terminology.has_term?(:name, :date, :nonexistentTerm, :anotherTermName).should be_false
+    end
+  end
+  
   describe ".retrieve_term" do
     it "should return the mapper identified by the given pointer" do
       term = @test_terminology.retrieve_term(:name, :namePart)

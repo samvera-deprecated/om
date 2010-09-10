@@ -111,6 +111,16 @@ class OM::XML::Terminology
     @terms[term.name.to_sym] = term
   end
   
+  # Returns true if the current terminology has a term defined at the location indicated by +pointers+ array
+  def has_term?(*pointers)
+    begin
+      retrieve_term(*OM.pointers_to_flat_array(pointers, false))
+      return true
+    rescue
+      return false
+    end
+  end
+  
   # Returns the Term corresponding to the given _pointer_.
   def retrieve_term(*args)
     args_cp = args.dup
