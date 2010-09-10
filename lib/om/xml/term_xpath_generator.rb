@@ -90,6 +90,15 @@ module OM::XML::TermXpathGenerator
   # Ex.  OM::XML::TermXpathGenerator.xpath_with_indexes(my_terminology, {:conference=>0}, {:role=>1}, :text ) 
   #      will yield an xpath similar to this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
   def self.generate_xpath_with_indexes(terminology, *pointers)
+    if pointers.first.nil?
+      root_term = terminology.root_terms.first
+      if root_term.nil?
+        return "/"
+      else
+        return root_term.xpath
+      end
+    end
+    
     query_constraints = nil
     
     if pointers.length > 1 && !pointers.last.kind_of?(Symbol)
@@ -135,7 +144,7 @@ module OM::XML::TermXpathGenerator
       end
       xpath << relative_path 
     end
-    
+      
     final_term = terminology.retrieve_term(*keys) 
     
     if query_constraints.kind_of?(Hash)

@@ -28,7 +28,7 @@ describe "OM::XML::TermValueOperators" do
           t.namePart(:index_as=>[:searchable, :displayable, :facetable, :sortable], :required=>:true, :type=>:string, :label=>"generic name")
           # affiliations are great
           t.affiliation
-          t.displayForm
+          t.display_form(:path=>"displayForm")
           t.role(:ref=>[:role])
           t.description
           t.date(:path=>"namePart", :attributes=>{:type=>"date"})
@@ -47,7 +47,7 @@ describe "OM::XML::TermValueOperators" do
           t.title_info
           t.origin_info(:path=>"originInfo")
           t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-          t.issue!
+          t.issue(:ref=>[:issue])
         }
         t.issue(:path=>"part") {
           t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
@@ -123,7 +123,11 @@ describe "OM::XML::TermValueOperators" do
       @article.update_values( {[{:person=>0}, :role] => {"4"=>"My New Role"}} )
       @article.update_values( {[{:person=>0}, :role] => {"-1"=>"My New Role"}} )
     end
-    it "should call term_value_delete where appropriate"
+    
+    it "should not get tripped up on root nodes" do
+      @article.update_values([:title_info]=>{"0"=>"york", "1"=>"mangle","2"=>"mork"})
+      @article.term_values(*[:title_info]).should == ["york", "mangle", "mork"]
+    end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
       TermValueOperatorsTest.terminology.expects(:xpath_with_indexes).with( *[{:person=>0}, :role]).times(7).returns("//oxns:name[@type=\"personal\"][1]/oxns:role")
@@ -144,7 +148,7 @@ describe "OM::XML::TermValueOperators" do
       @article.term_values('//oxns:name[@type="personal"][1]/oxns:namePart[@type="given"]').should == ["Billy","Bob","Joe"]
     end
     it "should support single-value arguments (as opposed to a hash of values with array indexes as keys)" do
-      # In other words, { "fubar"=>"dork" } should have the same effect as { "fubar"=>{"0"=>"dork"} }
+      # In other words, { [:journal, :title_info]=>"dork" } should have the same effect as { [:journal, :title_info]=>{"0"=>"dork"} }
       result = @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
       result.should == {"person_0_role"=>{"0"=>"the role"}}
       @article.term_values({:person=>0}, :role).first.should == "the role"     
@@ -166,7 +170,7 @@ describe "OM::XML::TermValueOperators" do
     # it "should support single-value arguments (as opposed to a hash of values with array indexes as keys)" do
     #   # In other words, { "fubar"=>"dork" } should have the same effect as { "fubar"=>{"0"=>"dork"} }
     #   pending "this should be working, but for some reason, the updates don't stick"
-    #   result = @test_ds.update_indexed_attributes( { "fubar"=>"dork" } )
+    #   result = @test_ds.update_values( { "fubar"=>"dork" } )
     #   result.should == {"fubar"=>{"0"=>"dork"}}
     #   @test_ds.fubar_values.should == ["dork"]
     # end
@@ -187,47 +191,41 @@ describe "OM::XML::TermValueOperators" do
       result = @article.update_values [{"title_info"=>"0"},"main_title"]=>{"-1"=>"mork"}
       result.should == {"title_info_0_main_title"=>{"2"=>"mork"}}
     end
-    # 
-    # it "should return accurate response when multiple values have been added in a single run" do
-    #   pending
-    #   att= {"swank"=>{"-1"=>"mork", "0"=>"york"}}
-    #   @test_ds.update_indexed_attributes(att).should == {"swank"=>{"0"=>"york", "1"=>"mork"}}
-    # end
     
-    # it "should deal gracefully with adding new values at explicitly declared indexes" do
-    #   @article.update_values([:journal, :title]=>["all", "for", "the"]
-    #   att = {"fubar"=>{"3"=>'glory'}}
-    #   result = @test_ds.update_indexed_attributes(att)
-    #   result.should == {"fubar"=>{"3"=>"glory"}}
-    #   @test_ds.fubar_values.should == ["all", "for", "the", "glory"]
-    #   
-    #   @test_ds.fubar_values = []
-    #   result = @test_ds.update_indexed_attributes(att)
-    #   result.should == {"fubar"=>{"0"=>"glory"}}
-    #   @test_ds.fubar_values.should == ["glory"]
-    # end
-    # 
-    # it "should allow deleting of values and should delete values so that to_xml does not return emtpy nodes" do
-    #   att= {"fubar"=>{"-1"=>"mork", "0"=>"york", "1"=>"mangle"}}
-    #   @test_ds.update_indexed_attributes(att)
-    #   @test_ds.fubar_values.should == ['mork', 'york', 'mangle']
-    #   rexml = REXML::Document.new(@test_ds.to_xml)
-    #   #puts rexml.root.elements.each {|el| el.to_s}
-    #   #puts rexml.root.elements.to_a.inspect
-    #   rexml.root.elements.to_a.length.should == 3
-    #   @test_ds.update_indexed_attributes({"fubar"=>{"1"=>""}})
-    #   @test_ds.fubar_values.should == ['mork', 'mangle']
-    #   rexml = REXML::Document.new(@test_ds.to_xml)
-    #   rexml.root.elements.to_a.length.should == 2
-    #   @test_ds.update_indexed_attributes({"fubar"=>{"0"=>:delete}})
-    #   @test_ds.fubar_values.should == ['mangle']
-    #   rexml = REXML::Document.new(@test_ds.to_xml)
-    #   rexml.root.elements.to_a.length.should == 1
-    #   
-    #   @test_ds.fubar_values = ["val1", nil, "val2"]
-    #   @test_ds.update_indexed_attributes({"fubar"=>{"1"=>""}})
-    #   @test_ds.fubar_values.should == ["val1", "val2"]
-    # end
+    it "should return accurate response when multiple values have been added in a single run" do
+      pending "THIS SHOULD BE FIXED"
+      att= {[:journal, :title_info]=>{"-1"=>"mork", "0"=>"york"}}
+      @article.update_values(att).should == {"journal_title_info"=>{"0"=>"york", "1"=>"mork"}}
+      @article.term_values(*att.keys.first).should == ["york", "mork"]
+    end
+    
+    it "should append nodes at the specified index if possible" do
+      @article.update_values([:journal, :title_info]=>["all", "for", "the"])
+      att = {[:journal, :title_info]=>{"3"=>'glory'}}
+      result = @article.update_values(att)
+      result.should == {"journal_title_info"=>{"3"=>"glory"}}
+      @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
+    end
+    
+    it "should append values to the end of the array if the specified index is higher than the length of the values array" do
+      att = {[:journal, :issue, :end_page]=>{"3"=>'108'}}
+      @article.term_values(:journal, :issue, :end_page).should == []
+      result = @article.update_values(att)
+      result.should == {"journal_issue_end_page"=>{"0"=>"108"}}
+      @article.term_values(:journal, :issue, :end_page).should == ["108"]
+    end
+    
+    it "should allow deleting of values and should delete values so that to_xml does not return emtpy nodes" do
+      att= {[:journal, :title_info]=>{"0"=>"york", "1"=>"mangle","2"=>"mork"}}
+      @article.update_values(att)
+      @article.term_values(:journal, :title_info).should == ['york', 'mangle', 'mork']
+      
+      @article.update_values({[:journal, :title_info]=>{"1"=>""}})
+      @article.term_values(:journal, :title_info).should == ['york', 'mork']
+      
+      @article.update_values({[:journal, :title_info]=>{"0"=>:delete}})
+      @article.term_values(:journal, :title_info).should == ['mork']
+    end
     
   end
   
@@ -312,17 +310,13 @@ describe "OM::XML::TermValueOperators" do
   end
   
   describe ".term_value_update" do
-
+    before(:each) do
+      @article = TermValueOperatorsTest.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
+    end
+    
     it "should accept an xpath as :parent_select" do
 	    sample_xpath = '//oxns:name[@type="personal"][4]/oxns:role/oxns:roleTerm[@type="text"]'
 	    @sample.term_value_update(sample_xpath,1,"artist")
-      
-      # @sample.term_value_update(      
-      #         :parent_select =>sample_xpath,
-      #         :child_index => 1,
-      #         :value => "donor"
-      #       )
-      
       @sample.ng_xml.xpath(sample_xpath, @sample.ox_namespaces)[1].text.should == "artist"
     end
     
@@ -341,6 +335,20 @@ describe "OM::XML::TermValueOperators" do
         :value => "foo"
       )
       1.should == 2
+    end
+    it "should delete nodes if value is :delete or empty string" do
+      @article.update_values([:title_info]=>{"0"=>"york", "1"=>"mangle","2"=>"mork"})
+      xpath = @article.class.terminology.xpath_for(:title_info)
+      
+      @article.term_value_update([:title_info], 1, "")
+      @article.term_values(:title_info).should == ['york', 'mork']
+      
+      @article.term_value_update([:title_info], 1, :delete)
+      @article.term_values(:title_info).should == ['york']
+    end
+    it "should create empty nodes if value is nil" do
+      @article.update_values([:title_info]=>{"0"=>"york", "1"=>nil,"2"=>"mork"})
+      @article.term_values(:title_info).should == ['york', "", "mork"]
     end
   end
   

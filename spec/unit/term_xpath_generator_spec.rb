@@ -5,6 +5,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   before(:all) do
     builder = OM::XML::Terminology::Builder.new do |t|
+      t.root(:path=>"mods")
       t.name_ {
         t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
         t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
@@ -12,7 +13,8 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       # lookup :person, :first_name        
       t.person(:ref=>:name, :attributes=>{:type=>"personal"})
     end
-    @sample_terminology = builder.build    
+    @sample_terminology = builder.build 
+    @rootless_terminology = OM::XML::Terminology.new   
   end
   
   before(:each) do
@@ -85,6 +87,13 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     end
     it "should support xpath queries as argument" do
       OM::XML::TermXpathGenerator.generate_xpath_with_indexes(@sample_terminology, '//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
+    end
+
+    it "should return the xpath of the terminology's root node if term pointer is nil" do
+      OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, nil ).should == @sample_terminology.root_terms.first.xpath
+    end
+    it "should return / if term pointer is nil and the terminology does not have a root term defined" do
+      OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @rootless_terminology, nil ).should == "/"
     end
   end
   

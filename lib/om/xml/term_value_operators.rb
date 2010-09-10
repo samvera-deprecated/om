@@ -41,7 +41,7 @@ module OM::XML::TermValueOperators
         new_values = {"0"=>new_values}
       end
       
-      # Populate the response hash appropriately.
+      # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
       result.delete(term_pointer)
       result[hn] = new_values.dup
       
@@ -61,7 +61,7 @@ module OM::XML::TermValueOperators
       parent_xpath = self.class.terminology.xpath_with_indexes(*parent_pointer)
       
       # If the value doesn't exist yet, append it.  Otherwise, update the existing value.
-      new_values.each do |y,z|         
+      new_values.each do |y,z|   
         if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
           result[hn].delete(y)
           term_values_append(:parent_select=>parent_xpath,:child_index=>0,:template=>template,:values=>z)
@@ -92,7 +92,6 @@ module OM::XML::TermValueOperators
       template = self.class.terminology.xml_builder_template( *template_args )
     end    
     
-    # parent_nodeset = find_by_terms_and_value(parent_select[0], parent_select[1])
     parent_nodeset = find_by_terms(*parent_select)
     parent_node = node_from_set(parent_nodeset, child_index)
     
@@ -115,8 +114,13 @@ module OM::XML::TermValueOperators
   
   def term_value_update(node_select,child_index,new_value,opts={})
     # template = opts.fetch(:template,nil)
-    node = find_by_terms_and_value(node_select)[child_index]
-    node.content = new_value
+    
+    node = find_by_terms_and_value(*node_select)[child_index]
+    if new_value == "" || new_value == :delete
+      node.remove
+    else
+      node.content = new_value
+    end
   end
   
   # def term_value_set(term_ref, query_opts, node_index, new_value)
