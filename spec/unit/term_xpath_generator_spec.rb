@@ -88,12 +88,14 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     it "should support xpath queries as argument" do
       OM::XML::TermXpathGenerator.generate_xpath_with_indexes(@sample_terminology, '//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
     end
-
     it "should return the xpath of the terminology's root node if term pointer is nil" do
       OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, nil ).should == @sample_terminology.root_terms.first.xpath
     end
     it "should return / if term pointer is nil and the terminology does not have a root term defined" do
       OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @rootless_terminology, nil ).should == "/"
+    end
+    it "should destringify term pointers before using them" do
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, {"person"=>"1"}, "first_name" ).should == '//oxns:name[@type="personal"][2]/oxns:namePart[@type="given"]'
     end
   end
   

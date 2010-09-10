@@ -5,16 +5,17 @@
 
 Gem::Specification.new do |s|
   s.name = %q{om}
-  s.version = "0.1.10"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Zumwalt"]
-  s.date = %q{2010-07-06}
+  s.date = %q{2010-09-10}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
   s.email = %q{matt.zumwalt@yourmediashelf.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.rdoc",
+     "README.textile"
   ]
   s.files = [
     ".document",
@@ -22,6 +23,7 @@ Gem::Specification.new do |s|
      "History.textile",
      "LICENSE",
      "README.rdoc",
+     "README.textile",
      "Rakefile",
      "VERSION",
      "container_spec.rb",
@@ -29,10 +31,17 @@ Gem::Specification.new do |s|
      "lib/om/xml.rb",
      "lib/om/xml/accessors.rb",
      "lib/om/xml/container.rb",
+     "lib/om/xml/document.rb",
      "lib/om/xml/generator.rb",
+     "lib/om/xml/node_generator.rb",
      "lib/om/xml/properties.rb",
      "lib/om/xml/property_value_operators.rb",
+     "lib/om/xml/term.rb",
+     "lib/om/xml/term_value_operators.rb",
+     "lib/om/xml/term_xpath_generator.rb",
+     "lib/om/xml/terminology.rb",
      "lib/om/xml/validation.rb",
+     "lib/om/xml/vocabulary.rb",
      "om.gemspec",
      "spec/fixtures/CBF_MODS/ARS0025_016.xml",
      "spec/fixtures/RUBRIC_mods_article_template.xml",
@@ -44,10 +53,18 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/unit/accessors_spec.rb",
      "spec/unit/container_spec.rb",
+     "spec/unit/document_spec.rb",
      "spec/unit/generator_spec.rb",
+     "spec/unit/node_generator_spec.rb",
      "spec/unit/om_spec.rb",
      "spec/unit/properties_spec.rb",
      "spec/unit/property_value_operators_spec.rb",
+     "spec/unit/term_builder_spec.rb",
+     "spec/unit/term_spec.rb",
+     "spec/unit/term_value_operators_spec.rb",
+     "spec/unit/term_xpath_generator_spec.rb",
+     "spec/unit/terminology_builder_spec.rb",
+     "spec/unit/terminology_spec.rb",
      "spec/unit/validation_spec.rb",
      "spec/unit/xml_spec.rb"
   ]
@@ -61,10 +78,18 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/unit/accessors_spec.rb",
      "spec/unit/container_spec.rb",
+     "spec/unit/document_spec.rb",
      "spec/unit/generator_spec.rb",
+     "spec/unit/node_generator_spec.rb",
      "spec/unit/om_spec.rb",
      "spec/unit/properties_spec.rb",
      "spec/unit/property_value_operators_spec.rb",
+     "spec/unit/term_builder_spec.rb",
+     "spec/unit/term_spec.rb",
+     "spec/unit/term_value_operators_spec.rb",
+     "spec/unit/term_xpath_generator_spec.rb",
+     "spec/unit/terminology_builder_spec.rb",
+     "spec/unit/terminology_spec.rb",
      "spec/unit/validation_spec.rb",
      "spec/unit/xml_spec.rb"
   ]
@@ -74,20 +99,20 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<nokogiri>, [">= 0"])
+      s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.2"])
       s.add_runtime_dependency(%q<facets>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_development_dependency(%q<ruby-debug>, [">= 0"])
     else
-      s.add_dependency(%q<nokogiri>, [">= 0"])
+      s.add_dependency(%q<nokogiri>, [">= 1.4.2"])
       s.add_dependency(%q<facets>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_dependency(%q<ruby-debug>, [">= 0"])
     end
   else
-    s.add_dependency(%q<nokogiri>, [">= 0"])
+    s.add_dependency(%q<nokogiri>, [">= 1.4.2"])
     s.add_dependency(%q<facets>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
     s.add_dependency(%q<mocha>, [">= 0.9.8"])

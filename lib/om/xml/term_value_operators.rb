@@ -4,10 +4,17 @@ require "logger"
 class OM::XML::ParentNodeNotFoundError < RuntimeError; end
 module OM::XML::TermValueOperators
   
-  def term_values(*lookup_args)
+  # Retrieves all of the nodes from the current document that match +term_pointer+ and returns an array of their values
+  def term_values(*term_pointer)
     result = []
-    find_by_terms(*lookup_args).each {|node| result << node.text }
+    find_by_terms(*term_pointer).each {|node| result << node.text }
+    # find_by_terms(*OM.destringify(term_pointer)).each {|node| result << node.text }
     return result
+  end
+  
+  # alias for term_values
+  def property_values(*lookup_args)
+    term_values(*lookup_args)
   end
   
   # 

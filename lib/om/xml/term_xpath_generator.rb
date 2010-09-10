@@ -101,7 +101,7 @@ module OM::XML::TermXpathGenerator
     
     query_constraints = nil
     
-    if pointers.length > 1 && !pointers.last.kind_of?(Symbol)
+    if pointers.length > 1 && pointers.last.kind_of?(Hash)
       query_constraints = pointers.pop
     end
 
@@ -115,6 +115,8 @@ module OM::XML::TermXpathGenerator
     
     keys = []
     xpath = "//"
+
+    pointers = OM.destringify(pointers)
     pointers.each do |pointer|
       
       if pointer.kind_of?(Hash)
