@@ -76,7 +76,7 @@ class OM::XML::Term
       up.each_pair do |setting_name, value|
         if value.kind_of?(Hash) && downstream_hash.has_key?(setting_name)  
           dn[setting_name] = value.merge(downstream_hash[setting_name])
-          up.delete (setting_name)
+          up.delete(setting_name)
         end
       end
       return up.merge(dn)
