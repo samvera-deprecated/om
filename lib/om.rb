@@ -60,5 +60,6 @@ end
 module OM::XML; end
 
 require "om/xml"
+require "om/samples"
 
 

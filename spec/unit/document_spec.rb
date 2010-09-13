@@ -47,7 +47,7 @@ describe "OM::XML::Document" do
           t.title_info
           t.origin_info(:path=>"originInfo")
           t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-          t.issue!
+          t.issue(:ref=>:issue)
         }
         t.issue(:path=>"part") {
           t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
@@ -136,7 +136,6 @@ describe "OM::XML::Document" do
     it "should support xpath queries as the pointer" do
       @mods_article.find_by_terms('//oxns:name[@type="personal"][1]/oxns:namePart[1]').first.text.should == "FAMILY NAME"
     end
-
   end
    
 end

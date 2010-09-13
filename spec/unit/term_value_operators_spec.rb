@@ -3,74 +3,75 @@ require "om"
 
 describe "OM::XML::TermValueOperators" do
   
-  before(:all) do
-    #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
-    class TermValueOperatorsTest 
-      
-      include OM::XML::Document    
-      
-      # Could add support for multiple root declarations.  
-      #  For now, assume that any modsCollections have already been broken up and fed in as individual mods documents
-      # root :mods_collection, :path=>"modsCollection", 
-      #           :attributes=>[],
-      #           :subelements => :mods
-      
-      set_terminology do |t|
-        t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
-
-        t.title_info(:path=>"titleInfo") {
-          t.main_title(:path=>"title", :label=>"title")
-          t.language(:path=>{:attribute=>"lang"})
-        }                 
-        # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
-        t.name_ {
-          # this is a namepart
-          t.namePart(:index_as=>[:searchable, :displayable, :facetable, :sortable], :required=>:true, :type=>:string, :label=>"generic name")
-          # affiliations are great
-          t.affiliation
-          t.display_form(:path=>"displayForm")
-          t.role(:ref=>[:role])
-          t.description
-          t.date(:path=>"namePart", :attributes=>{:type=>"date"})
-          t.last_name(:path=>"namePart", :attributes=>{:type=>"family"})
-          t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
-          t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
-        }
-        # find_by_terms_and_value :person, :first_name        
-        t.person(:ref=>:name, :attributes=>{:type=>"personal"})
-
-        t.role {
-          t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
-          t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
-        }
-        t.journal(:path=>'relatedItem', :attributes=>{:type=>"host"}) {
-          t.title_info
-          t.origin_info(:path=>"originInfo")
-          t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-          t.issue(:ref=>[:issue])
-        }
-        t.issue(:path=>"part") {
-          t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
-          t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
-          t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
-          t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
-          # t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
-          # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
-          t.publication_date(:path=>"date")
-        }
-      end
-                  
-    end
-        
-  end
+  # before(:all) do
+  #   #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
+  #   class TermValueOperatorsTest 
+  #     
+  #     include OM::XML::Document    
+  #     
+  #     # Could add support for multiple root declarations.  
+  #     #  For now, assume that any modsCollections have already been broken up and fed in as individual mods documents
+  #     # root :mods_collection, :path=>"modsCollection", 
+  #     #           :attributes=>[],
+  #     #           :subelements => :mods
+  #     
+  #     set_terminology do |t|
+  #       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
+  # 
+  #       t.title_info(:path=>"titleInfo") {
+  #         t.main_title(:path=>"title", :label=>"title")
+  #         t.language(:path=>{:attribute=>"lang"})
+  #       }                 
+  #       # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
+  #       t.name_ {
+  #         # this is a namepart
+  #         t.namePart(:index_as=>[:searchable, :displayable, :facetable, :sortable], :required=>:true, :type=>:string, :label=>"generic name")
+  #         # affiliations are great
+  #         t.affiliation
+  #         t.display_form(:path=>"displayForm")
+  #         t.role(:ref=>[:role])
+  #         t.description
+  #         t.date(:path=>"namePart", :attributes=>{:type=>"date"})
+  #         t.last_name(:path=>"namePart", :attributes=>{:type=>"family"})
+  #         t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+  #         t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+  #       }
+  #       # find_by_terms_and_value :person, :first_name        
+  #       t.person(:ref=>:name, :attributes=>{:type=>"personal"})
+  # 
+  #       t.role {
+  #         t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
+  #         t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
+  #       }
+  #       t.journal(:path=>'relatedItem', :attributes=>{:type=>"host"}) {
+  #         t.title_info
+  #         t.origin_info(:path=>"originInfo")
+  #         t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
+  #         t.issue(:ref=>[:issue])
+  #       }
+  #       t.issue(:path=>"part") {
+  #         t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+  #         t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
+  #         t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
+  #         t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
+  #         # t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
+  #         # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
+  #         t.publication_date(:path=>"date")
+  #       }
+  #     end
+  #                 
+  #   end
+  #       
+  # end
   
   before(:each) do
-    @sample = TermValueOperatorsTest.from_xml( fixture( File.join("test_dummy_mods.xml") ) )
+    @sample = OM::Samples::ModsArticle.from_xml( fixture( File.join("test_dummy_mods.xml") ) )
+    @article = OM::Samples::ModsArticle.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
   end
   
-  after(:all) do
-    Object.send(:remove_const, :TermValueOperatorsTest)
-  end
+  # after(:all) do
+  #   Object.send(:remove_const, :TermValueOperatorsTest)
+  # end
   
   describe ".term_values" do
 
@@ -85,9 +86,6 @@ describe "OM::XML::TermValueOperators" do
   
   
   describe ".update_values" do
-    before(:each) do
-      @article = TermValueOperatorsTest.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
-    end
     it "should update the xml according to the find_by_terms_and_values in the given hash" do
       terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}, [{:person=>1}, :last_name]=>"Andronicus", [{"person"=>"1"},:first_name]=>["Titus"],[{:person=>1},:role]=>["otherrole1","otherrole2"] }
       result = @article.update_values(terms_update_hash)
@@ -114,7 +112,7 @@ describe "OM::XML::TermValueOperators" do
     end
     it "should call term_values_append if the corresponding node does not already exist or if the requested index is -1" do
       expected_args = {
-        :parent_select => TermValueOperatorsTest.terminology.xpath_with_indexes(*[{:person=>0}]) ,
+        :parent_select => OM::Samples::ModsArticle.terminology.xpath_with_indexes(*[{:person=>0}]) ,
         :child_index => 0,
         :template => [:person, :role],
         :values => "My New Role"
@@ -130,8 +128,8 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
-      TermValueOperatorsTest.terminology.expects(:xpath_with_indexes).with( *[{:person=>0}, :role]).times(7).returns("//oxns:name[@type=\"personal\"][1]/oxns:role")
-      TermValueOperatorsTest.terminology.stubs(:xpath_with_indexes).with( *[{:person=>0}]).returns("//oxns:name[@type=\"personal\"][1]")
+      OM::Samples::ModsArticle.terminology.expects(:xpath_with_indexes).with( *[{:person=>0}, :role]).times(7).returns("//oxns:name[@type=\"personal\"][1]/oxns:role")
+      OM::Samples::ModsArticle.terminology.stubs(:xpath_with_indexes).with( *[{:person=>0}]).returns("//oxns:name[@type=\"personal\"][1]")
       @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
       @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" } )
       @article.update_values( { [{:person=>0}, :role]=>"the role" } )
@@ -208,11 +206,11 @@ describe "OM::XML::TermValueOperators" do
     end
     
     it "should append values to the end of the array if the specified index is higher than the length of the values array" do
-      att = {[:journal, :issue, :end_page]=>{"3"=>'108'}}
-      @article.term_values(:journal, :issue, :end_page).should == []
+      att = {[:journal, :issue, :pages, :end]=>{"3"=>'108'}}
+      @article.term_values(:journal, :issue, :pages, :end).should == []
       result = @article.update_values(att)
-      result.should == {"journal_issue_end_page"=>{"0"=>"108"}}
-      @article.term_values(:journal, :issue, :end_page).should == ["108"]
+      result.should == {"journal_issue_pages_end"=>{"0"=>"108"}}
+      @article.term_values(:journal, :issue, :pages, :end).should == ["108"]
     end
     
     it "should allow deleting of values and should delete values so that to_xml does not return emtpy nodes" do
@@ -310,9 +308,6 @@ describe "OM::XML::TermValueOperators" do
   end
   
   describe ".term_value_update" do
-    before(:each) do
-      @article = TermValueOperatorsTest.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
-    end
     
     it "should accept an xpath as :parent_select" do
 	    sample_xpath = '//oxns:name[@type="personal"][4]/oxns:role/oxns:roleTerm[@type="text"]'
