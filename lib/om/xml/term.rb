@@ -1,5 +1,7 @@
 class OM::XML::Term
   
+  # Term::Builder Class Definition
+  
   class Builder
     attr_accessor :name, :settings, :children, :terminology_builder
     
@@ -110,8 +112,13 @@ class OM::XML::Term
     end
   end
   
+  # Term Class Definition
+  
   attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix, :is_root_term
-  attr_accessor :children, :ancestors, :internal_xml, :terminology
+  attr_accessor :children, :internal_xml, :terminology
+  
+  include OM::TreeNode
+  
   def initialize(name, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
@@ -148,7 +155,7 @@ class OM::XML::Term
   
   # crawl down into mapper's children hash to find the desired mapper
   # ie. @test_mapper.retrieve_mapper(:conference, :role, :text)
-  def retrieve_mapper(*pointers)
+  def retrieve_term(*pointers)
     children_hash = self.children
     pointers.each do |p|
       if children_hash.has_key?(p)
@@ -163,26 +170,6 @@ class OM::XML::Term
       end
     end
     return target
-  end
-  
-  #  insert the mapper into the given parent
-  def set_parent(parent_mapper)
-    parent_mapper.children[@name] = self
-    @ancestors << parent_mapper
-  end
-  
-  #  insert the given mapper into the current mappers children
-  def add_child(child_mapper)
-    child_mapper.ancestors << self
-    @children[child_mapper.name.to_sym] = child_mapper    
-  end
-  
-  def retrieve_child(child_name)
-    child = @children.fetch(child_name, nil)
-  end
-  
-  def parent
-    ancestors.last
   end
   
   def is_root_term?

@@ -66,15 +66,15 @@ describe "OM::XML::Term" do
     it "should default to the mapper name with underscores converted to spaces"
   end
   
-  describe ".retrieve_mapper" do
-    it "should crawl down into mapper children to find the desired mapper" do
+  describe ".retrieve_term" do
+    it "should crawl down into mapper children to find the desired term" do
       mock_role = mock("mapper", :children =>{:text=>"the target"})
       mock_conference = mock("mapper", :children =>{:role=>mock_role})   
       @test_name_part.expects(:children).returns({:conference=>mock_conference})   
-      @test_name_part.retrieve_mapper(:conference, :role, :text).should == "the target"
+      @test_name_part.retrieve_term(:conference, :role, :text).should == "the target"
     end
-    it "should return an empty hash if no mapper can be found" do
-      @test_name_part.retrieve_mapper(:journal, :issue, :end_page).should == nil
+    it "should return an empty hash if no term can be found" do
+      @test_name_part.retrieve_term(:journal, :issue, :end_page).should == nil
     end
   end
   
