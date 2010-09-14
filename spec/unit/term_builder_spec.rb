@@ -100,8 +100,8 @@ describe "OM::XML::Term::Builder" do
       result.xpath_constrained.should == OM::XML::TermXpathGenerator.generate_constrained_xpath(result)
       result.xpath_relative.should == OM::XML::TermXpathGenerator.generate_relative_xpath(result)
     end
-    it "should create proxy terms if :proxy_relative is set" do
-      test_builder = OM::XML::Term::Builder.new("my_proxy").proxy_relative([:foo, :bar])
+    it "should create proxy terms if :proxy is set" do
+      test_builder = OM::XML::Term::Builder.new("my_proxy").proxy([:foo, :bar])
       result = test_builder.build
       result.should be_kind_of OM::XML::NamedTermProxy
     end

@@ -56,8 +56,8 @@ describe "OM::XML::Terminology::Builder" do
           # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
           t.publication_date(:path=>"date")
           # t.my_absolute_proxy(:proxy_absolute=>[:name, :role]) # this should always point to [:name, :role]
-          t.start_page(:proxy_relative=>[:pages, :start])
-          t.start_page(:proxy_relative=>[:pages, :end])
+          t.start_page(:proxy=>[:pages, :start])
+          t.start_page(:proxy=>[:pages, :end])
         }
       end
 

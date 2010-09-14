@@ -89,8 +89,8 @@ class OM::XML::Term
     # Recursively builds any children, appending the results as children of the Term that's being built.
     def build
       self.resolve_refs!
-      if term.self.settings.has_key?(:proxy_relative)
-        term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy_relative])
+      if term.self.settings.has_key?(:proxy)
+        term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy])
       else
         term = OM::XML::Term.new(self.name)
       

@@ -10,7 +10,7 @@ describe "OM::XML::NamedTermProxy" do
         t.foo {
           t.bar
         }
-        t.my_proxy(:proxy_relative=>[:foo, :bar])
+        t.my_proxy(:proxy=>[:foo, :bar])
       }
       t.adoptive_parent(:ref=>[:parent], :attributes=>{:type=>"adoptive"})
     end
