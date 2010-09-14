@@ -3,75 +3,10 @@ require "om"
 
 describe "OM::XML::TermValueOperators" do
   
-  # before(:all) do
-  #   #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
-  #   class TermValueOperatorsTest 
-  #     
-  #     include OM::XML::Document    
-  #     
-  #     # Could add support for multiple root declarations.  
-  #     #  For now, assume that any modsCollections have already been broken up and fed in as individual mods documents
-  #     # root :mods_collection, :path=>"modsCollection", 
-  #     #           :attributes=>[],
-  #     #           :subelements => :mods
-  #     
-  #     set_terminology do |t|
-  #       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
-  # 
-  #       t.title_info(:path=>"titleInfo") {
-  #         t.main_title(:path=>"title", :label=>"title")
-  #         t.language(:path=>{:attribute=>"lang"})
-  #       }                 
-  #       # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
-  #       t.name_ {
-  #         # this is a namepart
-  #         t.namePart(:index_as=>[:searchable, :displayable, :facetable, :sortable], :required=>:true, :type=>:string, :label=>"generic name")
-  #         # affiliations are great
-  #         t.affiliation
-  #         t.display_form(:path=>"displayForm")
-  #         t.role(:ref=>[:role])
-  #         t.description
-  #         t.date(:path=>"namePart", :attributes=>{:type=>"date"})
-  #         t.last_name(:path=>"namePart", :attributes=>{:type=>"family"})
-  #         t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
-  #         t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
-  #       }
-  #       # find_by_terms_and_value :person, :first_name        
-  #       t.person(:ref=>:name, :attributes=>{:type=>"personal"})
-  # 
-  #       t.role {
-  #         t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
-  #         t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
-  #       }
-  #       t.journal(:path=>'relatedItem', :attributes=>{:type=>"host"}) {
-  #         t.title_info
-  #         t.origin_info(:path=>"originInfo")
-  #         t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-  #         t.issue(:ref=>[:issue])
-  #       }
-  #       t.issue(:path=>"part") {
-  #         t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
-  #         t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
-  #         t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
-  #         t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
-  #         # t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
-  #         # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
-  #         t.publication_date(:path=>"date")
-  #       }
-  #     end
-  #                 
-  #   end
-  #       
-  # end
-  
   before(:each) do
     @sample = OM::Samples::ModsArticle.from_xml( fixture( File.join("test_dummy_mods.xml") ) )
     @article = OM::Samples::ModsArticle.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
   end
-  
-  # after(:all) do
-  #   Object.send(:remove_const, :TermValueOperatorsTest)
-  # end
   
   describe ".term_values" do
 
@@ -122,6 +57,13 @@ describe "OM::XML::TermValueOperators" do
       @article.update_values( {[{:person=>0}, :role] => {"-1"=>"My New Role"}} )
     end
     
+    it "should support updating attribute values" do
+      pointer = [:title_info, :language]
+      test_val = "language value"
+      @article.update_values( {pointer=>{"0"=>test_val}} )
+      @article.term_values(*pointer).first.should == test_val
+    end
+    
     it "should not get tripped up on root nodes" do
       @article.update_values([:title_info]=>{"0"=>"york", "1"=>"mangle","2"=>"mork"})
       @article.term_values(*[:title_info]).should == ["york", "mangle", "mork"]
@@ -163,16 +105,6 @@ describe "OM::XML::TermValueOperators" do
       @article.to_xml.should == xml_before
     end
     
-    ### Examples copied over form metadata_datastream_spec
-    
-    # it "should support single-value arguments (as opposed to a hash of values with array indexes as keys)" do
-    #   # In other words, { "fubar"=>"dork" } should have the same effect as { "fubar"=>{"0"=>"dork"} }
-    #   pending "this should be working, but for some reason, the updates don't stick"
-    #   result = @test_ds.update_values( { "fubar"=>"dork" } )
-    #   result.should == {"fubar"=>{"0"=>"dork"}}
-    #   @test_ds.fubar_values.should == ["dork"]
-    # end
-    # 
     it "should work for text fields" do 
       att= {[{"person"=>"0"},"description"]=>{"-1"=>"mork", "1"=>"york"}}
       result = @article.update_values(att)
@@ -257,6 +189,19 @@ describe "OM::XML::TermValueOperators" do
       ).to_xml.should == expected_result
       
       @sample.find_by_terms(:person, {:first_name=>"Tim", :last_name=>"Berners-Lee"}).first.to_xml.should == expected_result
+    end
+    
+    it "should support adding attribute values" do
+      pending 
+      pointer = [:title_info, :language]
+      test_val = "language value"
+      @article.term_values_append( 
+        :parent_select => :title_info,
+        :child_index => :first,
+        :template => [:title_info, :language],
+        :values => test_val
+      )
+      @article.term_values(*pointer).first.should == test_val
     end
     
     it "should accept symbols as arguments for generators/find_by_terms_and_values" do

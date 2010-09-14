@@ -191,7 +191,7 @@ class OM::XML::Terminology
     if term_pointers.length > 1 && !term_pointers.last.kind_of?(Symbol)
       extra_opts = term_pointers.pop
     end
-
+    
     term = retrieve_term(*term_pointers)
     return term.xml_builder_template(extra_opts)
   end

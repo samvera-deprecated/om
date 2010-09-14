@@ -95,7 +95,6 @@ module OM::XML::TermValueOperators
         template_opts = template_args.delete_at(template_args.length - 1)
         template_args << template_opts
       end
-      
       template = self.class.terminology.xml_builder_template( *template_args )
     end    
     
