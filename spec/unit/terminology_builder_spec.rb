@@ -41,16 +41,23 @@ describe "OM::XML::Terminology::Builder" do
           t.title_info
           t.origin_info(:path=>"originInfo")
           t.issn(:path=>"identifier", :attributes=>{:type=>"issn"})
-          t.issue!
+          t.issue(:ref=>[:issue])
         }
         t.issue(:path=>"part") {
           t.volume(:path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
           t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
-          t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
-          t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
+          t.pages(:path=>"extent", :attributes=>{:unit=>"pages"}) {
+            t.start
+            t.end
+          }
+          # t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
+          # t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
           # t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
           # t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
           t.publication_date(:path=>"date")
+          # t.my_absolute_proxy(:proxy_absolute=>[:name, :role]) # this should always point to [:name, :role]
+          t.start_page(:proxy_relative=>[:pages, :start])
+          t.start_page(:proxy_relative=>[:pages, :end])
         }
       end
 

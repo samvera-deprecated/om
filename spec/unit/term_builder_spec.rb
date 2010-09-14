@@ -9,7 +9,7 @@ describe "OM::XML::Term::Builder" do
         t.citrus(:attributes=>{"citric_acid"=>"true"}, :index_as=>[:facetable]) {
           t.randomness
         }
-        t.stone_fruit(:path=>"prunus", :attributes=>{:genus=>"Prunus"})
+        t.stone_fruit(:path=>"prunus", :attributes=>{:genus=>"Prunus"}) 
         t.peach(:ref=>[:fruit_trees, :stone_fruit], :attributes=>{:subgenus=>"Amygdalus", :species=>"Prunus persica"})
         t.nectarine(:ref=>[:fruit_trees, :peach], :attributes=>{:cultivar=>"nectarine"})
         t.almond(:ref=>[:fruit_trees, :peach], :attributes=>{:species=>"Prunus dulcis"})
@@ -99,6 +99,11 @@ describe "OM::XML::Term::Builder" do
       result.xpath.should == OM::XML::TermXpathGenerator.generate_absolute_xpath(result)
       result.xpath_constrained.should == OM::XML::TermXpathGenerator.generate_constrained_xpath(result)
       result.xpath_relative.should == OM::XML::TermXpathGenerator.generate_relative_xpath(result)
+    end
+    it "should create proxy terms if :proxy_relative is set" do
+      test_builder = OM::XML::Term::Builder.new("my_proxy").proxy_relative([:foo, :bar])
+      result = test_builder.build
+      result.should be_kind_of OM::XML::NamedTermProxy
     end
     it "should set path to match name if it is empty" do
       @test_builder.settings[:path].should be_nil
