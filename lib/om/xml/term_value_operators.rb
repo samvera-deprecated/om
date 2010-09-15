@@ -62,6 +62,13 @@ module OM::XML::TermValueOperators
         end
       end 
       
+      # Fill out the pointer completely if the final term is a NamedTermProxy
+      term = self.class.terminology.retrieve_term( *OM.pointers_to_flat_array(pointer,false) )
+      if term.kind_of? OM::XML::NamedTermProxy
+        pointer.pop
+        pointer = pointer.concat(term.proxy_pointer)
+      end
+      
       xpath = self.class.terminology.xpath_with_indexes(*pointer)
       parent_pointer = pointer.dup
       parent_pointer.pop

@@ -133,7 +133,8 @@ module OM::XML::TermXpathGenerator
       # Return nil if there is no term to work with
       if term.nil? then return nil end
       
-      # If we've encountered a NamedTermProxy, insert path sections corresponding to its entire proxy_pointer
+      # If we've encountered a NamedTermProxy, insert path sections corresponding to 
+      # terms corresponding to each entry in its proxy_pointer rather than just the final term that it points to.
       if term.kind_of? OM::XML::NamedTermProxy
         current_location = term.parent
         relative_path = ""
