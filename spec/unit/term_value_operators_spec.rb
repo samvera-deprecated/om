@@ -77,6 +77,13 @@ describe "OM::XML::TermValueOperators" do
       @article.update_values( { [{:person=>0}, :role]=>"the role" } )
     end
     
+    it "should traverse named term proxies transparently" do
+      @article.term_values( :journal, :issue, :start_page).should_not == ["108"]      
+      @article.update_values( { ["journal", "issue", "start_page"]=>"108" } )
+      @article.term_values( :journal, :issue, :start_page).should == ["108"]      
+      @article.term_values( :journal, :issue, :pages, :start).should == ["108"]
+    end
+    
     ### Examples copied over form nokogiri_datastream_spec
     
     it "should apply submitted hash to corresponding datastream field values" do

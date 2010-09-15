@@ -50,6 +50,8 @@ class OM::Samples::ModsArticle
             t.end
           }
           t.publication_date(:path=>"date")
+          t.start_page(:proxy=>[:pages, :start])
+          t.end_page(:proxy=>[:pages, :end])
         }
       }
       

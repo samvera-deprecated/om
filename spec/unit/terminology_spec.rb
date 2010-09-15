@@ -56,9 +56,13 @@ describe "OM::XML::Terminology" do
         t.level(:path=>"detail", :attributes=>{:type=>"number"}, :default_content_path=>"number")
         # t.start_page(:path=>"pages", :attributes=>{:type=>"start"})
         # t.end_page(:path=>"pages", :attributes=>{:type=>"end"})
-        t.start_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "start")
-        t.end_page(:path=>"extent", :attributes=>{:unit=>"pages"}, :default_content_path => "end")
         t.publication_date(:path=>"date")
+        t.pages(:path=>"extent", :attributes=>{:unit=>"pages"}) {
+          t.start
+          t.end
+        }
+        t.start_page(:proxy=>[:pages, :start])
+        t.end_page(:proxy=>[:pages, :end])
       }
     end
 
@@ -237,6 +241,12 @@ describe "OM::XML::Terminology" do
     it "should parrot any strings back to you (in case you already have an xpath query)" do
       @test_full_terminology.xpath_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
     end
+    
+    it "should traverse named term proxies transparently" do
+      proxied_xpath = @test_full_terminology.xpath_for(:journal, :issue, :pages, :start)
+      @test_full_terminology.xpath_for( :journal, :issue, :start_page ).should == proxied_xpath
+    end
+    
   end
   
   describe ".xpath_with_indexes" do
@@ -254,6 +264,10 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
       @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
       @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+    end
+    it "should traverse named term proxies transparently" do
+      proxied_xpath = @test_full_terminology.xpath_with_indexes(:journal, :issue, :pages, :start)
+      @test_full_terminology.xpath_with_indexes( :journal, :issue, :start_page ).should == proxied_xpath
     end
   end
   
@@ -273,7 +287,7 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xml_builder_template(:issue, :volume).should == "xml.detail( :type=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
       @test_full_terminology.xml_builder_template(:journal, :issue, :level).should == "xml.detail( :type=>'number' ) { xml.number( '\#{builder_new_value}' ) }"
       @test_full_terminology.xml_builder_template(:journal, :issue, :volume).should == "xml.detail( :type=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
-      @test_full_terminology.xml_builder_template(:journal, :issue, :start_page).should == "xml.extent( :unit=>'pages' ) { xml.start( '\#{builder_new_value}' ) }"
+      @test_full_terminology.xml_builder_template(:journal, :issue, :pages, :start).should == "xml.start( '\#{builder_new_value}' )"
     end
     
   end

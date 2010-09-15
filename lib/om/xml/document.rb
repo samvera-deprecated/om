@@ -51,7 +51,7 @@ module OM::XML::Document
   # example: [:person, 1, :first_name]
   # Currently, indexes must be integers.
   def find_by_terms(*term_pointer)
-    xpath = self.class.terminology.xpath_with_indexes(*term_pointer)    
+    xpath = self.class.terminology.xpath_with_indexes(*term_pointer)   
     if xpath.nil?
       return nil
     else

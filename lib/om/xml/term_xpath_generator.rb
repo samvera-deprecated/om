@@ -117,7 +117,7 @@ module OM::XML::TermXpathGenerator
     xpath = "//"
 
     pointers = OM.destringify(pointers)
-    pointers.each do |pointer|
+    pointers.each_with_index do |pointer, pointer_index|
       
       if pointer.kind_of?(Hash)
         k = pointer.keys.first
@@ -129,16 +129,29 @@ module OM::XML::TermXpathGenerator
       
       keys << k
       
-      pointer_index = pointers.index(pointer)
       term = terminology.retrieve_term(*keys)  
-      
       # Return nil if there is no term to work with
       if term.nil? then return nil end
-              
-      relative_path = term.xpath_relative
       
-      unless index.nil?
-        relative_path = add_node_index_predicate(relative_path, index)
+      # If we've encountered a NamedTermProxy, insert path sections corresponding to its entire proxy_pointer
+      if term.kind_of? OM::XML::NamedTermProxy
+        current_location = term.parent
+        relative_path = ""
+        term.proxy_pointer.each_with_index do |proxy_pointer, proxy_pointer_index|
+          proxy_term = current_location.retrieve_term(proxy_pointer)
+          proxy_relative_path = proxy_term.xpath_relative
+          if proxy_pointer_index > 0
+            proxy_relative_path = "/"+proxy_relative_path
+          end
+          relative_path << proxy_relative_path
+          current_location = proxy_term
+        end
+      else  
+        relative_path = term.xpath_relative
+      
+        unless index.nil?
+          relative_path = add_node_index_predicate(relative_path, index)
+        end
       end
       
       if pointer_index > 0
