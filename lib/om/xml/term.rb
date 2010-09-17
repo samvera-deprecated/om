@@ -35,7 +35,7 @@ class OM::XML::Term
         end
         
         # Fail on circular references and return an intelligible error message
-        if nodes_visited.contains?(target)
+        if nodes_visited.include?(target)
           nodes_visited << self
           nodes_visited << target
           trail = ""
