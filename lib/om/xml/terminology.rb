@@ -3,6 +3,11 @@ class OM::XML::Terminology
   class BadPointerError < StandardError; end
   class CircularReferenceError < StandardError; end
   
+  # Terminology::Builder Class Definition
+  #
+  # When coding against Builders, remember that they rely on MethodMissing, 
+  # so any time you call a method on the Builder that it doesn't explicitly recognize, 
+  # the Builder will add your method & arguments to the it's settings and return itself.
   class Builder
     
     attr_accessor :schema, :namespaces
