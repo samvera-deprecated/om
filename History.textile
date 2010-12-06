@@ -1,3 +1,11 @@
+1.0.1
+
+HYDRA-329: Allow for NamedTermProxies at root of Terminology
+
+1.0.0
+
+Stable release 
+
 0.1.10
 
 Improving generation of constrained xpath queries
