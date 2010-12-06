@@ -87,10 +87,11 @@ class OM::XML::Term
     # Builds a new OM::XML::Term based on the Builder object's current settings
     # If no path has been provided, uses the Builder object's name as the term's path
     # Recursively builds any children, appending the results as children of the Term that's being built.
-    def build
+    # @param [OM::XML::Terminology] terminology that this Term is being built for
+    def build(terminology=nil)
       self.resolve_refs!
       if term.self.settings.has_key?(:proxy)
-        term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy])
+        term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy], terminology, self.settings)
       else
         term = OM::XML::Term.new(self.name)
       
@@ -100,7 +101,7 @@ class OM::XML::Term
           end
         end
         @children.each_value do |child|
-          term.add_child child.build
+          term.add_child child.build(terminology)
         end
         term.generate_xpath_queries!
       end

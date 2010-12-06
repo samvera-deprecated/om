@@ -90,7 +90,7 @@ class OM::XML::Terminology
         root_term_builder.children.delete(root_term_builder.name)
       end 
       @term_builders.each_value do |root_builder|
-        terminology.add_term root_builder.build
+        terminology.add_term root_builder.build(terminology)
       end
       terminology
     end
@@ -140,6 +140,7 @@ class OM::XML::Terminology
   
   # Return the appropriate xpath query for retrieving nodes corresponding to the term identified by +pointers+.
   # If the last argument is a String or a Hash, it will be used to add +constraints+ to the resulting xpath query.
+  # If you provide an xpath query as the argument, it will be returne untouched.
   def xpath_for(*pointers)
     if pointers.length == 1 && pointers.first.instance_of?(String)
       xpath_query = pointers.first

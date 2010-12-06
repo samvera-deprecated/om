@@ -65,6 +65,21 @@ describe "OM::XML::Terminology::Builder" do
       
     end
     
+    it "supports proxy terms at the root of the Terminology" do 
+      t_builder = OM::XML::Terminology::Builder.new do |t| 
+        t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd") 
+        t.title_info(:path=>"titleInfo") { 
+          t.main_title(:path=>"title", :label=>"title") 
+          t.language(:path=>{:attribute=>"lang"}) 
+        } 
+        t.title(:proxy=>[:title_info, :main_title]) 
+      end 
+
+      terminology = t_builder.build 
+      terminology.retrieve_term(:title).should be_kind_of OM::XML::NamedTermProxy
+      terminology.xpath_for(:title).should == '//oxns:titleInfo/oxns:title'
+    end
+    
     describe '#new' do
       it "should return an instance of OM::XML::Terminology::Builder" do
         OM::XML::Terminology::Builder.new.should be_instance_of OM::XML::Terminology::Builder
