@@ -136,7 +136,7 @@ module OM::XML::TermXpathGenerator
       # If we've encountered a NamedTermProxy, insert path sections corresponding to 
       # terms corresponding to each entry in its proxy_pointer rather than just the final term that it points to.
       if term.kind_of? OM::XML::NamedTermProxy
-        current_location = term.parent
+        current_location = term.parent.nil? ? term.terminology : term.parent
         relative_path = ""
         term.proxy_pointer.each_with_index do |proxy_pointer, proxy_pointer_index|
           proxy_term = current_location.retrieve_term(proxy_pointer)
