@@ -112,17 +112,46 @@ module OM::XML::TermValueOperators
       raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
     end
     
+    insert_from_template(parent_node, new_values, template)
+    
+    # builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
+    #   new_values.each do |builder_new_value|
+    #     builder_arg = eval('"'+ template + '"') # this inserts builder_new_value into the builder template
+    #     eval(builder_arg)
+    #   end
+    # end
+        
+    # Nokogiri::XML::Node.new(builder.to_xml, foo)
+    
+    return parent_node
+    
+  end
+  
+  # Insert xml containing +new_values+ into +parent_node+.  Generate the xml based on +template+ 
+  # @param [Nokogiri::XML::Node] parent_node to insert new xml into
+  # @param [Array] new_values to build the xml around
+  # @param [String -- (like what you would pass into Nokogiri::XML::Builder.new)] template for building the new xml.  Use the syntax that Nokogiri::XML::Builder uses.
+  def insert_from_template(parent_node, new_values, template)
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|
         builder_arg = eval('"'+ template + '"') # this inserts builder_new_value into the builder template
         eval(builder_arg)
       end
     end
-        
-    # Nokogiri::XML::Node.new(builder.to_xml, foo)
-    
-    return parent_node
-    
+  end
+  
+  # Creates necesary ancestor nodes to support inserting a new term value where the ancestor node(s) don't exist yet.
+  def build_ancestors(parent_select, parent_index)
+    parent_nodeset = find_by_terms(*parent_select)
+    starting_point = parent_nodeset
+    to_build = []
+    until !starting_point.empty?
+      to_build += parent_select.pop
+      starting_point = find_by_terms(*parent_select)
+    end
+    to_build.each do |term_pointer|
+      
+    end
   end
   
   def term_value_update(node_select,node_index,new_value,opts={})
