@@ -93,17 +93,7 @@ module OM::XML::TermValueOperators
     parent_select = Array( opts[:parent_select] )
     parent_index = opts[:parent_index]
     template = opts[:template]
-    new_values = Array( opts[:values] )
-  
-    # If template is a string, use it as the template, otherwise use it as arguments to xml_builder_template
-    unless template.instance_of?(String)
-      template_args = Array(template)
-      if template_args.last.kind_of?(Hash)
-        template_opts = template_args.delete_at(template_args.length - 1)
-        template_args << template_opts
-      end
-      template = self.class.terminology.xml_builder_template( *template_args )
-    end    
+    new_values = Array( opts[:values] )  
     
     parent_nodeset = find_by_terms(*parent_select)
     parent_node = node_from_set(parent_nodeset, parent_index)
@@ -114,15 +104,6 @@ module OM::XML::TermValueOperators
     
     insert_from_template(parent_node, new_values, template)
     
-    # builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
-    #   new_values.each do |builder_new_value|
-    #     builder_arg = eval('"'+ template + '"') # this inserts builder_new_value into the builder template
-    #     eval(builder_arg)
-    #   end
-    # end
-        
-    # Nokogiri::XML::Node.new(builder.to_xml, foo)
-    
     return parent_node
     
   end
@@ -132,6 +113,16 @@ module OM::XML::TermValueOperators
   # @param [Array] new_values to build the xml around
   # @param [String -- (like what you would pass into Nokogiri::XML::Builder.new)] template for building the new xml.  Use the syntax that Nokogiri::XML::Builder uses.
   def insert_from_template(parent_node, new_values, template)
+    # If template is a string, use it as the template, otherwise use it as arguments to xml_builder_template
+    unless template.instance_of?(String)
+      template_args = Array(template)
+      if template_args.last.kind_of?(Hash)
+        template_opts = template_args.delete_at(template_args.length - 1)
+        template_args << template_opts
+      end
+      template = self.class.terminology.xml_builder_template( *template_args )
+    end
+    
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|
         builder_arg = eval('"'+ template + '"') # this inserts builder_new_value into the builder template
@@ -150,7 +141,9 @@ module OM::XML::TermValueOperators
       starting_point = find_by_terms(*parent_select)
     end
     to_build.each do |term_pointer|
-      
+      template = 
+      new_values = ""
+      insert_from_template(starting_point, new_values, template)
     end
   end
   
