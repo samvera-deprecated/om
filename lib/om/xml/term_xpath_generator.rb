@@ -102,7 +102,10 @@ module OM::XML::TermXpathGenerator
     query_constraints = nil
     
     if pointers.length > 1 && pointers.last.kind_of?(Hash)
-      query_constraints = pointers.pop
+      constraints = pointers.pop
+      unless constraints.empty?
+        query_constraints = constraints
+      end 
     end
 
     if pointers.length == 1 && pointers.first.instance_of?(String)
