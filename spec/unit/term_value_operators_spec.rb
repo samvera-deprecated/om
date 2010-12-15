@@ -45,15 +45,16 @@ describe "OM::XML::TermValueOperators" do
       @article.expects(:term_value_update).with('//oxns:titleInfo/oxns:title', 0, "My New Title")
       @article.update_values( {[:title_info, :main_title] => "My New Title"} )
     end
+    
     it "should call term_values_append if the corresponding node does not already exist or if the requested index is -1" do
       expected_args = {
         :parent_select => OM::Samples::ModsArticle.terminology.xpath_with_indexes(*[{:person=>0}]) ,
-        :child_index => 0,
+        :parent_index => 0,
         :template => [:person, :role],
         :values => "My New Role"
       }
       @article.expects(:term_values_append).with(expected_args).times(2)
-      @article.update_values( {[{:person=>0}, :role] => {"4"=>"My New Role"}} )
+      @article.update_values( {[{:person=>0}, :role] => {"6"=>"My New Role"}} )
       @article.update_values( {[{:person=>0}, :role] => {"-1"=>"My New Role"}} )
     end
     
@@ -168,10 +169,10 @@ describe "OM::XML::TermValueOperators" do
   
   describe ".term_values_append" do
 	
-  	it "looks up the parent using :parent_select, uses :child_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
+  	it "looks up the parent using :parent_select, uses :parent_index to choose the parent node from the result set, uses :template to build the node(s) to be inserted, inserts the :values(s) into the node(s) and adds the node(s) to the parent" do      
 	    @sample.term_values_append(
         :parent_select => [:person, {:first_name=>"Tim", :last_name=>"Berners-Lee"}] ,
-        :child_index => :first,
+        :parent_index => :first,
         :template => [:person, :affiliation],
         :values => ["my new value", "another new value"] 
       )
@@ -190,7 +191,7 @@ describe "OM::XML::TermValueOperators" do
       
 	    @sample.term_values_append(
         :parent_select => [:person, {:first_name=>"Tim", :last_name=>"Berners-Lee"}] ,
-        :child_index => :first,
+        :parent_index => :first,
         :template => [:person, :affiliation],
         :values => ["my new value", "another new value"] 
       ).to_xml.should == expected_result
@@ -204,7 +205,7 @@ describe "OM::XML::TermValueOperators" do
       test_val = "language value"
       @article.term_values_append( 
         :parent_select => :title_info,
-        :child_index => :first,
+        :parent_index => :first,
         :template => [:title_info, :language],
         :values => test_val
       )
@@ -215,7 +216,7 @@ describe "OM::XML::TermValueOperators" do
       # this appends a role of "my role" into the third "person" node in the document
       @sample.term_values_append(
         :parent_select => :person ,
-        :child_index => 3,
+        :parent_index => 3,
         :template => :role,
         :values => "my role" 
       ).to_xml.should #== expected_result
@@ -230,7 +231,7 @@ describe "OM::XML::TermValueOperators" do
       
       @sample.term_values_append(
         :parent_select =>'//oxns:name[@type="personal"]',
-        :child_index => 0,
+        :parent_index => 0,
         :template => 'xml.role { xml.roleTerm( \'#{builder_new_value}\', :type=>\'code\', :authority=>\'marcrelator\') }',
         :values => "founder" 
       )
@@ -246,7 +247,7 @@ describe "OM::XML::TermValueOperators" do
       @sample.ng_xml.xpath('//oxns:name[@type="personal"][2]/oxns:role[1]/oxns:roleTerm', @sample.ox_namespaces).length.should == 2
 	    @sample.term_values_append(
         :parent_select =>'//oxns:name[@type="personal"][2]/oxns:role',
-        :child_index => 0,
+        :parent_index => 0,
         :template => [ :person, :role, :text, {:attributes=>{"authority"=>"marcrelator"}} ],
         :values => "foo" 
       )
@@ -255,8 +256,21 @@ describe "OM::XML::TermValueOperators" do
       @sample.find_by_terms({:person=>1},:role)[0].search("./oxns:roleTerm[@type=\"text\" and @authority=\"marcrelator\"]", @sample.ox_namespaces).first.text.should == "foo"
 	  end
 	  
-	  it "should raise exception if no node corresponds to the provided :parent_select and :child_index"
-  	
+	  it "should raise exception if no node corresponds to the provided :parent_select and :parent_index"
+  	it "should create the necessary ancestor nodes when you insert a new term value" do
+  	  pending "working on this now"
+  	  @sample.find_by_terms(:person).length.should == 4
+  	  @sample.term_values_append(
+        :parent_select => :person ,
+        :parent_index => 8,
+        :template => :role,
+        :values => "my role" 
+      )
+      person_entries = @sample.find_by_terms(:person)
+      person_entries.length.should == 5
+      person_entries[4].search("./ns3:role[3]").first.text.should == "my role" 
+	  end
+	  
   end
   
   describe ".term_value_update" do
@@ -277,7 +291,7 @@ describe "OM::XML::TermValueOperators" do
       pending
       @sample.term_value_update(
         :parent_select =>'//oxns:name[@type="personal"]',
-        :child_index => 1,
+        :parent_index => 1,
         :template => [ :person, :role, {:attributes=>{"type"=>"code", "authority"=>"marcrelator"}} ],
         :value => "foo"
       )
@@ -318,7 +332,7 @@ describe "OM::XML::TermValueOperators" do
       # Check that the specific node we want to delete no longer exists
       @sample.find_by_terms_and_value(specific_xpath).length.should == 0
     end 
-    it "should accept :parent_select, :parent_index and :child_index options instead of a :select" do
+    it "should accept :parent_select, :parent_index and :parent_index options instead of a :select" do
             
       generic_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role/oxns:roleTerm'
       specific_xpath = '//oxns:name[@type="personal" and position()=4]/oxns:role[oxns:roleTerm="visionary"]'
@@ -340,7 +354,7 @@ describe "OM::XML::TermValueOperators" do
       # Check that the specific node we want to delete no longer exists
       @sample.find_by_terms_and_value(specific_xpath).length.should == 1
     end
-    it "should work if only :parent_select and :child_index are provided" do
+    it "should work if only :parent_select and :parent_index are provided" do
       generic_xpath = '//oxns:name[@type="personal"]/oxns:role'
       # specific_xpath = '//oxns:name[@type="personal"]/oxns:role'
       

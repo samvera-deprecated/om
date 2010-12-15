@@ -34,7 +34,7 @@ module OM::XML::TermValueOperators
     
     params.each_pair do |term_pointer,new_values|
       pointer = OM.destringify(term_pointer)
-      template = OM.pointers_to_flat_array(pointer,false)
+      template_pointer = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
       
       # Sanitize new_values to always be a hash with indexes
@@ -78,7 +78,7 @@ module OM::XML::TermValueOperators
       new_values.each do |y,z|   
         if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
           result[hn].delete(y)
-          term_values_append(:parent_select=>parent_xpath,:child_index=>0,:template=>template,:values=>z)
+          term_values_append(:parent_select=>parent_xpath,:parent_index=>0,:template=>template_pointer,:values=>z)
           new_array_index = find_by_terms(*pointer).length - 1
           result[hn][new_array_index.to_s] = z
         else
@@ -91,7 +91,7 @@ module OM::XML::TermValueOperators
   
   def term_values_append(opts={})
     parent_select = Array( opts[:parent_select] )
-    child_index = opts[:child_index]
+    parent_index = opts[:parent_index]
     template = opts[:template]
     new_values = Array( opts[:values] )
   
@@ -106,10 +106,10 @@ module OM::XML::TermValueOperators
     end    
     
     parent_nodeset = find_by_terms(*parent_select)
-    parent_node = node_from_set(parent_nodeset, child_index)
+    parent_node = node_from_set(parent_nodeset, parent_index)
     
     if parent_node.nil?
-      raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :child_index #{child_index.inspect}"
+      raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
     end
     
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
@@ -125,10 +125,10 @@ module OM::XML::TermValueOperators
     
   end
   
-  def term_value_update(node_select,child_index,new_value,opts={})
+  def term_value_update(node_select,node_index,new_value,opts={})
     # template = opts.fetch(:template,nil)
     
-    node = find_by_terms_and_value(*node_select)[child_index]
+    node = find_by_terms_and_value(*node_select)[node_index]
     if new_value == "" || new_value == :delete
       node.remove
     else
