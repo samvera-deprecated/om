@@ -258,7 +258,6 @@ describe "OM::XML::TermValueOperators" do
 	  
 	  it "should raise exception if no node corresponds to the provided :parent_select and :parent_index"
   	it "should create the necessary ancestor nodes when you insert a new term value" do
-  	  pending "working on this now"
   	  @sample.find_by_terms(:person).length.should == 4
   	  @sample.term_values_append(
         :parent_select => :person ,
@@ -268,7 +267,24 @@ describe "OM::XML::TermValueOperators" do
       )
       person_entries = @sample.find_by_terms(:person)
       person_entries.length.should == 5
-      person_entries[4].search("./ns3:role[3]").first.text.should == "my role" 
+      person_entries[4].search("./ns3:role").first.text.should == "my role" 
+	  end
+	  
+	  it "should create the necessary ancestor nodes for deep trees of ancestors" do
+  	  deep_pointer = [{:journal=>0}, {:issue=>3}, :pages, :start]
+  	  @article.find_by_terms({:journal=>0}).length.should == 1
+  	  @article.find_by_terms({:journal=>0}, :issue).length.should == 1
+  	  @article.term_values_append(
+        :parent_select => deep_pointer[0..deep_pointer.length-2] ,
+        :parent_index => 0,
+        :template => deep_pointer,
+        :values => "451" 
+      )
+      @article.find_by_terms({:journal=>0}, :issue).length.should == 2
+      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length.should == 1
+      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length.should == 1
+      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "451"
+      
 	  end
 	  
   end

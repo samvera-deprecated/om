@@ -99,9 +99,12 @@ module OM::XML::TermValueOperators
     parent_node = node_from_set(parent_nodeset, parent_index)
     
     if parent_node.nil?
-      raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
+      parent_node, parent_select = build_ancestors(parent_select, parent_index)
+      # parent_nodeset = find_by_terms(*parent_select)
+      # parent_node = node_from_set(parent_nodeset, :last)
+      # raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
     end
-    
+
     insert_from_template(parent_node, new_values, template)
     
     return parent_node
@@ -111,7 +114,8 @@ module OM::XML::TermValueOperators
   # Insert xml containing +new_values+ into +parent_node+.  Generate the xml based on +template+ 
   # @param [Nokogiri::XML::Node] parent_node to insert new xml into
   # @param [Array] new_values to build the xml around
-  # @param [String -- (like what you would pass into Nokogiri::XML::Builder.new)] template for building the new xml.  Use the syntax that Nokogiri::XML::Builder uses.
+  # @param [Array -- (OM term pointer array) OR String -- (like what you would pass into Nokogiri::XML::Builder.new)] template for building the new xml.  Use the syntax that Nokogiri::XML::Builder uses.
+  # @return [Nokogiri::XML::Node] the parent_node with new chldren inserted into it
   def insert_from_template(parent_node, new_values, template)
     # If template is a string, use it as the template, otherwise use it as arguments to xml_builder_template
     unless template.instance_of?(String)
@@ -120,6 +124,7 @@ module OM::XML::TermValueOperators
         template_opts = template_args.delete_at(template_args.length - 1)
         template_args << template_opts
       end
+      template_args = OM.pointers_to_flat_array(template_args,false)
       template = self.class.terminology.xml_builder_template( *template_args )
     end
     
@@ -129,22 +134,51 @@ module OM::XML::TermValueOperators
         eval(builder_arg)
       end
     end
+    return parent_node
   end
   
   # Creates necesary ancestor nodes to support inserting a new term value where the ancestor node(s) don't exist yet.
+  # Corrects node indexes in the pointer array to correspond to the ancestors that it creates.
+  # Returns a two-value array with the 'parent' node and a corrected pointer array
+  # @return [Nokogiri::XML::Node] the 'parent' (the final node in the ancestor tree)
+  # @return [Array] corrected pointer array for retrieving this parent
   def build_ancestors(parent_select, parent_index)
+    parent_select = Array(parent_select)
     parent_nodeset = find_by_terms(*parent_select)
-    starting_point = parent_nodeset
+    starting_point = node_from_set(parent_nodeset, parent_index)
+    if starting_point.nil? 
+      starting_point = [] 
+    end
     to_build = []
     until !starting_point.empty?
-      to_build += parent_select.pop
+      to_build = [parent_select.pop] + to_build
       starting_point = find_by_terms(*parent_select)
     end
-    to_build.each do |term_pointer|
-      template = 
-      new_values = ""
-      insert_from_template(starting_point, new_values, template)
+    to_build.each do |term_pointer|      
+      parent_select << term_pointer
+      
+      # If pointers in parent_select don't match with the indexes of built ancestors, correct the hash
+      if find_by_terms(*parent_select+[{}]).length == 0
+        if parent_select.last.kind_of?(Hash)
+          suspect_pointer = parent_select.pop
+          term_key = suspect_pointer.keys.first
+          corrected_term_index = find_by_terms(*parent_select+[{}]).length
+          parent_select << {term_key => corrected_term_index}
+        end
+      end
+      template_pointer = OM.pointers_to_flat_array(parent_select,false)
+      new_values = [""]
+      insert_from_template(starting_point.first, new_values, template_pointer)
+      starting_point = find_by_terms(*parent_select+[{}])
+      # If pointers in parent_select don't match with the indexes of built ancestors, correct the hash
+      if starting_point.empty?
+        raise StandardError "Oops.  Something went wrong adding #{term_pointer} to #{parent_select} while building ancestors"
+      end
     end
+    if parent_index > starting_point.length
+      parent_index = starting_point.length - 1
+    end
+    return node_from_set(starting_point, parent_index), parent_select
   end
   
   def term_value_update(node_select,node_index,new_value,opts={})
