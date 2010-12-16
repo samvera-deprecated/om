@@ -163,7 +163,11 @@ module OM::XML::TermValueOperators
         if parent_select.last.kind_of?(Hash)
           suspect_pointer = parent_select.pop
           term_key = suspect_pointer.keys.first
-          corrected_term_index = find_by_terms(*parent_select+[{}]).length
+          if parent_select.empty?
+            corrected_term_index = find_by_terms(term_key).length
+          else
+            corrected_term_index = find_by_terms(*parent_select+[{}]).length
+          end
           parent_select << {term_key => corrected_term_index}
         end
       end

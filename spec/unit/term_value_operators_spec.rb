@@ -87,12 +87,22 @@ describe "OM::XML::TermValueOperators" do
     end
     
     it "should create the necessary ancestor nodes when necessary" do
+  	  @sample.find_by_terms(:person).length.should == 4
+  	  @sample.update_values([{:person=>8}, :role, :text]=>"my role").should
+      person_entries = @sample.find_by_terms(:person)
+      person_entries.length.should == 5
+      person_entries[4].search("./ns3:role").first.text.should == "my role" 
+	  end
+	  
+    it "should create deep trees of ancestor nodes" do
       result = @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>{"0"=>"434"} })
       @article.find_by_terms({:journal=>0}, :issue).length.should == 2
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length.should == 1
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length.should == 1
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "434"
 	  end
+	  
+	  
     
     ### Examples copied over form nokogiri_datastream_spec
     
@@ -265,7 +275,6 @@ describe "OM::XML::TermValueOperators" do
       @sample.find_by_terms({:person=>1},:role)[0].search("./oxns:roleTerm[@type=\"text\" and @authority=\"marcrelator\"]", @sample.ox_namespaces).first.text.should == "foo"
 	  end
 	  
-	  it "should raise exception if no node corresponds to the provided :parent_select and :parent_index"
   	it "should create the necessary ancestor nodes when you insert a new term value" do
   	  @sample.find_by_terms(:person).length.should == 4
   	  @sample.term_values_append(
