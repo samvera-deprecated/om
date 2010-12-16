@@ -78,7 +78,8 @@ module OM::XML::TermValueOperators
       new_values.each do |y,z|   
         if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
           result[hn].delete(y)
-          term_values_append(:parent_select=>parent_xpath,:parent_index=>0,:template=>template_pointer,:values=>z)
+          term_values_append(:parent_select=>parent_pointer,:parent_index=>0,:template=>template_pointer,:values=>z)
+          # term_values_append(:parent_select=>parent_xpath,:parent_index=>0,:template=>template_pointer,:values=>z)
           new_array_index = find_by_terms(*pointer).length - 1
           result[hn][new_array_index.to_s] = z
         else

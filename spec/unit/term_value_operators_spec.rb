@@ -48,7 +48,8 @@ describe "OM::XML::TermValueOperators" do
     
     it "should call term_values_append if the corresponding node does not already exist or if the requested index is -1" do
       expected_args = {
-        :parent_select => OM::Samples::ModsArticle.terminology.xpath_with_indexes(*[{:person=>0}]) ,
+        # :parent_select => OM::Samples::ModsArticle.terminology.xpath_with_indexes(*[{:person=>0}]) ,
+        :parent_select => [{:person=>0}],
         :parent_index => 0,
         :template => [:person, :role],
         :values => "My New Role"
@@ -84,6 +85,14 @@ describe "OM::XML::TermValueOperators" do
       @article.term_values( :journal, :issue, :start_page).should == ["108"]      
       @article.term_values( :journal, :issue, :pages, :start).should == ["108"]
     end
+    
+    it "should create the necessary ancestor nodes when necessary" do
+      result = @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>{"0"=>"434"} })
+      @article.find_by_terms({:journal=>0}, :issue).length.should == 2
+      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length.should == 1
+      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length.should == 1
+      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "434"
+	  end
     
     ### Examples copied over form nokogiri_datastream_spec
     
