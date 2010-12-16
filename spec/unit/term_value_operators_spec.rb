@@ -88,7 +88,7 @@ describe "OM::XML::TermValueOperators" do
     
     it "should create the necessary ancestor nodes when necessary" do
   	  @sample.find_by_terms(:person).length.should == 4
-  	  @sample.update_values([{:person=>8}, :role, :text]=>"my role").should
+  	  @sample.update_values([{:person=>8}, :role, :text]=>"my role")
       person_entries = @sample.find_by_terms(:person)
       person_entries.length.should == 5
       person_entries[4].search("./ns3:role").first.text.should == "my role" 
