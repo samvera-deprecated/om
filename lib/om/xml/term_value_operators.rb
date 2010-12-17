@@ -7,7 +7,10 @@ module OM::XML::TermValueOperators
   # Retrieves all of the nodes from the current document that match +term_pointer+ and returns an array of their values
   def term_values(*term_pointer)
     result = []
-    find_by_terms(*term_pointer).each {|node| result << node.text }
+    xpath = self.class.terminology.xpath_with_indexes(*term_pointer)
+    #if value is on line by itself sometimes does not trim leading and trailing whitespace for a text node so will detect and fix it
+    trim_text = !xpath.nil? && !xpath.index("text()").nil?
+    find_by_terms(*term_pointer).each {|node| result << (trim_text ? node.text.strip : node.text) }
     # find_by_terms(*OM.destringify(term_pointer)).each {|node| result << node.text }
     return result
   end
@@ -128,6 +131,9 @@ module OM::XML::TermValueOperators
       template_args = OM.pointers_to_flat_array(template_args,false)
       template = self.class.terminology.xml_builder_template( *template_args )
     end
+
+    #if there is an xpath element pointing to text() need to change to just 'text' so it references the text method for the parent node
+    template.gsub!(/text\(\)/, 'text')
     
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|

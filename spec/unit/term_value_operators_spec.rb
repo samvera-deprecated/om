@@ -16,6 +16,10 @@ describe "OM::XML::TermValueOperators" do
       result.length.should == expected_values.length
       expected_values.each {|v| result.should include(v)}
     end
+
+    it "should ignore whitespace elements for a term pointing to a text() node for an element that contains children" do
+      @article.term_values(:name, :name_content).should == ["Describes a person"]
+    end
   
   end
   
@@ -72,7 +76,7 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
-      OM::Samples::ModsArticle.terminology.expects(:xpath_with_indexes).with( *[{:person=>0}, :role]).times(7).returns("//oxns:name[@type=\"personal\"][1]/oxns:role")
+      OM::Samples::ModsArticle.terminology.expects(:xpath_with_indexes).with( *[{:person=>0}, :role]).times(10).returns("//oxns:name[@type=\"personal\"][1]/oxns:role")
       OM::Samples::ModsArticle.terminology.stubs(:xpath_with_indexes).with( *[{:person=>0}]).returns("//oxns:name[@type=\"personal\"][1]")
       @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
       @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" } )
@@ -182,6 +186,13 @@ describe "OM::XML::TermValueOperators" do
       
       @article.update_values({[:journal, :title_info]=>{"0"=>:delete}})
       @article.term_values(:journal, :title_info).should == ['mork']
+    end
+
+    it "should retain other child nodes when updating a text content term and shoud not append an additional text node but update text in place" do
+      @article.term_values(:name,:name_content).should == ["Describes a person"]
+      @article.update_values({[:name, :name_content]=>"Test text"})
+      @article.term_values(:name,:name_content).should == ["Test text"]
+      @article.find_by_terms(:name).children.length().should == 26
     end
     
   end

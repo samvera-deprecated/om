@@ -11,6 +11,7 @@
     </titleInfo>
 
     <name type="personal">
+        Describes a person
         <namePart type="family">FAMILY NAME</namePart>
         <namePart type="given">GIVEN NAMES</namePart>
         <namePart type="termsOfAddress">DR.</namePart>

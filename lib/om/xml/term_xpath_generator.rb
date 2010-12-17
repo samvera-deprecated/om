@@ -17,10 +17,14 @@ module OM::XML::TermXpathGenerator
         raise "#{mapper.path} is an invalid path for an OM::XML::Term.  You should provide either a string or {:attributes=>XXX}"
       end
     else
-      unless mapper.namespace_prefix.nil?
-        template << complete_prefix
+      if mapper.path == "text()"
+        base_path = "#{mapper.path}[normalize-space(.)]"
+      else
+        unless mapper.namespace_prefix.nil?
+          template << complete_prefix
+        end
+        base_path = mapper.path
       end
-      base_path = mapper.path
     end
     template << base_path
     

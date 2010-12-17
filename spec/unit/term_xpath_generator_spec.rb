@@ -51,6 +51,12 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       @test_term.namespace_prefix = nil
       OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
     end
+
+    it "should not use a namespace for a path set to text() and should include normalize-space to ignore white space" do
+      text_term = OM::XML::Term.new(:title_content, :path=>"text()")
+      OM::XML::TermXpathGenerator.generate_relative_xpath(text_term).should == 'text()[normalize-space(.)]'
+    end
+
   end
   
   describe "generate_absolute_xpath" do
