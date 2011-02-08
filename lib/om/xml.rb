@@ -1,9 +1,5 @@
 require "om/xml/container"
-require "om/xml/accessors"
 require "om/xml/validation"
-require "om/xml/properties"
-require "om/xml/property_value_operators"
-require "om/xml/generator"
 
 require "om/xml/terminology"
 require "om/xml/term"
@@ -49,13 +45,8 @@ module OM::XML
   
   def self.included(klass)
     klass.extend(ClassMethods)
-  
     klass.send(:include, OM::XML::Container)
-    klass.send(:include, OM::XML::Accessors)
     klass.send(:include, OM::XML::Validation)
-    klass.send(:include, OM::XML::Properties)
-    klass.send(:include, OM::XML::PropertyValueOperators)
-    klass.send(:include, OM::XML::Generator)
   end
   
   

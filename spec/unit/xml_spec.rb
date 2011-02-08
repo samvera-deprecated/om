@@ -12,10 +12,7 @@ describe "OM::XML::Container" do
   
   it "should automatically include the other modules" do
     XMLTest.included_modules.should include(OM::XML::Container)
-    XMLTest.included_modules.should include(OM::XML::Accessors)
     XMLTest.included_modules.should include(OM::XML::Validation)
-    XMLTest.included_modules.should include(OM::XML::Properties)
-    XMLTest.included_modules.should include(OM::XML::PropertyValueOperators)
   end
   
   describe "#sanitize_pointer" do
