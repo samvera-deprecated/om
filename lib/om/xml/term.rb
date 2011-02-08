@@ -129,6 +129,9 @@ class OM::XML::Term
   
   include OM::TreeNode
   
+  # h2. Namespaces
+  # By default, OM assumes that all terms in a Terminology have the namespace set in the root of the document.  If you want to set a different namespace for a Term, pass :namespasce_prefix into its initializer (or call .namespace_prefix= on its builder)
+  # If a node has _no_ namespace, you must explicitly set namespace_prefix to nil.
   def initialize(name, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
