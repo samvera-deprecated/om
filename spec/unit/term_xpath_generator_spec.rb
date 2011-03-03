@@ -22,6 +22,8 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     @test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
     @test_role_text = OM::XML::Term.new(:role_text, :path=>"roleTerm", :attributes=>{:type=>"text"})
     @test_lang_attribute = OM::XML::Term.new(:language, :path=>{:attribute=>"lang"})
+    @test_none_attribute_value = OM::XML::Term.new(:person_id, :path=>"namePart", :attributes=>{:type=>:none})
+    
   end
   
   it "should support terms that are pointers to attribute values" do
@@ -51,10 +53,12 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       @test_term.namespace_prefix = nil
       OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
     end
-
     it "should not use a namespace for a path set to text() and should include normalize-space to ignore white space" do
       text_term = OM::XML::Term.new(:title_content, :path=>"text()")
       OM::XML::TermXpathGenerator.generate_relative_xpath(text_term).should == 'text()[normalize-space(.)]'
+    end
+    it "should set a 'not' predicate if the attribute value is :none" do
+       OM::XML::TermXpathGenerator.generate_relative_xpath(@test_none_attribute_value).should == 'oxns:namePart[not(@type)]'
     end
 
   end

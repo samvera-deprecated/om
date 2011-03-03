@@ -36,11 +36,12 @@ describe "OM::XML::Terminology" do
         t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
         t.given_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
         t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+        t.person_id(:path=>"namePart", :attributes=>{:type=>:none})
       }
       # lookup :person, :first_name        
       t.person(:ref=>:name, :attributes=>{:type=>"personal"})
       t.conference(:ref=>:name, :attributes=>{:type=>"conference"})
-
+      
       t.role {
         t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
         t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
@@ -78,6 +79,7 @@ describe "OM::XML::Terminology" do
       
       @test_full_terminology.retrieve_term(:person).xpath.should == '//oxns:name[@type="personal"]'
       @test_full_terminology.retrieve_term(:person).xpath_relative.should == 'oxns:name[@type="personal"]'
+      @test_full_terminology.retrieve_term(:person, :person_id).xpath_relative.should == 'oxns:namePart[not(@type)]'
     end
 
     it "constructs templates for value-driven searches" do
@@ -221,6 +223,9 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xpath_for(:person, :date).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
 
       @test_full_terminology.xpath_for(:person, :date, "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains(., "2010")]'
+      
+      @test_full_terminology.xpath_for(:person, :person_id).should == '//oxns:name[@type="personal"]/oxns:namePart[not(@type)]'
+      
     end
     
     it "should support including root terms in term pointer" do
