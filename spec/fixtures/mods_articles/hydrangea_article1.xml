@@ -15,6 +15,7 @@
         <namePart type="family">FAMILY NAME</namePart>
         <namePart type="given">GIVEN NAMES</namePart>
         <namePart type="termsOfAddress">DR.</namePart>
+        <namePart>PERSON_ID</namePart>
         <displayForm>NAME AS IT APPEARS</displayForm>
         <affiliation>FACULTY, UNIVERSITY</affiliation>    
         <role> 
@@ -29,6 +30,7 @@
         <namePart type="family">Gautama</namePart>
         <namePart type="given">Siddartha</namePart>
         <namePart type="termsOfAddress">Prince</namePart>
+        <namePart>123987</namePart>
         <affiliation>Nirvana</affiliation>    
         <role> 
             <roleTerm authority="marcrelator" type="text">teacher</roleTerm>
