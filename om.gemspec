@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{om}
-  s.version = "1.0.2"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Zumwalt"]
-  s.date = %q{2010-12-15}
+  s.date = %q{2011-03-05}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
   s.email = %q{matt.zumwalt@yourmediashelf.com}
   s.extra_rdoc_files = [
@@ -33,14 +33,10 @@ Gem::Specification.new do |s|
     "lib/om/samples/mods_article.rb",
     "lib/om/tree_node.rb",
     "lib/om/xml.rb",
-    "lib/om/xml/accessors.rb",
     "lib/om/xml/container.rb",
     "lib/om/xml/document.rb",
-    "lib/om/xml/generator.rb",
     "lib/om/xml/named_term_proxy.rb",
     "lib/om/xml/node_generator.rb",
-    "lib/om/xml/properties.rb",
-    "lib/om/xml/property_value_operators.rb",
     "lib/om/xml/term.rb",
     "lib/om/xml/term_value_operators.rb",
     "lib/om/xml/term_xpath_generator.rb",
@@ -56,15 +52,11 @@ Gem::Specification.new do |s|
     "spec/integration/rights_metadata_integration_example_spec.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb",
-    "spec/unit/accessors_spec.rb",
     "spec/unit/container_spec.rb",
     "spec/unit/document_spec.rb",
-    "spec/unit/generator_spec.rb",
     "spec/unit/named_term_proxy_spec.rb",
     "spec/unit/node_generator_spec.rb",
     "spec/unit/om_spec.rb",
-    "spec/unit/properties_spec.rb",
-    "spec/unit/property_value_operators_spec.rb",
     "spec/unit/term_builder_spec.rb",
     "spec/unit/term_spec.rb",
     "spec/unit/term_value_operators_spec.rb",
@@ -81,15 +73,11 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/integration/rights_metadata_integration_example_spec.rb",
     "spec/spec_helper.rb",
-    "spec/unit/accessors_spec.rb",
     "spec/unit/container_spec.rb",
     "spec/unit/document_spec.rb",
-    "spec/unit/generator_spec.rb",
     "spec/unit/named_term_proxy_spec.rb",
     "spec/unit/node_generator_spec.rb",
     "spec/unit/om_spec.rb",
-    "spec/unit/properties_spec.rb",
-    "spec/unit/property_value_operators_spec.rb",
     "spec/unit/term_builder_spec.rb",
     "spec/unit/term_spec.rb",
     "spec/unit/term_value_operators_spec.rb",
