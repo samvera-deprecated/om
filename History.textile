@@ -1,3 +1,17 @@
+1.1.0
+
+HYDRA-371: Provide a way to specify a term that points to nodes where an attribute is not set
+
+  Add support for this syntax in Terminologies, where an attribute value can be :none.  When an attribute's value is set to :none, a not() predicate is used in the resulting xpath 
+
+    t.computing_id(:path=>"namePart", :attributes=>{:type=>:none}) 
+    
+    will result in an xpath that looks like:
+    
+    //namePart[not(@type)] 
+
+namePart[not(@type)]
+
 1.0.1
 
 HYDRA-329: Allow for NamedTermProxies at root of Terminology
