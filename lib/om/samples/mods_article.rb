@@ -10,7 +10,10 @@ class OM::Samples::ModsArticle
         t.language(:path=>{:attribute=>"lang"})
       } 
       t.abstract     
-      t.topic_tag(:path=>"subject", :default_content_path=>"topic")           
+      t.subject{
+        t.topic
+      }
+      t.topic_tag(:ref=>[:subject, :topic])           
       # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
       t.name_ {
         # this is a namepart
