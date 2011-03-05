@@ -35,6 +35,7 @@ describe "OM::XML::Document" do
           t.last_name(:path=>"namePart", :attributes=>{:type=>"family"})
           t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
           t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+          t.person_id(:path=>"namePart", :attributes=>{:type=>:none})
         }
         # lookup :person, :first_name        
         t.person(:ref=>:name, :attributes=>{:type=>"personal"})
@@ -113,6 +114,9 @@ describe "OM::XML::Document" do
       @mods_article.find_by_terms( {:person=>1}, :first_name ).class.should == Nokogiri::XML::NodeSet
       @mods_article.find_by_terms( {:person=>1}, :first_name ).first.text.should == "Siddartha"
     end
+    it "should find a NodeSet where a terminology attribute has been set to :none" do
+      @mods_article.find_by_terms( {:person=>1}, :person_id).first.text.should == "123987"
+    end
     it "should support accessors whose relative_xpath is a lookup array instead of an xpath string" do
       # pending "this only impacts scenarios where we want to display & edit"
       DocumentTest.terminology.retrieve_term(:title_info, :language).path.should == {:attribute=>"lang"}
@@ -128,7 +132,7 @@ describe "OM::XML::Document" do
       pending "Can't decide if it's better to return nil or raise an error.  Choosing informative errors for now."
       @mods_article.find_by_terms( {:foo=>20}, :bar ).should == nil
     end
-
+    
     it "should support terms that point to attributes instead of nodes" do
       @mods_article.find_by_terms( {:title_info=>1}, :language ).first.text.should == "finnish"
     end

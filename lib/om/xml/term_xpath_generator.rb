@@ -40,7 +40,11 @@ module OM::XML::TermXpathGenerator
     
     unless term.attributes.nil?
       term.attributes.each_pair do |attr_name, attr_value|
-        predicates << "@#{attr_name}=\"#{attr_value}\""
+        if attr_value == :none
+          predicates << "not(@#{attr_name})"
+        else
+          predicates << "@#{attr_name}=\"#{attr_value}\""
+        end
       end
     end
     
