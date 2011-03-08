@@ -106,7 +106,12 @@ describe "OM::XML::TermValueOperators" do
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "434"
 	  end
 	  
-	  
+	  it "should accommodate appending term values with apostrophes in them"  do
+	    @article.find_by_terms(:person, :description).should be_empty  # making sure that there's no description node -- forces a value_append
+      terms_update_hash =  {[:person, :description]=>" 'phrul gyi lde mig"}
+      result = @article.update_values(terms_update_hash)
+      @article.term_values(:person, :description).should include(" 'phrul gyi lde mig")
+    end
     
     ### Examples copied over form nokogiri_datastream_spec
     

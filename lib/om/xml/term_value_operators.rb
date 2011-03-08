@@ -137,6 +137,7 @@ module OM::XML::TermValueOperators
     
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|
+        builder_new_value.gsub!(/'/, "\\\\'") # escape any apostrophes in the new value
         builder_arg = eval('"'+ template + '"') # this inserts builder_new_value into the builder template
         eval(builder_arg)
       end
