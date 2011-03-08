@@ -1,3 +1,7 @@
+1.0.1
+  
+  "HYDRA-395":https://jira.duraspace.org/browse/HYDRA-395: Fixed bug that prevented you from appending term values with apostrophes in them
+
 1.1.0
 
 HYDRA-371: Provide a way to specify a term that points to nodes where an attribute is not set
