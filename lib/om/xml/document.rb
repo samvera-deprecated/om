@@ -5,12 +5,17 @@ module OM::XML::Document
   
   module ClassMethods
     
-    attr_accessor :terminology
+    attr_accessor :terminology, :templates
   
     # Sets the OM::XML::Terminology for the Document
     # Expects +&block+ that will be passed into OM::XML::Terminology::Builder.new
     def set_terminology &block
       @terminology = OM::XML::Terminology::Builder.new( &block ).build
+    end
+    
+    def add_template name, &block
+      @templates ||= TemplateRegistry.new(Proc { self.ox_namespaces })
+      @templates.register name, &block
     end
     
     # Returns any namespaces defined by the Class' Terminology
@@ -57,6 +62,10 @@ module OM::XML::Document
     else
       return ng_xml.xpath(xpath, ox_namespaces) 
     end   
+  end
+  
+  def insert_registered_template(parent_node, template_name, *template_args)
+    self.class.templates.add_template(parent_node, template_name.to_sym, *template_args)
   end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
