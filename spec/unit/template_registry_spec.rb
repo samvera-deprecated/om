@@ -60,16 +60,37 @@ describe "OM::XML::TemplateRegistry" do
       EquivalentXml.equivalent?(node, expectation).should == true
     end
     
+    it "should raise an error when trying to instantiate an unknown node_type" do
+      lambda { RegistryTest.template_registry.instantiate(:demigod, 'Hercules') }.should raise_error(NameError)
+    end
+    
     it "should instantiate a detached node from a template using the template name as a method" do
       node = RegistryTest.template_registry.zombie('Zeke')
       expectation = Nokogiri::XML('<monster wants="braaaaainz">Zeke</monster>').root
       EquivalentXml.equivalent?(node, expectation).should == true
     end
     
+    it "should raise an exception if a missing method name doesn't match a node_type" do
+      lambda { RegistryTest.template_registry.demigod('Hercules') }.should raise_error(NameError)
+    end
+    
     it "should undefine existing templates" do
       RegistryTest.template_registry.node_types.should include(:zombie)
       RegistryTest.template_registry.undefine :zombie
       RegistryTest.template_registry.node_types.should_not include(:zombie)
+    end
+    
+    it "should complain if the template name isn't a symbol" do
+      lambda { RegistryTest.template_registry.define("die!") { |xml| xml.this_never_happened } }.should raise_error(TypeError)
+    end
+    
+    it "should report on whether a given template is defined" do
+      RegistryTest.template_registry.has_node_type?(:person).should == true
+      RegistryTest.template_registry.has_node_type?(:zombie).should == false
+    end
+    
+    it "should include defined node_types as method names for introspection" do
+      RegistryTest.template_registry.methods.should include('person')
     end
   end
   
