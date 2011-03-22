@@ -2,6 +2,8 @@ GEM
   remote: http://rubygems.org/
   specs:
     columnize (0.3.2)
+    equivalent-xml (0.1.6)
+      nokogiri
     facets (2.9.1)
     git (1.2.5)
     jeweler (1.5.2)
@@ -23,6 +25,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  equivalent-xml (>= 0.1.6)
   facets
   jeweler
   mocha (>= 0.9.8)

@@ -42,61 +42,56 @@ class OM::XML::TemplateRegistry
   # @param [Symbol] the node_type to instantiate
   # @param additional arguments to pass to the template
   def instantiate(node_type, *args)
-    create_detached_node(nil, node_type, *args)
+    result = create_detached_node(nil, node_type, *args)
+    # Strip namespaces from text and CDATA nodes. Stupid Nokogiri.
+    result.traverse { |node|
+      if node.is_a?(Nokogiri::XML::CharacterData)
+        node.namespace = nil
+      end
+    }
+    return result
   end
 
   # +instantiate+ a node and add it as a child of the [Nokogiri::XML::Node] specified by +target_node+
   # @return the new [Nokogiri::XML::Node]
   def add_child(target_node, node_type, *args)
-    if target_node.is_a?(Array) and target_node.length == 1
-      target_node = target_node.first
-    end
-    new_node = create_detached_node(target_node, node_type, *args)
-    target_node.add_child(new_node)
+    attach_node(:add_child, target_node, :self, node_type, *args)
   end
 
-  def attach_node(method, target_node, node_type, *args)
-    if target_node.is_a?(Nokogiri::XML::NodeSet) and target_node.length == 1
-      target_node = target_node.first
-    end
-    new_node = create_detached_node(target_node.parent, node_type, *args)
-    target_node.send(method, new_node)
-  end
-  
   # +instantiate+ a node and add it as a following sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return the new [Nokogiri::XML::Node]
   def add_next_sibling(target_node, node_type, *args)
-    attach_node(:add_next_sibling, target_node, node_type, *args)
+    attach_node(:add_next_sibling, target_node, :parent, node_type, *args)
   end
 
   # +instantiate+ a node and add it as a preceding sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return the new [Nokogiri::XML::Node]
   def add_previous_sibling(target_node, node_type, *args)
-    attach_node(:add_previous_sibling, target_node, node_type, *args)
+    attach_node(:add_previous_sibling, target_node, :parent, node_type, *args)
   end
 
   # +instantiate+ a node and add it as a following sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return +target_node+
   def after(target_node, node_type, *args)
-    attach_node(:after, target_node, node_type, *args)
+    attach_node(:after, target_node, :parent, node_type, *args)
   end
 
   # +instantiate+ a node and add it as a preceding sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return +target_node+
   def before(target_node, node_type, *args)
-    attach_node(:before, target_node, node_type, *args)
+    attach_node(:before, target_node, :parent, node_type, *args)
   end
 
   # +instantiate+ a node replace the [Nokogiri::XML::Node] specified by +target_node+ with it
   # @return the new [Nokogiri::XML::Node]
   def replace(target_node, node_type, *args)
-    attach_node(:replace, target_node, node_type, *args)
+    attach_node(:replace, target_node, :parent, node_type, *args)
   end
 
   # +instantiate+ a node replace the [Nokogiri::XML::Node] specified by +target_node+ with it
   # @return +target_node+
   def swap(target_node, node_type, *args)
-    attach_node(:swap, target_node, node_type, *args)
+    attach_node(:swap, target_node, :parent, node_type, *args)
   end
   
   def methods
@@ -125,6 +120,22 @@ class OM::XML::TemplateRegistry
       proc.call(xml,*args)
     end
     builder_node.elements.last.remove
+  end
+
+  def attach_node(method, target_node, builder_node_offset, node_type, *args)
+    if target_node.is_a?(Nokogiri::XML::NodeSet) and target_node.length == 1
+      target_node = target_node.first
+    end
+    builder_node = builder_node_offset == :parent ? target_node.parent : target_node
+    new_node = create_detached_node(builder_node, node_type, *args)
+    result = target_node.send(method, new_node)
+    # Strip namespaces from text and CDATA nodes. Stupid Nokogiri.
+    new_node.traverse { |node|
+      if node.is_a?(Nokogiri::XML::CharacterData)
+        node.namespace = nil
+      end
+    }
+    return result
   end
   
   def empty_root_node
