@@ -63,10 +63,28 @@ module OM::XML::Document
       return ng_xml.xpath(xpath, ox_namespaces) 
     end   
   end
-  
+
+  # Access the class's template registry
   def templates
     self.class.templates
   end
+  
+  # Convenience pass-through methods integrating +find_by_terms+ support directly into templates
+  # Methods ending in 
+  # example: doc.add_child_node([*term_pointer], :node_type, *args) is the same as doc.templates.add_child(doc.find_by_terms(*term_pointer), :node_type, *args)
+  def manipulate_node(method, target, *args)
+    if target.is_a?(Array)
+      target = self.find_by_terms(*target)
+    end
+    templates.send(method, target, *args)
+  end
+  def add_child_node(*args);            manipulate_node(:add_child, *args);            end
+  def add_next_sibling_node(*args);     manipulate_node(:add_next_sibling, *args);     end
+  def add_previous_sibling_node(*args); manipulate_node(:add_previous_sibling, *args); end
+  def after_node(*args);                manipulate_node(:after, *args);                end
+  def before_node(*args);               manipulate_node(:before, *args);               end
+  def replace_node(*args);              manipulate_node(:replace, *args);              end
+  def swap_node(*args);                 manipulate_node(:swap, *args);                 end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
   # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your Terminology's root term config
