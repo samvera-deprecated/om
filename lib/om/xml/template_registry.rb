@@ -99,6 +99,7 @@ class OM::XML::TemplateRegistry
   end
 
   def method_missing(sym,*args)
+    sym = sym.to_s.sub!(/_$/,'').to_sym
     if @templates.has_key?(sym)
       instantiate(sym,*args)
     else
