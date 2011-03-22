@@ -5,7 +5,7 @@ module OM::XML::Document
   
   module ClassMethods
     
-    attr_accessor :terminology, :templates
+    attr_accessor :terminology, :template_registry
   
     # Sets the OM::XML::Terminology for the Document
     # Expects +&block+ that will be passed into OM::XML::Terminology::Builder.new
@@ -14,8 +14,8 @@ module OM::XML::Document
     end
     
     def define_template name, &block
-      @templates ||= OM::XML::TemplateRegistry.new
-      @templates.define name, &block
+      @template_registry ||= OM::XML::TemplateRegistry.new
+      @template_registry.define name, &block
     end
     
     # Returns any namespaces defined by the Class' Terminology
@@ -65,8 +65,8 @@ module OM::XML::Document
   end
 
   # Access the class's template registry
-  def templates
-    self.class.templates
+  def template_registry
+    self.class.template_registry
   end
   
   # Instantiate a +node_type+ template and add it as a child of +target_node+, where +target_node+ is one of:
@@ -77,43 +77,43 @@ module OM::XML::Document
   #
   # Returns the new Nokogiri::XML::Node.
   def add_child_node(target_node, node_type, *args)
-    manipulate_node(:add_child, *args)
+    manipulate_node(:add_child, target_node, node_type, *args)
   end
   
   # Instantiate a +node_type+ template and insert it as the following sibling of +target_node+. 
   # Returns the new Nokogiri::XML::Node.
   def add_next_sibling_node(target_node, node_type, *args)
-    manipulate_node(:add_next_sibling, *args)
+    manipulate_node(:add_next_sibling, target_node, node_type, *args)
   end
 
   # Instantiate a +node_type+ template and insert it as the preceding sibling of +target_node+.
   # Returns the new Nokogiri::XML::Node.
   def add_previous_sibling_node(target_node, node_type, *args)
-    manipulate_node(:add_previous_sibling, *args)
+    manipulate_node(:add_previous_sibling, target_node, node_type, *args)
   end
 
   # Instantiate a +node_type+ template and insert it as the following sibling of +target_node+.
   # Returns +target_node+.
   def after_node(target_node, node_type, *args)
-    manipulate_node(:after, *args)
+    manipulate_node(:after, target_node, node_type, *args)
   end
 
   # Instantiate a +node_type+ template and insert it as the preceding sibling of +target_node+.
   # Returns +target_node+.
   def before_node(target_node, node_type, *args)
-    manipulate_node(:before, *args)
+    manipulate_node(:before, target_node, node_type, *args)
   end
 
   # Instantiate a +node_type+ template and replace +target_node+ with it.
   # Returns the new Nokogiri::XML::Node.
   def replace_node(target_node, node_type, *args)
-    manipulate_node(:replace, *args)
+    manipulate_node(:replace, target_node, node_type, *args)
   end
 
   # Instantiate a +node_type+ template and replace +target_node+ with it.
   # Returns +target_node+.
   def swap_node(target_node, node_type, *args)
-    manipulate_node(:swap, *args)
+    manipulate_node(:swap, target_node, node_type, *args)
   end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
@@ -127,6 +127,6 @@ module OM::XML::Document
     if target.is_a?(Array)
       target = self.find_by_terms(*target)
     end
-    templates.send(method, target, *args)
+    template_registry.send(method, target, *args)
   end
 end
