@@ -13,9 +13,9 @@ module OM::XML::Document
       @terminology = OM::XML::Terminology::Builder.new( &block ).build
     end
     
-    def add_template name, &block
-      @templates ||= TemplateRegistry.new(Proc { self.ox_namespaces })
-      @templates.register name, &block
+    def define_template name, &block
+      @templates ||= OM::XML::TemplateRegistry.new
+      @templates.define name, &block
     end
     
     # Returns any namespaces defined by the Class' Terminology
@@ -64,8 +64,8 @@ module OM::XML::Document
     end   
   end
   
-  def insert_registered_template(parent_node, template_name, *template_args)
-    self.class.templates.add_template(parent_node, template_name.to_sym, *template_args)
+  def templates
+    self.class.templates
   end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
