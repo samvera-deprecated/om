@@ -69,27 +69,64 @@ module OM::XML::Document
     self.class.templates
   end
   
-  # Convenience pass-through methods integrating +find_by_terms+ support directly into templates
-  # Methods ending in 
-  # example: doc.add_child_node([*term_pointer], :node_type, *args) is the same as doc.templates.add_child(doc.find_by_terms(*term_pointer), :node_type, *args)
-  def manipulate_node(method, target, *args)
-    if target.is_a?(Array)
-      target = self.find_by_terms(*target)
-    end
-    templates.send(method, target, *args)
+  # Instantiate a +node_type+ template and add it as a child of +target_node+, where +target_node+ is one of:
+  # * a Nokogiri::XML::Node
+  # * a single-element Nokogiri::XML::NodeSet
+  # * a +term_pointer+ array resolving to a single-element Nokogiri::XML::NodeSet
+  # Additional arguments will be passed to the template unaltered.
+  #
+  # Returns the new Nokogiri::XML::Node.
+  def add_child_node(target_node, node_type, *args)
+    manipulate_node(:add_child, *args)
   end
-  def add_child_node(*args);            manipulate_node(:add_child, *args);            end
-  def add_next_sibling_node(*args);     manipulate_node(:add_next_sibling, *args);     end
-  def add_previous_sibling_node(*args); manipulate_node(:add_previous_sibling, *args); end
-  def after_node(*args);                manipulate_node(:after, *args);                end
-  def before_node(*args);               manipulate_node(:before, *args);               end
-  def replace_node(*args);              manipulate_node(:replace, *args);              end
-  def swap_node(*args);                 manipulate_node(:swap, *args);                 end
+  
+  # Instantiate a +node_type+ template and insert it as the following sibling of +target_node+. 
+  # Returns the new Nokogiri::XML::Node.
+  def add_next_sibling_node(target_node, node_type, *args)
+    manipulate_node(:add_next_sibling, *args)
+  end
+
+  # Instantiate a +node_type+ template and insert it as the preceding sibling of +target_node+.
+  # Returns the new Nokogiri::XML::Node.
+  def add_previous_sibling_node(target_node, node_type, *args)
+    manipulate_node(:add_previous_sibling, *args)
+  end
+
+  # Instantiate a +node_type+ template and insert it as the following sibling of +target_node+.
+  # Returns +target_node+.
+  def after_node(target_node, node_type, *args)
+    manipulate_node(:after, *args)
+  end
+
+  # Instantiate a +node_type+ template and insert it as the preceding sibling of +target_node+.
+  # Returns +target_node+.
+  def before_node(target_node, node_type, *args)
+    manipulate_node(:before, *args)
+  end
+
+  # Instantiate a +node_type+ template and replace +target_node+ with it.
+  # Returns the new Nokogiri::XML::Node.
+  def replace_node(target_node, node_type, *args)
+    manipulate_node(:replace, *args)
+  end
+
+  # Instantiate a +node_type+ template and replace +target_node+ with it.
+  # Returns +target_node+.
+  def swap_node(target_node, node_type, *args)
+    manipulate_node(:swap, *args)
+  end
   
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
   # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your Terminology's root term config
   def ox_namespaces
     @ox_namespaces ||= ng_xml.namespaces.merge(self.class.ox_namespaces)
   end
-  
+
+  private
+  def manipulate_node(method, target, *args)
+    if target.is_a?(Array)
+      target = self.find_by_terms(*target)
+    end
+    templates.send(method, target, *args)
+  end
 end
