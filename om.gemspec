@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Zumwalt"]
-  s.date = %q{2011-03-08}
+  s.date = %q{2011-03-22}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
   s.email = %q{matt.zumwalt@yourmediashelf.com}
   s.extra_rdoc_files = [
@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
     "lib/om/xml/document.rb",
     "lib/om/xml/named_term_proxy.rb",
     "lib/om/xml/node_generator.rb",
+    "lib/om/xml/template_registry.rb",
     "lib/om/xml/term.rb",
     "lib/om/xml/term_value_operators.rb",
     "lib/om/xml/term_xpath_generator.rb",
@@ -57,6 +58,7 @@ Gem::Specification.new do |s|
     "spec/unit/named_term_proxy_spec.rb",
     "spec/unit/node_generator_spec.rb",
     "spec/unit/om_spec.rb",
+    "spec/unit/template_registry_spec.rb",
     "spec/unit/term_builder_spec.rb",
     "spec/unit/term_spec.rb",
     "spec/unit/term_value_operators_spec.rb",
@@ -78,6 +80,7 @@ Gem::Specification.new do |s|
     "spec/unit/named_term_proxy_spec.rb",
     "spec/unit/node_generator_spec.rb",
     "spec/unit/om_spec.rb",
+    "spec/unit/template_registry_spec.rb",
     "spec/unit/term_builder_spec.rb",
     "spec/unit/term_spec.rb",
     "spec/unit/term_value_operators_spec.rb",
@@ -99,6 +102,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, ["< 2.0.0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_development_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_development_dependency(%q<equivalent-xml>, [">= 0.1.6"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.2"])
       s.add_runtime_dependency(%q<facets>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
@@ -111,6 +115,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, ["< 2.0.0"])
       s.add_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_dependency(%q<equivalent-xml>, [">= 0.1.6"])
       s.add_dependency(%q<nokogiri>, [">= 1.4.2"])
       s.add_dependency(%q<facets>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
@@ -124,6 +129,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, ["< 2.0.0"])
     s.add_dependency(%q<mocha>, [">= 0.9.8"])
     s.add_dependency(%q<ruby-debug>, [">= 0"])
+    s.add_dependency(%q<equivalent-xml>, [">= 0.1.6"])
     s.add_dependency(%q<nokogiri>, [">= 1.4.2"])
     s.add_dependency(%q<facets>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
