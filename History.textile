@@ -1,3 +1,7 @@
+1.2.0
+
+  added OM::XML::TemplateRegistry for built-in templating and creation of new XML nodes
+
 1.1.1
   
   "HYDRA-395":https://jira.duraspace.org/browse/HYDRA-395: Fixed bug that prevented you from appending term values with apostrophes in them
