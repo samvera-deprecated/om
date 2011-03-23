@@ -1,3 +1,35 @@
+# Extend an OM::XML::Document with reusable templates, then use them to add content to 
+# instance documents.
+#
+# Example:
+#
+#   require 'om/samples/mods_article'
+# 
+#   class OM::Samples::ModsArticle
+#     define_template :personalName do |xml, family, given, address|
+#       xml.name(:type => 'personal') do
+#         xml.namePart(:type => 'family') { xml.text(family) }
+#         xml.namePart(:type => 'given') { xml.text(given) }
+#         xml.namePart(:type => 'termsOfAddress') { xml.text(address) }
+#       end
+#     end
+# 
+#     define_template :role do |xml, text, attrs|
+#       xml.role do
+#         attrs = { :type => 'text' }.merge(attrs)
+#         xml.roleTerm(attrs) { xml.text(text) }
+#       end
+#     end
+#   end
+# 
+#   mods = OM::Samples::ModsArticle.from_xml(File.read('./spec/fixtures/CBF_MODS/ARS0025_016.xml'))
+# 
+#   mods.add_previous_sibling_node([:person => 0], :personalName, 'Shmoe', 'Joseph', 'Dr.') { |person|
+#     person.add_child(mods.template(:role, 'author', :authority => 'marcrelator'))
+#     person.add_child(mods.template(:role, 'sub', :authority => 'local', :type => 'code'))
+#     person
+#   }
+
 class OM::XML::TemplateRegistry
 
   def initialize
