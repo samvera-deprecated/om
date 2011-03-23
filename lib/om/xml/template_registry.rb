@@ -54,44 +54,44 @@ class OM::XML::TemplateRegistry
 
   # +instantiate+ a node and add it as a child of the [Nokogiri::XML::Node] specified by +target_node+
   # @return the new [Nokogiri::XML::Node]
-  def add_child(target_node, node_type, *args)
-    attach_node(:add_child, target_node, :self, node_type, *args)
+  def add_child(target_node, node_type, *args, &block)
+    attach_node(:add_child, target_node, :self, node_type, *args, &block)
   end
 
   # +instantiate+ a node and add it as a following sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return the new [Nokogiri::XML::Node]
-  def add_next_sibling(target_node, node_type, *args)
-    attach_node(:add_next_sibling, target_node, :parent, node_type, *args)
+  def add_next_sibling(target_node, node_type, *args, &block)
+    attach_node(:add_next_sibling, target_node, :parent, node_type, *args, &block)
   end
 
   # +instantiate+ a node and add it as a preceding sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return the new [Nokogiri::XML::Node]
-  def add_previous_sibling(target_node, node_type, *args)
-    attach_node(:add_previous_sibling, target_node, :parent, node_type, *args)
+  def add_previous_sibling(target_node, node_type, *args, &block)
+    attach_node(:add_previous_sibling, target_node, :parent, node_type, *args, &block)
   end
 
   # +instantiate+ a node and add it as a following sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return +target_node+
-  def after(target_node, node_type, *args)
-    attach_node(:after, target_node, :parent, node_type, *args)
+  def after(target_node, node_type, *args, &block)
+    attach_node(:after, target_node, :parent, node_type, *args, &block)
   end
 
   # +instantiate+ a node and add it as a preceding sibling of the [Nokogiri::XML::Node] specified by +target_node+
   # @return +target_node+
-  def before(target_node, node_type, *args)
-    attach_node(:before, target_node, :parent, node_type, *args)
+  def before(target_node, node_type, *args, &block)
+    attach_node(:before, target_node, :parent, node_type, *args, &block)
   end
 
   # +instantiate+ a node replace the [Nokogiri::XML::Node] specified by +target_node+ with it
   # @return the new [Nokogiri::XML::Node]
-  def replace(target_node, node_type, *args)
-    attach_node(:replace, target_node, :parent, node_type, *args)
+  def replace(target_node, node_type, *args, &block)
+    attach_node(:replace, target_node, :parent, node_type, *args, &block)
   end
 
   # +instantiate+ a node replace the [Nokogiri::XML::Node] specified by +target_node+ with it
   # @return +target_node+
-  def swap(target_node, node_type, *args)
-    attach_node(:swap, target_node, :parent, node_type, *args)
+  def swap(target_node, node_type, *args, &block)
+    attach_node(:swap, target_node, :parent, node_type, *args, &block)
   end
   
   def methods
@@ -123,7 +123,7 @@ class OM::XML::TemplateRegistry
     builder_node.elements.last.remove
   end
 
-  def attach_node(method, target_node, builder_node_offset, node_type, *args)
+  def attach_node(method, target_node, builder_node_offset, node_type, *args, &block)
     if target_node.is_a?(Nokogiri::XML::NodeSet) and target_node.length == 1
       target_node = target_node.first
     end
@@ -136,7 +136,11 @@ class OM::XML::TemplateRegistry
         node.namespace = nil
       end
     }
-    return result
+    if block_given?
+      yield result
+    else
+      return result
+    end
   end
   
   def empty_root_node

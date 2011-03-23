@@ -63,12 +63,6 @@ describe "OM::XML::TemplateRegistry" do
       lambda { RegistryTest.template_registry.instantiate(:demigod, 'Hercules') }.should raise_error(NameError)
     end
     
-    it "should instantiate a detached node from a template using the template name as a method" do
-      node = RegistryTest.template_registry.zombie('Zeke')
-      expectation = Nokogiri::XML('<monster wants="braaaaainz">Zeke</monster>').root
-      node.should be_equivalent_to(expectation)
-    end
-    
     it "should raise an exception if a missing method name doesn't match a node_type" do
       lambda { RegistryTest.template_registry.demigod('Hercules') }.should raise_error(NameError)
     end
@@ -102,6 +96,12 @@ describe "OM::XML::TemplateRegistry" do
     it "should accept a Nokogiri::XML::NodeSet as target" do
       @test_document.template_registry.after(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
       @test_document.ng_xml.root.elements.length.should == 2
+    end
+    
+    it "should instantiate a detached node from a template using the template name as a method" do
+      node = RegistryTest.template_registry.person('Odin', 'All-Father')
+      expectation = Nokogiri::XML('<person title="All-Father">Odin</person>').root
+      node.should be_equivalent_to(expectation)
     end
     
     it "should add_child" do
@@ -147,6 +147,15 @@ describe "OM::XML::TemplateRegistry" do
       return_value.should == target_node
       @test_document.ng_xml.should be_equivalent_to(@expectations[:instead]).respecting_element_order
     end
+    
+    it "should yield the result if a block is given" do
+      target_node = @test_document.find_by_terms(:person => 0).first
+      expectation = Nokogiri::XML('<person xmlns="urn:registry-test" title="Actor">Alice</person>').root
+      @test_document.template_registry.swap(target_node, :person, 'Bob', 'Builder') { |old_node|
+        old_node.should be_equivalent_to(expectation)
+        old_node
+      }.should be_equivalent_to(expectation)
+    end
   end
     
   describe "document-based document manipulations" do
@@ -165,6 +174,12 @@ describe "OM::XML::TemplateRegistry" do
       @test_document.ng_xml.root.elements.length.should == 2
     end
     
+    it "should instantiate a detached node from a template" do
+      node = @test_document.template(:person, 'Odin', 'All-Father')
+      expectation = Nokogiri::XML('<person title="All-Father">Odin</person>').root
+      node.should be_equivalent_to(expectation)
+    end
+
     it "should add_child_node" do
       return_value = @test_document.add_child_node(@test_document.ng_xml.root, :person, 'Bob', 'Builder')
       return_value.should == @test_document.find_by_terms(:person => 1).first
