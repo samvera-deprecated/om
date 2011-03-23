@@ -13,6 +13,10 @@ module OM::XML::Document
       @terminology = OM::XML::Terminology::Builder.new( &block ).build
     end
     
+    # Define a new node template with the OM::XML::TemplateRegistry.
+    # * +name+ is a Symbol indicating the name of the new template.
+    # * The +block+ does the work of creating the new node, and will receive 
+    #   a Nokogiri::XML::Builder and any other args passed to one of the node instantiation methods.
     def define_template name, &block
       @template_registry ||= OM::XML::TemplateRegistry.new
       @template_registry.define name, &block
