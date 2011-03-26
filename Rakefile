@@ -12,11 +12,12 @@ begin
     gem.authors = ["Matt Zumwalt"]
     
     gem.add_dependency('nokogiri', ">= 1.4.2")
-    gem.add_dependency('facets')
     
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "rspec", "<2.0.0"
     gem.add_development_dependency "mocha", ">= 0.9.8"
     gem.add_development_dependency "ruby-debug"
+    gem.add_development_dependency "jeweler"
+    gem.add_development_dependency "equivalent-xml", ">= 0.2.4"
     
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

@@ -1,7 +1,6 @@
 require 'rubygems'
 
 require 'nokogiri'
-require "facets"
 
 module OM
   # @params String, Array, or Hash
