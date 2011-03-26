@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     "Gemfile",
+    "Gemfile.lock",
     "History.textile",
     "LICENSE",
     "README.rdoc",
@@ -102,6 +103,11 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<ruby-debug>, [">= 0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_development_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, ["< 2.0.0"])
+      s.add_development_dependency(%q<mocha>, [">= 0.9.8"])
+      s.add_development_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
+      s.add_development_dependency(%q<equivalent-xml>, [">= 0.2.4"])
       s.add_runtime_dependency(%q<nokogiri>, [">= 1.4.2"])
       s.add_development_dependency(%q<rspec>, ["< 2.0.0"])
       s.add_development_dependency(%q<mocha>, [">= 0.9.8"])
@@ -114,9 +120,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, ["< 2.0.0"])
       s.add_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_dependency(%q<ruby-debug>, [">= 0"])
-      s.add_dependency(%q<equivalent-xml>, [">= 0.1.6"])
       s.add_dependency(%q<mocha>, [">= 0.9.8"])
       s.add_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_dependency(%q<rspec>, ["< 2.0.0"])
+      s.add_dependency(%q<mocha>, [">= 0.9.8"])
+      s.add_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
+      s.add_dependency(%q<equivalent-xml>, [">= 0.2.4"])
       s.add_dependency(%q<nokogiri>, [">= 1.4.2"])
       s.add_dependency(%q<rspec>, ["< 2.0.0"])
       s.add_dependency(%q<mocha>, [">= 0.9.8"])
@@ -130,9 +140,13 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, ["< 2.0.0"])
     s.add_dependency(%q<mocha>, [">= 0.9.8"])
     s.add_dependency(%q<ruby-debug>, [">= 0"])
-    s.add_dependency(%q<equivalent-xml>, [">= 0.1.6"])
     s.add_dependency(%q<mocha>, [">= 0.9.8"])
     s.add_dependency(%q<ruby-debug>, [">= 0"])
+    s.add_dependency(%q<rspec>, ["< 2.0.0"])
+    s.add_dependency(%q<mocha>, [">= 0.9.8"])
+    s.add_dependency(%q<ruby-debug>, [">= 0"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
+    s.add_dependency(%q<equivalent-xml>, [">= 0.2.4"])
     s.add_dependency(%q<nokogiri>, [">= 1.4.2"])
     s.add_dependency(%q<rspec>, ["< 2.0.0"])
     s.add_dependency(%q<mocha>, [">= 0.9.8"])
