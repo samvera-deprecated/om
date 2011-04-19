@@ -13,6 +13,7 @@ describe "OM::XML::NamedTermProxy" do
         t.my_proxy(:proxy=>[:foo, :bar])
       }
       t.adoptive_parent(:ref=>[:parent], :attributes=>{:type=>"adoptive"})
+      t.parentfoobarproxy(:proxy=>[:parent, :foo, :bar])
     end
     
     @test_terminology = @test_terminology_builder.build
@@ -35,5 +36,8 @@ describe "OM::XML::NamedTermProxy" do
     proxy2 = @test_terminology.retrieve_term(:adoptive_parent, :my_proxy)    
     proxy2.proxied_term.should == @test_terminology.retrieve_term(:adoptive_parent, :foo, :bar)
     proxy2.xpath.should == '//oxns:parent[@type="adoptive"]/oxns:foo/oxns:bar'
+  end
+  it "should support NamedTermProxies that point to root terms" do
+    @test_terminology.xpath_for(:parentfoobarproxy).should == "//oxns:parent/oxns:foo/oxns:bar"
   end
 end

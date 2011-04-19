@@ -169,13 +169,21 @@ module OM::XML::TermXpathGenerator
         current_location = term.parent.nil? ? term.terminology : term.parent
         relative_path = ""
         term.proxy_pointer.each_with_index do |proxy_pointer, proxy_pointer_index|
+          begin
           proxy_term = current_location.retrieve_term(proxy_pointer)
+          if proxy_term.nil?
+            proxy_term = terminology.retrieve_term(proxy_pointer)
+          end
           proxy_relative_path = proxy_term.xpath_relative
           if proxy_pointer_index > 0
             proxy_relative_path = "/"+proxy_relative_path
           end
           relative_path << proxy_relative_path
           current_location = proxy_term
+          rescue Exception => e
+            debugger
+            raise "There's a problem with the #{term.name} OM::XML::NamedTermProxy, whose proxy pointer is #{term.proxy_pointer}.  The #{proxy_pointer} pointer is returning #{proxy_term.inspect}"
+          end
         end
       else  
         relative_path = term.xpath_relative
