@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'rake'
 
+# adding tasks defined in lib/tasks
+Dir.glob('lib/tasks/*.rake').each { |r| import r }
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
