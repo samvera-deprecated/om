@@ -18,5 +18,8 @@ coverage
 rdoc
 pkg
 /.bundle
+doc
+.yardoc
 
 ## PROJECT::SPECIFIC
+
