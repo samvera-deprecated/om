@@ -41,6 +41,9 @@ class OM::XML::Terminology
         end
       end
       root_term_builder = OM::XML::Term::Builder.new(opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')).is_root_term(true)
+      term_opts = opts.dup
+      term_opts.delete(:schema)
+      root_term_builder.settings.merge!(term_opts)
       @term_builders[root_term_builder.name] = root_term_builder
       
       return root_term_builder

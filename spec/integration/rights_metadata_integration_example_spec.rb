@@ -70,7 +70,6 @@ describe "OM::XML::Accessors" do
       pending "nesting is too deep..."
       @sample.retrieve(*[:edit_access, :machine, :person]).length.should == 0
       @sample.update_properties([:edit_access, :machine, :person]=>"user id").should == {"edit_access_machine_person"=>{"-1"=>"user id"}}
-      debugger
       @sample.retrieve(*[:edit_access, :machine, :person]).length.should == 1
       @sample.retrieve(*[:edit_access, :machine, :person]).first.text.should == "user id"
     end

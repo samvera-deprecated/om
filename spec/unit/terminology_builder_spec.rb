@@ -176,8 +176,15 @@ describe "OM::XML::Terminology::Builder" do
         terminology = @test_builder.build
         terminology.schema.should == "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd"
         terminology.namespaces.should == { "oxns"=>"one:two", 'xmlns' => 'one:two', 'xmlns:foo' => 'bar' }
-        terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
-        terminology.retrieve_term(:mods).is_root_term?.should == true
+      end
+      it "should create an explicit term correspoinding to the root node and pass any additional settings into that term" do
+        @test_builder.root(:path=>"fwoop", :xmlns => 'one:two', 'xmlns:foo' => 'bar', :index_as=>[:not_searchable], :namespace_prefix=>"foox")
+        terminology = @test_builder.build
+        term = terminology.retrieve_term(:fwoop)
+        term.should be_instance_of OM::XML::Term
+        term.is_root_term?.should == true
+        term.index_as.should == [:not_searchable]        
+        term.namespace_prefix.should == "foox"   
       end
       it "should work within a builder block" do
         @builder_with_block.term_builders[:mods].settings[:is_root_term].should == true

@@ -181,7 +181,6 @@ module OM::XML::TermXpathGenerator
           relative_path << proxy_relative_path
           current_location = proxy_term
           rescue Exception => e
-            debugger
             raise "There's a problem with the #{term.name} OM::XML::NamedTermProxy, whose proxy pointer is #{term.proxy_pointer}.  The #{proxy_pointer} pointer is returning #{proxy_term.inspect}"
           end
         end
