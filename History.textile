@@ -1,16 +1,20 @@
-h3.1.2.3
+h3. 1.2.4
 
-NamedTermProxies can now point to terms at the root of a Terminology
+  TerminologyBuilder.root now passes on its options to the root term builder that it creates.
 
-h3.1.2.0
+h3. 1.2.3
+
+  NamedTermProxies can now point to terms at the root of a Terminology
+
+h3. 1.2.0
 
   added OM::XML::TemplateRegistry for built-in templating and creation of new XML nodes
 
-h3.1.1.1
-  
+h3. 1.1.1
+   
   "HYDRA-395":https://jira.duraspace.org/browse/HYDRA-395: Fixed bug that prevented you from appending term values with apostrophes in them
 
-h2.1.1.0
+h2. 1.1.0
 
 HYDRA-371: Provide a way to specify a term that points to nodes where an attribute is not set
 
@@ -24,47 +28,47 @@ HYDRA-371: Provide a way to specify a term that points to nodes where an attribu
 
 namePart[not(@type)]
 
-h3.1.0.1
+h3. 1.0.1
 
 HYDRA-329: Allow for NamedTermProxies at root of Terminology
 
-h2.1.0.0
+h2. 1.0.0
 
 Stable release 
 
-h3.0.1.10
+h3. 0.1.10
 
 Improving generation of constrained xpath queries
 
-h3.0.1.9
+h3. 0.1.9
 
 Improving support for deeply nested nodes (still needs work though)
 
-h3.0.1.5
+h3. 0.1.5
 
 * root_property now inserts an entry into the properties hash
 * added .generate method for building new instances of declared properties
 * refinements to accessor_xpath
 
-h3.0.1.4
+h3. 0.1.4
 
 *  made attribute_xpath idempotent
 
-h3.0.1.3
+h3. 0.1.3
 
 *  added accessor_generic_name and accessor_hierarchical_name methods
 
-h3.0.1.2
+h3. 0.1.2
 
 * changed syntax for looking up accessors with (optional) index values -- no using [{:person=>1}, :first_name]  instead of [:person, 1, :first_name]
 
-h3.0.1.1
+h3. 0.1.1
 
 RENAMED to om (formerly opinionated-xml)
 
 * broke up functionality into Modules
 * added OM::XML::Accessor functionality
 
-h3.0.1
+h3. 0.1
 
 Note: OX v.1 Does not handle treating attribute values as the changing "value" of a node
