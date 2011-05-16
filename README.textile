@@ -4,10 +4,10 @@ A library to help you tame sprawling XML schemas like MODS.
 
 h2. Tutorials
 
-"Getting Started":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_STARTED.html
-"Querying Documents":http://hudson.projecthydra.org/job/om/Documentation/file.QUERYING_DOCUMENTS.html
-"Updating Documents":http://hudson.projecthydra.org/job/om/Documentation/file.UPDATING_DOCUMENTS.html
-"Getting Fancy":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_FANCY.html
+* "Getting Started":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_STARTED.html
+* "Querying Documents":http://hudson.projecthydra.org/job/om/Documentation/file.QUERYING_DOCUMENTS.html
+* "Updating Documents":http://hudson.projecthydra.org/job/om/Documentation/file.UPDATING_DOCUMENTS.html
+* "Getting Fancy":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_FANCY.html
 
 h2. Common OM Patterns
 
