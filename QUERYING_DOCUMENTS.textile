@@ -1,0 +1,125 @@
+h2. Querying OM Documents
+
+This document gives you some exposure to the methods provided by the "OM::XML::Document":OM/XML/Document.html module and its related modules "OM::XML::TermXPathGenerator":OM/XML/TermXPathGenerator.html & "OM::XML::TermValueOperators":OM/XML/TermValueOperators.html
+
+_Note: In your code, don't worry about including OM::XML::TermXPathGenerator and OM::XML::TermValueOperators into your classes.  OM::XML::Document handles that for you._
+
+h3. Load the Sample XML and Sample Terminology
+
+These examples use the Document class defined in "OM::Samples::ModsArticle":http://github.com/mediashelf/om/lib/om/samples/mods_article.rb
+
+Download "hydrangea_article1.xml":https://github.com/mediashelf/om/blob/master/spec/fixtures/mods_articles/hydrangea_article1.xml into your working directory, then run this:
+
+<pre>
+  require "om/samples"
+  sample_xml = File.new("hydrangea_article1.xml")
+  doc = OM::Samples::ModsArticle.from_xml(sample_xml)
+</pre>
+
+h3. Query the Document
+
+The OM Terminology declared by OM::Samples::ModsArticle handles generating xpath queries based on the structures you've defined.  It will also run the queries for you in most cases.  If you're ever curious what the xpath queries are, or if you want to use them in some other way, they are a few keystrokes away.
+
+Here are the xpaths for :name and two variants of :name that were created using the :ref argument in the Terminology builder.
+
+<pre>
+OM::Samples::ModsArticle.terminology.xpath_for(:name)
+=> "//oxns:name"
+OM::Samples::ModsArticle.terminology.xpath_for(:person)
+=> "//oxns:name[@type=\"personal\"]" 
+OM::Samples::ModsArticle.terminology.xpath_for(:organization)
+=> "//oxns:name[@type=\"corporate\"]"
+</pre>
+
+To retrieve the values of xml nodes, use the term_values method
+
+<pre>
+doc.term_values(:person, :first_name) 
+doc.term_values(:person, :last_name) 
+</pre>
+
+If the xpath points to XML nodes that contain other nodes, the response to term_values will contain Nokogiri::XML::Node objects instead of text values.
+
+<pre>
+  doc.term_values(:name)
+</pre>
+
+More examples of using term_values and find_by_terms:
+
+<pre>
+doc.find_by_terms(:organization).to_xml
+doc.term_values(:organization, :role)
+=> ["\n      Funder\n    "] 
+doc.term_values(:organization, :namePart)
+=> ["NSF"]
+</pre>
+
+You will often string together a series of term names to point to what you want
+
+<pre>
+OM::Samples::ModsArticle.terminology.xpath_for(:journal, :issue, :pages, :start)
+=> "//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:start" 
+doc.term_values(:journal, :issue, :pages, :start)
+=> ["195"] 
+</pre>
+  
+If you get one of the names wrong in the list, OM will tell you which one is causing problems.  See what happens when you put :page instead of :pages in your argument to term_values.
+
+<pre>
+doc.term_values(:journal, :issue, :page, :start)
+OM::XML::Terminology::BadPointerError: You attempted to retrieve a Term using this pointer: [:journal, :issue, :page] but no Term exists at that location. Everything is fine until ":page", which doesn't exist.
+</pre>
+
+If you use a term often and you're sick of typing all of those term names, you can define a proxy term.  Here we have a proxy term called :start_page that saves you from having to remember the details of how MODS is structured.  
+
+<pre>
+OM::Samples::ModsArticle.terminology.xpath_for(:journal, :issue, :start_page)
+=> "//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:start"
+</pre>
+  
+Here is another proxy term.  It proxies to [:journal,:origin_info,:issuance]
+
+<pre>
+OM::Samples::ModsArticle.terminology.xpath_for(:peer_reviewed)
+=> "//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:issuance"
+</pre>
+
+h2. What to do when elements are reused throughout an XML document
+
+In our MODS document, we have two types of title: 1) the title of the published article and 2) the title of the journal it was published in.  They both use the same xml node.  How can we deal with that? 
+
+<pre>
+doc.term_values(:title_info, :main_title)
+=> ["ARTICLE TITLE", "VARYING FORM OF TITLE", "TITLE OF HOST JOURNAL"] 
+doc.term_values(:mods, :title_info, :main_title)
+=> ["ARTICLE TITLE", "VARYING FORM OF TITLE"]
+OM::Samples::ModsArticle.terminology.xpath_for(:title_info, :main_title)
+=> "//oxns:titleInfo/oxns:title" 
+</pre>
+
+The solution: include the root node in your term pointer.
+
+<pre>
+OM::Samples::ModsArticle.terminology.xpath_for(:mods, :title_info, :main_title)
+=> "//oxns:mods/oxns:titleInfo/oxns:title"
+doc.term_values(:mods, :title_info, :main_title)
+=> ["ARTICLE TITLE", "VARYING FORM OF TITLE"] 
+</pre>
+
+We can still access the Journal title by its own pointers:
+
+<pre>
+doc.term_values(:journal, :title_info, :main_title)
+ => ["TITLE OF HOST JOURNAL"] 
+</pre>
+
+More Proxy Terms!
+
+Sometimes all of these terms become tedious.  That's where proxy terms come in. You can use them to access frequently used Terms more easily.
+
+<pre>
+OM::Samples::ModsArticle.terminology.xpath_for(:title)
+=> "//oxns:mods/oxns:titleInfo/oxns:title" 
+OM::Samples::ModsArticle.terminology.xpath_for(:journal_title)
+=> "//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title"
+</pre>

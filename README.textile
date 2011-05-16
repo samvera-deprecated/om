@@ -1,16 +1,25 @@
-h1. opinionated-xml
+h1. om (Optinionated Metadata)
 
 A library to help you tame sprawling XML schemas like MODS.
 
-h2. Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+h2. Tutorials
+
+"Getting Started":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_STARTED.html
+"Querying Documents":http://hudson.projecthydra.org/job/om/Documentation/file.QUERYING_DOCUMENTS.html
+"Updating Documents":http://hudson.projecthydra.org/job/om/Documentation/file.UPDATING_DOCUMENTS.html
+"Getting Fancy":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_FANCY.html
+
+h2. Common OM Patterns
+
+"Common OM Patterns":http://hudson.projecthydra.org/job/om/Documentation/file.COMMON_OM_PATTERNS.html
+
+h3. Solrizing Documents
+
+The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  That process is documented in the "solrizer documentation":http://hudson.projecthydra.org/job/solrizer/Documentation/file.SOLRIZING_OM_DOCUMENTS.html
+
+h2. OM in the Wild
+
+We have a page on the Hydra wiki with a list of OM Terminologies in active use: "OM Terminologies in the Wild":https://wiki.duraspace.org/display/hydra/OM+Terminologies+in+the+Wild
 
 h2. Acknowledgements
 

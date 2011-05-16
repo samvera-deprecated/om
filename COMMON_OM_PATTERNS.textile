@@ -1,0 +1,14 @@
+h1. Common Patterns You'll Use with OM
+
+h2. Common Terminology Patterns
+
+h3. Reserved method names (ie. id_, root_)
+
+Like Nokogiri ...
+
+h3. Namespaces
+oxns
+document namespaces & node namespaces
+_no namespace_ (suppressing oxns in xpath queries)
+
+h3. :ref and :proxy Terms

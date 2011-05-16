@@ -1,6 +1,14 @@
+# Special options: data_type, attributes, index_as
+# is_root_term
+#
 class OM::XML::Term
   
   # Term::Builder Class Definition
+  #
+  # @example
+  #   tb2 = OM::XML::Term::Builder.new("my_term_name").path("fooPath").attributes({:lang=>"foo"}).index_as([:searchable, :facetable]).required(true).data_type(:text) 
+  #
+  #   
   #
   # When coding against Builders, remember that they rely on MethodMissing, 
   # so any time you call a method on the Builder that it doesn't explicitly recognize, 

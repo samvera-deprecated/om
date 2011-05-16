@@ -1,3 +1,13 @@
+# When you're defining a Terminology, you will usually use a "Terminology Builder":OM/XML/Terminology/Builder.html to create it
+# Each line you put into a "Terminology Builder":OM/XML/Terminology/Builder.html is passed to the constructor for a "Term Builder":OM/XML/Term/Builder.html. 
+# See the "OM::XML::Term::Builder":OM/XML/Term/Builder.html API docs for complete description of your options for defining each Term.
+#
+# The most important thing to define in a Terminology is the root term.  This is the place where you set namespaces and schemas for the Terminology
+# @example Define a Terminology with a root term "mods", a default namespace of "http://www.loc.gov/mods/v3" and a schema of "http://www.loc.gov/standards/mods/v3/mods-3-2.xsd" (schema is optional)
+#   terminology_builder = OM::XML::Terminology::Builder.new do |t|
+#     t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
+#   end
+#   terminology = terminology_builder.build
 class OM::XML::Terminology
   
   class BadPointerError < StandardError; end

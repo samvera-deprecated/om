@@ -1,0 +1,192 @@
+<pre>
+gem install om
+</pre>
+
+<pre>
+require "om"
+</pre>
+
+Builder for a simple Terminology based on a couple of elements from the MODS schema.
+
+<pre>
+terminology_builder = OM::XML::Terminology::Builder.new do |t|
+  t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
+  # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
+  t.name_ {
+    t.namePart
+    t.role(:ref=>[:role])
+    t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
+    t.given_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+    t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+  }
+  
+  # Re-use the structure of a :name Term with a different @type attribute
+  t.person(:ref=>:name, :attributes=>{:type=>"personal"})
+  t.organization(:ref=>:name, :attributes=>{:type=>"corporate"})
+  
+  # This is a mods:role, which is used within mods:namePart elements
+  t.role {
+    t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
+    t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
+  }
+end
+</pre>
+
+Now tell the Builder to build your Terminology for you.
+
+<pre>terminology = terminology_builder.build</pre>
+
+h2. Using a Terminology to generate XPath Queries based on Term Pointers ("OM::XML::TermXPathGenerator":OM/XML/TermXpathGenerator.html)
+
+The Terminology handles generating xpath queries based on the structures you've defined.  It will also run the queries for you, so in most cases you won't even have to look at the XPath.  If you're ever curious what the xpath queries are, or if you want to use them in some other way, they are a few keystrokes away.
+
+Here are the xpaths for :name and two variants of :name that were created using the :ref argument in the Terminology builder.
+
+<pre>
+terminology.xpath_for(:name)
+=> "//oxns:name"
+terminology.xpath_for(:person)
+=> "//oxns:name[@type=\"personal\"]" 
+terminology.xpath_for(:organization)
+=> "//oxns:name[@type=\"corporate\"]"
+</pre>
+
+h2. OM Documents
+
+In action, you will usually use "OM::XML::Document":OM/XML/Document.html to deal with your xml.  Here's how to define a Document class that uses the same Terminology as above
+
+<pre>
+  class MyModsDocument
+    include OM::XML::Document
+    
+    set_terminology do |t|
+      t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
+      # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
+      t.name_ {
+        t.namePart
+        t.role(:ref=>[:role])
+        t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
+        t.given_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+        t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+      }
+      t.person(:ref=>:name, :attributes=>{:type=>"personal"})
+      t.organization(:ref=>:name, :attributes=>{:type=>"corporate"})
+
+      # This is a mods:role, which is used within mods:namePart elements
+      t.role {
+        t.text(:path=>"roleTerm",:attributes=>{:type=>"text"})
+        t.code(:path=>"roleTerm",:attributes=>{:type=>"code"})
+      }
+    end
+    
+    def self.xml_template
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.mods(:version=>"3.3", "xmlns:xlink"=>"http://www.w3.org/1999/xlink",
+           "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+           "xmlns"=>"http://www.loc.gov/mods/v3",
+           "xsi:schemaLocation"=>"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd") {
+             xml.titleInfo(:lang=>"") {
+               xml.title
+             }
+             xml.name(:type=>"personal") {
+               xml.namePart(:type=>"given")
+               xml.namePart(:type=>"family")
+               xml.affiliation
+               xml.computing_id
+               xml.description
+               xml.role {
+                 xml.roleTerm("Author", :authority=>"marcrelator", :type=>"text")
+               }
+             }
+           }
+      end
+      return builder.doc
+    end
+    
+  end
+</pre>
+
+OM::XML::Document provides the set_terminology method to handle the details of creating a TerminologyBuilder and building the terminology for you.  This allows you to focus on defining the structures of the Terminology itself.
+
+h3. Creating XML Documents from Scratch
+
+<pre>
+  newdoc = MyModsDocument.new
+  newdoc.to_xml
+</pre>
+
+By default, new OM Document instances will create an empty xml document.  However, if you set self.xml_template to return a different "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html, that will be used instead.  
+
+In the example above, we have overridden xml_template to use "Nokogiri::XML::Builder":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Builder.html to build an empty, relatively simple MODS document.  Note that at the end of the definition for xml_template, we call .doc on that XML Builder to return the "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html object.  This is important because you need xml_template to return a "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html.  Instead of using "Nokogiri::XML::Builder":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Builder.html, you could put your template into an actual xml file and have xml_template use "Nokogiri::XML::Document.parse":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html#M000225 to load it.  That's up to you.  Create the documents however you want, just return a "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html.
+
+
+h3. Loading an existing XML document
+
+To load existing XML into your OM Document, use "#from_xml":OM/XML/Container/ClassMethods.html#from_xml-instance_method" }
+
+Download "hydrangea_article1.xml":https://github.com/mediashelf/om/blob/master/spec/fixtures/mods_articles/hydrangea_article1.xml into your working directory, then run this:
+
+<pre>
+  sample_xml = File.new("hydrangea_article1.xml")
+  doc = MyModsDocument.from_xml(sample_xml)
+</pre>
+
+Now take a look at the document you've loaded.  We will use this document for the next few examples.
+
+<pre>doc.to_xml</pre>
+
+h3. Directly accessing the "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html and the "OM::XML::Terminology":OM/XML/Terminology.html
+
+"OM::XML::Document":OM/XML/Document.html is implemented as a container for a "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html.  It uses the associated Terminology to provide a bunch of convenience methods that wrap calls to Nokogiri.  If you ever need to operate directly on the Nokogiri Document, simply call ng_xml and do what you need to do.  OM will not get in your way.
+
+<pre>ng_document = doc.ng_xml</pre>
+
+If you need to look at the Terminology associated with your Document, call "#terminology":OM/XML/Document/ClassMethods.html#terminology-instance_method on the _class_.
+
+<pre>
+  MyModsDocument.terminology
+  doc.class.terminology
+</pre>
+
+h3. Querying OM Documents 
+
+Using the Terminology associated with your Document, you can query the xml for Nodes _or_ node values without ever writing a line of XPath.
+
+You can use "OM::XML::Document.find_by_terms":OM/XML/Document.html#find_by_terms-instance_method to retrieve xml nodes from the datastream.  It returns Nokogiri::XML::Node objects.
+
+<pre>
+doc.find_by_terms(:person)
+doc.find_by_terms(:person).length
+doc.find_by_terms(:person).each {|n| puts n.to_xml}
+</pre>
+
+If you want to get directly to the _values_ within those nodes, use "term_values":OM/XML/TermValueOperators.html#term_values-instance_method
+
+<pre>
+doc.term_values(:person, :first_name)
+doc.term_values(:person, :last_name)
+</pre>
+
+If the xpath points to XML nodes that contain other nodes, the response to term_values will contain Nokogiri::XML::Node objects instead of text values.
+
+<pre>
+  doc.term_values(:name)
+</pre>
+
+For more examples of Querying OM Documents, see {file:QUERYING_DOCUMENTS.textile Querying Documents}
+
+h3. Updating, Inserting & Deleting Elements ("TermValueOperators":OM/XML/TermValueOperators.html)
+
+For more examples of Updating OM Documents, see {file:UPDATING_DOCUMENTS.textile Updating Documents}
+
+h3. Validating Documents
+
+If you have a schema defined in your Terminology's root Term, you can validate any xml document by calling ".validate":OM/XML/Validation.html#validate-instance_method on any instance of your Document classes.
+
+<pre>doc.validate</pre>
+
+__*Note:* this method requires an internet connection, as it will download the schema from the URL you have specified in the Terminology's root term.__
+
+h3. Solrizing Documents
+
+The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  That process is documented in the "solrizer documentation":http://hudson.projecthydra.org/job/solrizer/Documentation/file.SOLRIZING_OM_DOCUMENTS.html
