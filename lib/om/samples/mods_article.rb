@@ -34,6 +34,7 @@ class OM::Samples::ModsArticle
         t.first_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
         t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
         t.computing_id
+        t.name_content(:path=>"text()")
       }
       # lookup :person, :first_name        
       t.person(:ref=>:name, :attributes=>{:type=>"personal"}, :index_as=>[:facetable])
