@@ -37,7 +37,6 @@ namespace :om do
           textile_docs << f
         end
       end
-      puts textile_docs
       yt.files   = Dir.glob(File.join(project_root, 'lib', '**', '*.rb')) + textile_docs
                    # [ File.join(project_root, 'README.textile') ]
                    # [ File.join(project_root, 'README.textile'),'-', File.join(project_root,'GETTING_STARTED.textile') ]
