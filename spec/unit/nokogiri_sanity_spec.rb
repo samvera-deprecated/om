@@ -34,6 +34,21 @@ describe "OM::XML::TermValueOperators" do
     it "should update the xml according to the find_by_terms_and_values in the given hash" do
       terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       result = @article.update_values(terms_update_hash)
+      puts "Updated XML"
+      puts @article.to_xml
+      puts "AFFILIATIONS"
+      puts article.find_by_terms( {":person"=>"0"}, "affiliation"] ).to_xml
+      result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      
+      # Trying again with a more complex update hash
+      terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}, [{:person=>1}, :last_name]=>"Andronicus", [{"person"=>"1"},:first_name]=>["Titus"],[{:person=>1},:role]=>["otherrole1","otherrole2"] }
+      result = @article.update_values(terms_update_hash)
+      result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}, "person_1_last_name"=>{"0"=>"Andronicus"},"person_1_first_name"=>{"0"=>"Titus"}, "person_1_role"=>{"0"=>"otherrole1","1"=>"otherrole2"}}
+    end
+    
+    it "should work when you re-run the example" do
+      terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      result = @article.update_values(terms_update_hash)
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       
       # Trying again with a more complex update hash
