@@ -34,10 +34,6 @@ describe "OM::XML::TermValueOperators" do
     it "should update the xml according to the find_by_terms_and_values in the given hash" do
       terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       result = @article.update_values(terms_update_hash)
-      puts "Updated XML"
-      puts @article.to_xml
-      puts "AFFILIATIONS"
-      puts @article.find_by_terms( {":person"=>"0"}, "affiliation" ).to_xml
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       
       # Trying again with a more complex update hash
@@ -46,9 +42,26 @@ describe "OM::XML::TermValueOperators" do
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}, "person_1_last_name"=>{"0"=>"Andronicus"},"person_1_first_name"=>{"0"=>"Titus"}, "person_1_role"=>{"0"=>"otherrole1","1"=>"otherrole2"}}
     end
     
-    it "should work when you re-run the example" do
+    it "should work when you re-run the command" do
       terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       result = @article.update_values(terms_update_hash)
+      @article.term_values( {":person"=>"0"}, "affiliation" ).should == ["affiliation1", "affiliation2", "affiliation3"]
+      result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      
+      # result = @article.update_values(terms_update_hash)
+      # result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      @article = OM::Samples::ModsArticle.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
+      result = @article.update_values(terms_update_hash)
+      @article.term_values( {":person"=>"0"}, "affiliation" ).should == ["affiliation1", "affiliation2", "affiliation3"]
+      result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      result = @article.update_values(terms_update_hash)
+      
+      terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
+      @article = OM::Samples::ModsArticle.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
+      p terms_update_hash
+      result = @article.update_values(terms_update_hash)
+      @article.term_values( {":person"=>"0"}, "affiliation" ).should == ["affiliation1", "affiliation2", "affiliation3"]
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       
       # Trying again with a more complex update hash
