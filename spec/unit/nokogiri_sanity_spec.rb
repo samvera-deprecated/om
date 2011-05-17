@@ -37,7 +37,7 @@ describe "OM::XML::TermValueOperators" do
       puts "Updated XML"
       puts @article.to_xml
       puts "AFFILIATIONS"
-      puts article.find_by_terms( {":person"=>"0"}, "affiliation"] ).to_xml
+      puts @article.find_by_terms( {":person"=>"0"}, "affiliation" ).to_xml
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       
       # Trying again with a more complex update hash
