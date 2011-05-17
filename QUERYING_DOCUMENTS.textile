@@ -6,7 +6,7 @@ _Note: In your code, don't worry about including OM::XML::TermXPathGenerator and
 
 h3. Load the Sample XML and Sample Terminology
 
-These examples use the Document class defined in "OM::Samples::ModsArticle":http://github.com/mediashelf/om/lib/om/samples/mods_article.rb
+These examples use the Document class defined in "OM::Samples::ModsArticle":https://github.com/mediashelf/om/blob/master/lib/om/samples/mods_article.rb
 
 Download "hydrangea_article1.xml":https://github.com/mediashelf/om/blob/master/spec/fixtures/mods_articles/hydrangea_article1.xml into your working directory, then run this:
 
@@ -113,9 +113,18 @@ doc.term_values(:journal, :title_info, :main_title)
  => ["TITLE OF HOST JOURNAL"] 
 </pre>
 
-More Proxy Terms!
+h2. Making life easier with Proxy Terms
 
-Sometimes all of these terms become tedious.  That's where proxy terms come in. You can use them to access frequently used Terms more easily.
+Sometimes all of these terms become tedious.  That's where proxy terms come in. You can use them to access frequently used Terms more easily.  As you can see in "OM::Samples::ModsArticle":https://github.com/mediashelf/om/blob/master/lib/om/samples/mods_article.rb, we have defined a few proxy terms for convenience.
+
+<pre>
+t.publication_url(:proxy=>[:location,:url])
+t.peer_reviewed(:proxy=>[:journal,:origin_info,:issuance], :index_as=>[:facetable])
+t.title(:proxy=>[:mods,:title_info, :main_title])
+t.journal_title(:proxy=>[:journal, :title_info, :main_title])
+</pre>
+
+You can use them just like any other Term when querying the document.
 
 <pre>
 OM::Samples::ModsArticle.terminology.xpath_for(:title)
