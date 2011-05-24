@@ -59,7 +59,6 @@ describe "OM::XML::TermValueOperators" do
       
       terms_update_hash = {[{":person"=>"0"}, "affiliation"]=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}
       @article = OM::Samples::ModsArticle.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
-      p terms_update_hash
       result = @article.update_values(terms_update_hash)
       @article.term_values( {":person"=>"0"}, "affiliation" ).should == ["affiliation1", "affiliation2", "affiliation3"]
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}}

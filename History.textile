@@ -1,3 +1,7 @@
+h3. 1.3.0
+
+  Document automatically includes Validation module, meaning that you can now call .validate on any document
+
 h3. 1.2.4
 
   TerminologyBuilder.root now passes on its options to the root term builder that it creates.

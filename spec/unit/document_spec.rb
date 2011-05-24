@@ -74,7 +74,13 @@ describe "OM::XML::Document" do
   after(:all) do
     Object.send(:remove_const, :DocumentTest)
   end
-    
+  
+  it "should automatically include the necessary modules" do
+    DocumentTest.included_modules.should include(OM::XML::Container)
+    DocumentTest.included_modules.should include(OM::XML::TermValueOperators)
+    DocumentTest.included_modules.should include(OM::XML::Validation)
+  end
+  
   describe ".ox_namespaces" do
     it "should merge terminology namespaces with document namespaces" do
       @fixturemods.ox_namespaces.should == {"oxns"=>"http://www.loc.gov/mods/v3", "xmlns:ns2"=>"http://www.w3.org/1999/xlink", "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns:ns3"=>"http://www.loc.gov/mods/v3", "xmlns"=>"http://www.loc.gov/mods/v3"}
