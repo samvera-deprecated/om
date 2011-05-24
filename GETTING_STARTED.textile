@@ -1,9 +1,31 @@
-<pre>
-gem install om
-</pre>
+To get started, you will create a new folder, set up a Gemfile to install OM, and then run bundler.
 
 <pre>
+mkdir omtest
+cd omtest
+</pre>
+
+Using whichever editor you prefer, create a file called Gemfile with the following contents
+
+<pre>
+source 'http://rubygems.org'
+gem 'om'
+</pre>
+
+Now run bundler to install the gem:
+
+<pre>
+bundle install
+</pre>
+
+You should now be set to use irb to run the following examples.
+
+<pre>
+irb
+require "rubygems"
+=> true 
 require "om"
+=> true
 </pre>
 
 Builder for a simple Terminology based on a couple of elements from the MODS schema.
@@ -53,10 +75,10 @@ terminology.xpath_for(:organization)
 
 h2. OM Documents
 
-In action, you will usually use "OM::XML::Document":OM/XML/Document.html to deal with your xml.  Here's how to define a Document class that uses the same Terminology as above
+In action, you will usually use "OM::XML::Document":OM/XML/Document.html to deal with your xml.  Here's how to define a Document class that uses the same Terminology as above.  In a separate window, create the file my_mods_document.rb in the directory you created at the beginning of this document.
 
 <pre>
-  class MyModsDocument
+  class MyModsDocument &lt; ActiveFedora::NokogiriDatastream 
     include OM::XML::Document
     
     set_terminology do |t|
@@ -111,8 +133,10 @@ OM::XML::Document provides the set_terminology method to handle the details of c
 h3. Creating XML Documents from Scratch
 
 <pre>
+  require "my_mods_document"
   newdoc = MyModsDocument.new
   newdoc.to_xml
+  => NoMethodError: undefined method `to_xml' for nil:NilClass
 </pre>
 
 By default, new OM Document instances will create an empty xml document.  However, if you set self.xml_template to return a different "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html, that will be used instead.  
@@ -135,9 +159,9 @@ Now take a look at the document you've loaded.  We will use this document for th
 
 <pre>doc.to_xml</pre>
 
-h3. Directly accessing the "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html and the "OM::XML::Terminology":OM/XML/Terminology.html
+h3. Directly accessing the "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html and the "OM::XML::Terminology":https://github.com/mediashelf/om/blob/master/lib/om/xml/terminology.rb
 
-"OM::XML::Document":OM/XML/Document.html is implemented as a container for a "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html.  It uses the associated Terminology to provide a bunch of convenience methods that wrap calls to Nokogiri.  If you ever need to operate directly on the Nokogiri Document, simply call ng_xml and do what you need to do.  OM will not get in your way.
+"OM::XML::Document":https://github.com/mediashelf/om/blob/master/lib/om/xml/document.rb is implemented as a container for a "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html.  It uses the associated Terminology to provide a bunch of convenience methods that wrap calls to Nokogiri.  If you ever need to operate directly on the Nokogiri Document, simply call ng_xml and do what you need to do.  OM will not get in your way.
 
 <pre>ng_document = doc.ng_xml</pre>
 
@@ -152,7 +176,7 @@ h3. Querying OM Documents
 
 Using the Terminology associated with your Document, you can query the xml for Nodes _or_ node values without ever writing a line of XPath.
 
-You can use "OM::XML::Document.find_by_terms":OM/XML/Document.html#find_by_terms-instance_method to retrieve xml nodes from the datastream.  It returns Nokogiri::XML::Node objects.
+You can use OM::XML::Document.find_by_terms to retrieve xml nodes from the datastream.  It returns Nokogiri::XML::Node objects.
 
 <pre>
 doc.find_by_terms(:person)
@@ -160,11 +184,11 @@ doc.find_by_terms(:person).length
 doc.find_by_terms(:person).each {|n| puts n.to_xml}
 </pre>
 
-If you want to get directly to the _values_ within those nodes, use "term_values":OM/XML/TermValueOperators.html#term_values-instance_method
+If you want to get directly to the _values_ within those nodes, use OM::XML::Document.term_values
 
 <pre>
-doc.term_values(:person, :first_name)
-doc.term_values(:person, :last_name)
+doc.term_values(:person, :given_name)
+doc.term_values(:person, :family_name)
 </pre>
 
 If the xpath points to XML nodes that contain other nodes, the response to term_values will contain Nokogiri::XML::Node objects instead of text values.
@@ -173,15 +197,15 @@ If the xpath points to XML nodes that contain other nodes, the response to term_
   doc.term_values(:name)
 </pre>
 
-For more examples of Querying OM Documents, see {file:QUERYING_DOCUMENTS.textile Querying Documents}
+For more examples of Querying OM Documents, see "Querying Documents":https://github.com/mediashelf/om/blob/master/QUERYING_DOCUMENTS.textile
 
-h3. Updating, Inserting & Deleting Elements ("TermValueOperators":OM/XML/TermValueOperators.html)
+h3. Updating, Inserting & Deleting Elements (TermValueOperators)
 
-For more examples of Updating OM Documents, see {file:UPDATING_DOCUMENTS.textile Updating Documents}
+For more examples of Updating OM Documents, see "Updating Documents":https://github.com/mediashelf/om/blob/master/UPDATING_DOCUMENTS.textile
 
 h3. Validating Documents
 
-If you have a schema defined in your Terminology's root Term, you can validate any xml document by calling ".validate":OM/XML/Validation.html#validate-instance_method on any instance of your Document classes.
+If you have a schema defined in your Terminology's root Term, you can validate any xml document by calling ".validate" on any instance of your Document classes.
 
 <pre>doc.validate</pre>
 
