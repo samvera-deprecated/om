@@ -133,10 +133,10 @@ OM::XML::Document provides the set_terminology method to handle the details of c
 h3. Creating XML Documents from Scratch
 
 <pre>
-  require "my_mods_document"
-  newdoc = MyModsDocument.new
-  newdoc.to_xml
-  => NoMethodError: undefined method `to_xml' for nil:NilClass
+require "my_mods_document"
+newdoc = MyModsDocument.new
+newdoc.to_xml
+=> NoMethodError: undefined method `to_xml' for nil:NilClass
 </pre>
 
 By default, new OM Document instances will create an empty xml document.  However, if you set self.xml_template to return a different "Nokogiri::XML::Document":http://nokogiri.rubyforge.org/nokogiri/Nokogiri/XML/Document.html, that will be used instead.  
@@ -151,8 +151,8 @@ To load existing XML into your OM Document, use "#from_xml":OM/XML/Container/Cla
 Download "hydrangea_article1.xml":https://github.com/mediashelf/om/blob/master/spec/fixtures/mods_articles/hydrangea_article1.xml into your working directory, then run this:
 
 <pre>
-  sample_xml = File.new("hydrangea_article1.xml")
-  doc = MyModsDocument.from_xml(sample_xml)
+sample_xml = File.new("hydrangea_article1.xml")
+doc = MyModsDocument.from_xml(sample_xml)
 </pre>
 
 Now take a look at the document you've loaded.  We will use this document for the next few examples.
@@ -168,8 +168,8 @@ h3. Directly accessing the "Nokogiri::XML::Document":http://nokogiri.rubyforge.o
 If you need to look at the Terminology associated with your Document, call "#terminology":OM/XML/Document/ClassMethods.html#terminology-instance_method on the _class_.
 
 <pre>
-  MyModsDocument.terminology
-  doc.class.terminology
+MyModsDocument.terminology
+doc.class.terminology
 </pre>
 
 h3. Querying OM Documents 
@@ -194,7 +194,7 @@ doc.term_values(:person, :family_name)
 If the xpath points to XML nodes that contain other nodes, the response to term_values will contain Nokogiri::XML::Node objects instead of text values.
 
 <pre>
-  doc.term_values(:name)
+doc.term_values(:name)
 </pre>
 
 For more examples of Querying OM Documents, see "Querying Documents":https://github.com/mediashelf/om/blob/master/QUERYING_DOCUMENTS.textile
