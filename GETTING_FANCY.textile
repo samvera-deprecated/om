@@ -16,10 +16,10 @@ To achieve this:
 
 <pre>
   builder = OM::XML::Terminology::Builder.new do |t|
-    t.root(:xmlns=>"http://yourmediashelf.com/schemas/hydra-dataset/v0")
+    t.root(:path=>"grants", :xmlns=>"http://yourmediashelf.com/schemas/hydra-dataset/v0", :schema=>"http://example.org/schemas/grants-v1.xsd")
     t.grant {
-      t.organization {
-        t.name
+      t.organization(:attributes=>{:type=>"funder"}) {
+        t.name(:index_as=>:searchable)
       }
       t.number
     }
@@ -30,18 +30,30 @@ To achieve this:
 You could also do this:
 
 <pre>
-include OM::XML
-handcrafted_terminology = Terminology.new
+# Create the Terminology, set its namespaces & (optional) schema 
+# Note that you have to set the :oxns namespaces to match :xmlns
 
-# Create term1 (the root), set its xmlns and set it as the root term
-term1 = Term.new(:xmlns=>"http://yourmediashelf.com/schemas/hydra-dataset/v0")
+handcrafted_terminology = OM::XML::Terminology.new
+handcrafted_terminology.namespaces[:xmlns] = "http://yourmediashelf.com/schemas/hydra-dataset/v0"
+handcrafted_terminology.namespaces[:oxns] = "http://yourmediashelf.com/schemas/hydra-dataset/v0"
+handcrafted_terminology.schema = "http://example.org/schemas/grants-v1.xsd"
+
+
+# Create term1 (the root) and set it as the root term
+term1 = OM::XML::Term.new("grants")
 term1.is_root_term = true
 
 # Create term2 (grant) and its subterms
-term2 = Term.new(:name=>"grant", :path=>"grant")
-subterm1 = Term.new(:name=>"organization", :path=>"organization")
-subterm2 = Term.new(:name=>"number", :path=>"number")
-subsubterm = Term.new(:name=>"name_", :path=>"name")
+term2 = OM::XML::Term.new("grant")
+term2.path = "grant"  # this is automatically set based on the Term's name if you don't explicitly set it
+
+subterm1 = OM::XML::Term.new("organization")
+subterm1.attributes = {:type=>"funder"}
+
+subterm2 = OM::XML::Term.new("number")
+
+subsubterm = OM::XML::Term.new("name")
+subsubterm.index_as = :searchable
 
 # Assemble the tree of terms by adding child terms to their parents, then add those to the Terminology.
 subterm1.add_child(subsubterm)
