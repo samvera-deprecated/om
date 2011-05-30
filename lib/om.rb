@@ -54,6 +54,10 @@ module OM
     end
     return flat_array
   end
+
+  def self.version
+    Om::VERSION
+  end
 end
 
 module OM::XML; end
@@ -61,5 +65,5 @@ module OM::XML; end
 require "om/tree_node"
 require "om/xml"
 require "om/samples"
-
+require "om/version"
 
