@@ -42,15 +42,11 @@ describe "OM::XML::Term.to_xml" do
     xml.xpath("/term/index_as").first.text.should == ""
     xml.xpath("/term/required").first.text.should == "false"
     xml.xpath("/term/data_type").first.text.should == "string"
-    # xml.xpath("/term/properties/index_as").first.text.should == ""
-    # xml.xpath("/term/properties/required").first.text.should == "false"
-    # xml.xpath("/term/properties/data_type").first.text.should == "string"
   end
-  it "should store root term info" do
-    pending
+  it "should capture root term info" do
     xml = @terminology.root_terms.first.to_xml
-    xml.xpath("/term/@is_root_term").should == true
-    @person_first_name.to_xml.xpath("/term/@is_root_term").should_not == true
+    xml.xpath("/term/is_root_term").text.should == "true"
+    @person_first_name.to_xml.xpath("/term/is_root_term").should be_empty
   end
   it "should allow you to pass in a document to add the term to" do
     doc = Nokogiri::XML::Document.new

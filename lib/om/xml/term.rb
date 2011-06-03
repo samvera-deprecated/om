@@ -245,6 +245,9 @@ class OM::XML::Term
   def to_xml(options={}, document=Nokogiri::XML::Document.new)
     builder = Nokogiri::XML::Builder.with(document) do |xml|
       xml.term(:name=>name) {
+        if is_root_term?
+          xml.is_root_term("true")
+        end
         xml.path path
         xml.namespace_prefix namespace_prefix
         unless attributes.nil? || attributes.empty?

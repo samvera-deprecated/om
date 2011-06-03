@@ -7,29 +7,29 @@
       <identifier>http://www.loc.gov/mods/v3</identifier>
     </namespace>
     <namespace>
-      <name>xmlns</name>
-      <identifier>http://www.loc.gov/mods/v3</identifier>
-    </namespace>
-    <namespace>
       <name>xmlns:foo</name>
       <identifier>http://my.custom.namespace</identifier>
     </namespace>
+    <namespace>
+      <name>xmlns</name>
+      <identifier>http://www.loc.gov/mods/v3</identifier>
+    </namespace>
   </namespaces>
   <terms>
-    <term name="subject">
-      <path>subject</path>
+    <term name="title_info">
+      <path>titleInfo</path>
       <namespace_prefix>oxns</namespace_prefix>
       <index_as/>
       <required>false</required>
       <data_type>string</data_type>
       <xpath>
-        <relative>oxns:subject</relative>
-        <absolute>//oxns:subject</absolute>
-        <constrained>//oxns:subject[contains(., \"#{constraint_value}\")]</constrained>
+        <relative>oxns:titleInfo</relative>
+        <absolute>//oxns:titleInfo</absolute>
+        <constrained>//oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
       </xpath>
       <children>
-        <term name="topic">
-          <path>topic</path>
+        <term name="main_title">
+          <path>title</path>
           <namespace_prefix>oxns</namespace_prefix>
           <index_as>
             <index_type/>
@@ -37,451 +37,24 @@
           <required>false</required>
           <data_type>string</data_type>
           <xpath>
-            <relative>oxns:topic</relative>
-            <absolute>//oxns:subject/oxns:topic</absolute>
-            <constrained>//oxns:subject/oxns:topic[contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children/>
-        </term>
-        <term name="topic">
-          <path>topic</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <index_as>
-            <index_type/>
-          </index_as>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:topic</relative>
-            <absolute>//oxns:mods/oxns:subject/oxns:topic</absolute>
-            <constrained>//oxns:mods/oxns:subject/oxns:topic[contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children/>
-        </term>
-      </children>
-    </term>
-    <term name="mods">
-      <path>mods</path>
-      <namespace_prefix>oxns</namespace_prefix>
-      <index_as/>
-      <required>false</required>
-      <data_type>string</data_type>
-      <xpath>
-        <relative>oxns:mods</relative>
-        <absolute>//oxns:mods</absolute>
-        <constrained>//oxns:mods[contains(., \"#{constraint_value}\")]</constrained>
-      </xpath>
-      <children>
-        <term name="subject">
-          <path>subject</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <index_as/>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:subject</relative>
-            <absolute>//oxns:mods/oxns:subject</absolute>
-            <constrained>//oxns:mods/oxns:subject[contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children/>
-        </term>
-        <term name="role">
-          <path>role</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <index_as/>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:role</relative>
-            <absolute>//oxns:mods/oxns:role</absolute>
-            <constrained>//oxns:mods/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:mods/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:mods/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:mods/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:mods/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:name/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:name/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:name/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:name/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="code">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>code</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="code"]</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="text">
-              <path>roleTerm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>text</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:roleTerm[@type="text"]</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-          </children>
-        </term>
-        <term name="location">
-          <path>location</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <index_as/>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:location</relative>
-            <absolute>//oxns:mods/oxns:location</absolute>
-            <constrained>//oxns:mods/oxns:location[contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children>
-            <term name="url">
-              <path>url</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:url</relative>
-                <absolute>//oxns:mods/oxns:location/oxns:url</absolute>
-                <constrained>//oxns:mods/oxns:location/oxns:url[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="url">
-              <path>url</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:url</relative>
-                <absolute>//oxns:location/oxns:url</absolute>
-                <constrained>//oxns:location/oxns:url[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-          </children>
-        </term>
-        <term name="note">
-          <path>note</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <index_as/>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:note</relative>
-            <absolute>//oxns:mods/oxns:note</absolute>
-            <constrained>//oxns:mods/oxns:note[contains(., \"#{constraint_value}\")]</constrained>
+            <relative>oxns:title</relative>
+            <absolute>//oxns:titleInfo/oxns:title</absolute>
+            <constrained>//oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
           </xpath>
           <children/>
         </term>
         <term name="language">
-          <path>language</path>
+          <path attribute="lang"/>
           <namespace_prefix>oxns</namespace_prefix>
-          <index_as/>
+          <index_as>
+            <index_type/>
+          </index_as>
           <required>false</required>
           <data_type>string</data_type>
           <xpath>
-            <relative>oxns:language</relative>
-            <absolute>//oxns:mods/oxns:language</absolute>
-            <constrained>//oxns:mods/oxns:language[contains(., \"#{constraint_value}\")]</constrained>
+            <relative>@lang</relative>
+            <absolute>//oxns:titleInfo/@lang</absolute>
+            <constrained>//oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
           </xpath>
           <children>
             <term name="lang_code">
@@ -522,6 +95,1411 @@
             </term>
           </children>
         </term>
+        <term name="main_title">
+          <path>title</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:title</relative>
+            <absolute>//oxns:relatedItem[@type="host"]/oxns:titleInfo/oxns:title</absolute>
+            <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="language">
+          <path attribute="lang"/>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>@lang</relative>
+            <absolute>//oxns:relatedItem[@type="host"]/oxns:titleInfo/@lang</absolute>
+            <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="main_title">
+          <path>title</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:title</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:titleInfo/oxns:title</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="language">
+          <path attribute="lang"/>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>@lang</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:titleInfo/@lang</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="main_title">
+          <path>title</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:title</relative>
+            <absolute>//oxns:mods/oxns:titleInfo/oxns:title</absolute>
+            <constrained>//oxns:mods/oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="language">
+          <path attribute="lang"/>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>@lang</relative>
+            <absolute>//oxns:mods/oxns:titleInfo/@lang</absolute>
+            <constrained>//oxns:mods/oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+      </children>
+    </term>
+    <term name="journal">
+      <path>relatedItem</path>
+      <namespace_prefix>oxns</namespace_prefix>
+      <attributes>
+        <type>host</type>
+      </attributes>
+      <index_as/>
+      <required>false</required>
+      <data_type>string</data_type>
+      <xpath>
+        <relative>oxns:relatedItem[@type="host"]</relative>
+        <absolute>//oxns:relatedItem[@type="host"]</absolute>
+        <constrained>//oxns:relatedItem[@type=\"host\" and contains(., \"#{constraint_value}\")]</constrained>
+      </xpath>
+      <children>
+        <term name="title_info">
+          <path>titleInfo</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:titleInfo</relative>
+            <absolute>//oxns:relatedItem[@type="host"]/oxns:titleInfo</absolute>
+            <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="issue">
+          <path>part</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:part</relative>
+            <absolute>//oxns:relatedItem[@type="host"]/oxns:part</absolute>
+            <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children>
+            <term name="volume">
+              <path>detail</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>volume</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <default_content_path>number</default_content_path>
+              <xpath>
+                <relative>oxns:detail[@type="volume"]</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume"]</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="publication_date">
+              <path>date</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:date</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:date</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:date[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="extent">
+              <path>extent</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:extent</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="pages">
+              <path>extent</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <unit>pages</unit>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:extent[@unit="pages"]</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children>
+                <term name="start">
+                  <path>start</path>
+                  <namespace_prefix>oxns</namespace_prefix>
+                  <index_as/>
+                  <required>false</required>
+                  <data_type>string</data_type>
+                  <xpath>
+                    <relative>oxns:start</relative>
+                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:start</absolute>
+                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:start[contains(., \"#{constraint_value}\")]</constrained>
+                  </xpath>
+                  <children/>
+                </term>
+                <term name="end">
+                  <path>end</path>
+                  <namespace_prefix>oxns</namespace_prefix>
+                  <index_as/>
+                  <required>false</required>
+                  <data_type>string</data_type>
+                  <xpath>
+                    <relative>oxns:end</relative>
+                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:end</absolute>
+                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:end[contains(., \"#{constraint_value}\")]</constrained>
+                  </xpath>
+                  <children/>
+                </term>
+                <term name="start">
+                  <path>start</path>
+                  <namespace_prefix>oxns</namespace_prefix>
+                  <index_as/>
+                  <required>false</required>
+                  <data_type>string</data_type>
+                  <xpath>
+                    <relative>oxns:start</relative>
+                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:start</absolute>
+                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:start[contains(., \"#{constraint_value}\")]</constrained>
+                  </xpath>
+                  <children/>
+                </term>
+                <term name="end">
+                  <path>end</path>
+                  <namespace_prefix>oxns</namespace_prefix>
+                  <index_as/>
+                  <required>false</required>
+                  <data_type>string</data_type>
+                  <xpath>
+                    <relative>oxns:end</relative>
+                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:end</absolute>
+                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:end[contains(., \"#{constraint_value}\")]</constrained>
+                  </xpath>
+                  <children/>
+                </term>
+              </children>
+            </term>
+            <term name="level">
+              <path>detail</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>number</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <default_content_path>number</default_content_path>
+              <xpath>
+                <relative>oxns:detail[@type="number"]</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="number"]</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"number\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="volume">
+              <path>detail</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>volume</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <default_content_path>number</default_content_path>
+              <xpath>
+                <relative>oxns:detail[@type="volume"]</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume"]</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="publication_date">
+              <path>date</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:date</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:date</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:date[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="extent">
+              <path>extent</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:extent</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="pages">
+              <path>extent</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <unit>pages</unit>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:extent[@unit="pages"]</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="level">
+              <path>detail</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>number</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <default_content_path>number</default_content_path>
+              <xpath>
+                <relative>oxns:detail[@type="number"]</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="number"]</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"number\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+          </children>
+        </term>
+        <term name="origin_info">
+          <path>originInfo</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:originInfo</relative>
+            <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo</absolute>
+            <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children>
+            <term name="publisher">
+              <path>publisher</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:publisher</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:publisher</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:publisher[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="date_issued">
+              <path>dateIssued</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:dateIssued</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:dateIssued</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:dateIssued[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="issuance">
+              <path>issuance</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:issuance</relative>
+                <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:issuance</absolute>
+                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:issuance[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="publisher">
+              <path>publisher</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:publisher</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:publisher</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:publisher[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="date_issued">
+              <path>dateIssued</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:dateIssued</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:dateIssued</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:dateIssued[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="issuance">
+              <path>issuance</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:issuance</relative>
+                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:issuance</absolute>
+                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:issuance[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+          </children>
+        </term>
+        <term name="issn">
+          <path>identifier</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>issn</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:identifier[@type="issn"]</relative>
+            <absolute>//oxns:relatedItem[@type="host"]/oxns:identifier[@type="issn"]</absolute>
+            <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:identifier[@type=\"issn\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="title_info">
+          <path>titleInfo</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:titleInfo</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:titleInfo</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="issue">
+          <path>part</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:part</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="origin_info">
+          <path>originInfo</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:originInfo</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="issn">
+          <path>identifier</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>issn</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:identifier[@type="issn"]</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:identifier[@type="issn"]</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:identifier[@type=\"issn\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+      </children>
+    </term>
+    <term name="location">
+      <path>location</path>
+      <namespace_prefix>oxns</namespace_prefix>
+      <index_as/>
+      <required>false</required>
+      <data_type>string</data_type>
+      <xpath>
+        <relative>oxns:location</relative>
+        <absolute>//oxns:location</absolute>
+        <constrained>//oxns:location[contains(., \"#{constraint_value}\")]</constrained>
+      </xpath>
+      <children>
+        <term name="url">
+          <path>url</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:url</relative>
+            <absolute>//oxns:location/oxns:url</absolute>
+            <constrained>//oxns:location/oxns:url[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="url">
+          <path>url</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:url</relative>
+            <absolute>//oxns:mods/oxns:location/oxns:url</absolute>
+            <constrained>//oxns:mods/oxns:location/oxns:url[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+      </children>
+    </term>
+    <term name="abstract">
+      <path>abstract</path>
+      <namespace_prefix>oxns</namespace_prefix>
+      <index_as/>
+      <required>false</required>
+      <data_type>string</data_type>
+      <xpath>
+        <relative>oxns:abstract</relative>
+        <absolute>//oxns:abstract</absolute>
+        <constrained>//oxns:abstract[contains(., \"#{constraint_value}\")]</constrained>
+      </xpath>
+      <children/>
+    </term>
+    <term name="person">
+      <path>name</path>
+      <namespace_prefix>oxns</namespace_prefix>
+      <attributes>
+        <type>personal</type>
+      </attributes>
+      <index_as>
+        <index_type/>
+      </index_as>
+      <required>false</required>
+      <data_type>string</data_type>
+      <xpath>
+        <relative>oxns:name[@type="personal"]</relative>
+        <absolute>//oxns:name[@type="personal"]</absolute>
+        <constrained>//oxns:name[@type=\"personal\" and contains(., \"#{constraint_value}\")]</constrained>
+      </xpath>
+      <children>
+        <term name="affiliation">
+          <path>affiliation</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:affiliation</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:affiliation</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="computing_id">
+          <path>computing_id</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:computing_id</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:computing_id</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="institution">
+          <path>affiliation</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:affiliation</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:affiliation</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="name_content">
+          <path>text()</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>text()[normalize-space(.)]</relative>
+            <absolute>//oxns:name[@type="personal"]/text()[normalize-space(.)]</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="displayForm">
+          <path>displayForm</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:displayForm</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:displayForm</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="first_name">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>given</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="given"]</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="given"]</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="description">
+          <path>description</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:description</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:description</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="role">
+          <path>role</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:role</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:role</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:mods/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:mods/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:mods/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:mods/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:name/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:name/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:name/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:name/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="text">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>text</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="text"]</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="text"]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"text\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="code">
+              <path>roleTerm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>code</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:roleTerm[@type="code"]</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:role/oxns:roleTerm[@type="code"]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:role/oxns:roleTerm[@type=\"code\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+          </children>
+        </term>
+        <term name="last_name">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>family</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="family"]</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="family"]</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="date">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>date</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="date"]</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="date"]</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="namePart">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:namePart</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="terms_of_address">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>termsOfAddress</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="termsOfAddress"]</relative>
+            <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="termsOfAddress"]</absolute>
+            <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="affiliation">
+          <path>affiliation</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:affiliation</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:affiliation</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="computing_id">
+          <path>computing_id</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:computing_id</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:computing_id</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="institution">
+          <path>affiliation</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:affiliation</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:affiliation</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="name_content">
+          <path>text()</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>text()[normalize-space(.)]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/text()[normalize-space(.)]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="displayForm">
+          <path>displayForm</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:displayForm</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:displayForm</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="first_name">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>given</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="given"]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="given"]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="description">
+          <path>description</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:description</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:description</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="role">
+          <path>role</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:role</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:role</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="last_name">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>family</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="family"]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="family"]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="date">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>date</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="date"]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="date"]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="namePart">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="terms_of_address">
+          <path>namePart</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>termsOfAddress</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:namePart[@type="termsOfAddress"]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="termsOfAddress"]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+      </children>
+    </term>
+    <term name="mods">
+      <is_root_term>true</is_root_term>
+      <path>mods</path>
+      <namespace_prefix>oxns</namespace_prefix>
+      <index_as/>
+      <required>false</required>
+      <data_type>string</data_type>
+      <xpath>
+        <relative>oxns:mods</relative>
+        <absolute>//oxns:mods</absolute>
+        <constrained>//oxns:mods[contains(., \"#{constraint_value}\")]</constrained>
+      </xpath>
+      <children>
+        <term name="location">
+          <path>location</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:location</relative>
+            <absolute>//oxns:mods/oxns:location</absolute>
+            <constrained>//oxns:mods/oxns:location[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="journal">
+          <path>relatedItem</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>host</type>
+          </attributes>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:relatedItem[@type="host"]</relative>
+            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]</absolute>
+            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="title_info">
+          <path>titleInfo</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:titleInfo</relative>
+            <absolute>//oxns:mods/oxns:titleInfo</absolute>
+            <constrained>//oxns:mods/oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="abstract">
+          <path>abstract</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:abstract</relative>
+            <absolute>//oxns:mods/oxns:abstract</absolute>
+            <constrained>//oxns:mods/oxns:abstract[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="person">
+          <path>name</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <attributes>
+            <type>personal</type>
+          </attributes>
+          <index_as>
+            <index_type/>
+          </index_as>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:name[@type="personal"]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="personal"]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"personal\" and contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="subject">
+          <path>subject</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:subject</relative>
+            <absolute>//oxns:mods/oxns:subject</absolute>
+            <constrained>//oxns:mods/oxns:subject[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children>
+            <term name="topic">
+              <path>topic</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:topic</relative>
+                <absolute>//oxns:mods/oxns:subject/oxns:topic</absolute>
+                <constrained>//oxns:mods/oxns:subject/oxns:topic[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="topic">
+              <path>topic</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:topic</relative>
+                <absolute>//oxns:subject/oxns:topic</absolute>
+                <constrained>//oxns:subject/oxns:topic[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+          </children>
+        </term>
+        <term name="note">
+          <path>note</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:note</relative>
+            <absolute>//oxns:mods/oxns:note</absolute>
+            <constrained>//oxns:mods/oxns:note[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
+        <term name="role">
+          <path>role</path>
+          <namespace_prefix>oxns</namespace_prefix>
+          <index_as/>
+          <required>false</required>
+          <data_type>string</data_type>
+          <xpath>
+            <relative>oxns:role</relative>
+            <absolute>//oxns:mods/oxns:role</absolute>
+            <constrained>//oxns:mods/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+          </xpath>
+          <children/>
+        </term>
         <term name="organization">
           <path>name</path>
           <namespace_prefix>oxns</namespace_prefix>
@@ -539,6 +1517,19 @@
             <constrained>//oxns:mods/oxns:name[@type=\"corporate\" and contains(., \"#{constraint_value}\")]</constrained>
           </xpath>
           <children>
+            <term name="affiliation">
+              <path>affiliation</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:affiliation</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
             <term name="computing_id">
               <path>computing_id</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -549,6 +1540,34 @@
                 <relative>oxns:computing_id</relative>
                 <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:computing_id</absolute>
                 <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="institution">
+              <path>affiliation</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:affiliation</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="name_content">
+              <path>text()</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>text()[normalize-space(.)]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/text()[normalize-space(.)]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -565,16 +1584,34 @@
               </xpath>
               <children/>
             </term>
-            <term name="name_content">
-              <path>text()</path>
+            <term name="first_name">
+              <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>given</type>
+              </attributes>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>text()[normalize-space(.)]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/text()[normalize-space(.)]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:namePart[@type="given"]</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:namePart[@type="given"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="description">
+              <path>description</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:description</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:description</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -607,35 +1644,6 @@
               </xpath>
               <children/>
             </term>
-            <term name="namePart">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:namePart</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
             <term name="date">
               <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -652,16 +1660,16 @@
               </xpath>
               <children/>
             </term>
-            <term name="affiliation">
-              <path>affiliation</path>
+            <term name="namePart">
+              <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:namePart</relative>
+                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:namePart</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -681,33 +1689,16 @@
               </xpath>
               <children/>
             </term>
-            <term name="description">
-              <path>description</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:description</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="institution">
+            <term name="affiliation">
               <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
+              <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name[@type="corporate"]/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:name[@type="corporate"]/oxns:affiliation</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -724,16 +1715,18 @@
               </xpath>
               <children/>
             </term>
-            <term name="displayForm">
-              <path>displayForm</path>
+            <term name="institution">
+              <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
+              <index_as>
+                <index_type/>
+              </index_as>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:displayForm</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:affiliation</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -747,6 +1740,50 @@
                 <relative>text()[normalize-space(.)]</relative>
                 <absolute>//oxns:name[@type="corporate"]/text()[normalize-space(.)]</absolute>
                 <constrained>//oxns:name[@type=\"corporate\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="displayForm">
+              <path>displayForm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:displayForm</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:displayForm</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="first_name">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>given</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="given"]</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:namePart[@type="given"]</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="description">
+              <path>description</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:description</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:description</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -779,35 +1816,6 @@
               </xpath>
               <children/>
             </term>
-            <term name="namePart">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:namePart</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
             <term name="date">
               <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -824,16 +1832,16 @@
               </xpath>
               <children/>
             </term>
-            <term name="affiliation">
-              <path>affiliation</path>
+            <term name="namePart">
+              <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:affiliation</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:namePart</relative>
+                <absolute>//oxns:name[@type="corporate"]/oxns:namePart</absolute>
+                <constrained>//oxns:name[@type=\"corporate\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -853,399 +1861,6 @@
               </xpath>
               <children/>
             </term>
-            <term name="description">
-              <path>description</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:description</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="institution">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name[@type="corporate"]/oxns:affiliation</absolute>
-                <constrained>//oxns:name[@type=\"corporate\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-          </children>
-        </term>
-        <term name="conference">
-          <path>name</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <attributes>
-            <type>conference</type>
-          </attributes>
-          <index_as>
-            <index_type/>
-          </index_as>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:name[@type="conference"]</relative>
-            <absolute>//oxns:mods/oxns:name[@type="conference"]</absolute>
-            <constrained>//oxns:mods/oxns:name[@type=\"conference\" and contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children>
-            <term name="computing_id">
-              <path>computing_id</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:computing_id</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:computing_id</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="displayForm">
-              <path>displayForm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:displayForm</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="name_content">
-              <path>text()</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>text()[normalize-space(.)]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/text()[normalize-space(.)]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="role">
-              <path>role</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:role</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:role</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="last_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>family</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="family"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="family"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="namePart">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="date">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>date</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="date"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="date"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="affiliation">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="terms_of_address">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>termsOfAddress</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="termsOfAddress"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="termsOfAddress"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="description">
-              <path>description</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:description</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="institution">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="computing_id">
-              <path>computing_id</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:computing_id</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:computing_id</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="displayForm">
-              <path>displayForm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:displayForm</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="name_content">
-              <path>text()</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>text()[normalize-space(.)]</relative>
-                <absolute>//oxns:name[@type="conference"]/text()[normalize-space(.)]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="role">
-              <path>role</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:role</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:role</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="last_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>family</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="family"]</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="family"]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="namePart">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:namePart</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="date">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>date</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="date"]</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="date"]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="affiliation">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:affiliation</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="terms_of_address">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>termsOfAddress</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="termsOfAddress"]</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="termsOfAddress"]</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="description">
-              <path>description</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:description</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="institution">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name[@type="conference"]/oxns:affiliation</absolute>
-                <constrained>//oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
           </children>
         </term>
         <term name="name">
@@ -1260,6 +1875,19 @@
             <constrained>//oxns:mods/oxns:name[contains(., \"#{constraint_value}\")]</constrained>
           </xpath>
           <children>
+            <term name="affiliation">
+              <path>affiliation</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:affiliation</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
             <term name="computing_id">
               <path>computing_id</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -1273,16 +1901,18 @@
               </xpath>
               <children/>
             </term>
-            <term name="displayForm">
-              <path>displayForm</path>
+            <term name="institution">
+              <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
+              <index_as>
+                <index_type/>
+              </index_as>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:displayForm</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:affiliation</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1299,6 +1929,19 @@
               </xpath>
               <children/>
             </term>
+            <term name="displayForm">
+              <path>displayForm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:displayForm</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:displayForm</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
             <term name="role">
               <path>role</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -1309,6 +1952,53 @@
                 <relative>oxns:role</relative>
                 <absolute>//oxns:mods/oxns:name/oxns:role</absolute>
                 <constrained>//oxns:mods/oxns:name/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="description">
+              <path>description</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:description</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:description</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="first_name">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>given</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="given"]</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:namePart[@type="given"]</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="date">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>date</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="date"]</relative>
+                <absolute>//oxns:mods/oxns:name/oxns:namePart[@type="date"]</absolute>
+                <constrained>//oxns:mods/oxns:name/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1341,66 +2031,6 @@
               </xpath>
               <children/>
             </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="affiliation">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="date">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>date</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="date"]</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:namePart[@type="date"]</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="description">
-              <path>description</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:description</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
             <term name="terms_of_address">
               <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -1417,18 +2047,16 @@
               </xpath>
               <children/>
             </term>
-            <term name="institution">
+            <term name="affiliation">
               <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
+              <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:name/oxns:affiliation</absolute>
+                <constrained>//oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1445,16 +2073,18 @@
               </xpath>
               <children/>
             </term>
-            <term name="displayForm">
-              <path>displayForm</path>
+            <term name="institution">
+              <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
+              <index_as>
+                <index_type/>
+              </index_as>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:name/oxns:displayForm</absolute>
-                <constrained>//oxns:name/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:name/oxns:affiliation</absolute>
+                <constrained>//oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1471,6 +2101,19 @@
               </xpath>
               <children/>
             </term>
+            <term name="displayForm">
+              <path>displayForm</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:displayForm</relative>
+                <absolute>//oxns:name/oxns:displayForm</absolute>
+                <constrained>//oxns:name/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
             <term name="role">
               <path>role</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -1481,6 +2124,53 @@
                 <relative>oxns:role</relative>
                 <absolute>//oxns:name/oxns:role</absolute>
                 <constrained>//oxns:name/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="description">
+              <path>description</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as>
+                <index_type/>
+              </index_as>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:description</relative>
+                <absolute>//oxns:name/oxns:description</absolute>
+                <constrained>//oxns:name/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="first_name">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>given</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="given"]</relative>
+                <absolute>//oxns:name/oxns:namePart[@type="given"]</absolute>
+                <constrained>//oxns:name/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="date">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>date</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="date"]</relative>
+                <absolute>//oxns:name/oxns:namePart[@type="date"]</absolute>
+                <constrained>//oxns:name/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1513,66 +2203,6 @@
               </xpath>
               <children/>
             </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:name/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:name/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="affiliation">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name/oxns:affiliation</absolute>
-                <constrained>//oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="date">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>date</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="date"]</relative>
-                <absolute>//oxns:name/oxns:namePart[@type="date"]</absolute>
-                <constrained>//oxns:name/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="description">
-              <path>description</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:name/oxns:description</absolute>
-                <constrained>//oxns:name/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
             <term name="terms_of_address">
               <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -1589,162 +2219,26 @@
               </xpath>
               <children/>
             </term>
-            <term name="institution">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name/oxns:affiliation</absolute>
-                <constrained>//oxns:name/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
           </children>
         </term>
-        <term name="title_info">
-          <path>titleInfo</path>
+        <term name="language">
+          <path>language</path>
           <namespace_prefix>oxns</namespace_prefix>
           <index_as/>
           <required>false</required>
           <data_type>string</data_type>
           <xpath>
-            <relative>oxns:titleInfo</relative>
-            <absolute>//oxns:mods/oxns:titleInfo</absolute>
-            <constrained>//oxns:mods/oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
+            <relative>oxns:language</relative>
+            <absolute>//oxns:mods/oxns:language</absolute>
+            <constrained>//oxns:mods/oxns:language[contains(., \"#{constraint_value}\")]</constrained>
           </xpath>
-          <children>
-            <term name="language">
-              <path attribute="lang"/>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>@lang</relative>
-                <absolute>//oxns:mods/oxns:titleInfo/@lang</absolute>
-                <constrained>//oxns:mods/oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="main_title">
-              <path>title</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:title</relative>
-                <absolute>//oxns:mods/oxns:titleInfo/oxns:title</absolute>
-                <constrained>//oxns:mods/oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="language">
-              <path attribute="lang"/>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>@lang</relative>
-                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:titleInfo/@lang</absolute>
-                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="main_title">
-              <path>title</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:title</relative>
-                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:titleInfo/oxns:title</absolute>
-                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="language">
-              <path attribute="lang"/>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>@lang</relative>
-                <absolute>//oxns:titleInfo/@lang</absolute>
-                <constrained>//oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="main_title">
-              <path>title</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:title</relative>
-                <absolute>//oxns:titleInfo/oxns:title</absolute>
-                <constrained>//oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="language">
-              <path attribute="lang"/>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>@lang</relative>
-                <absolute>//oxns:relatedItem[@type="host"]/oxns:titleInfo/@lang</absolute>
-                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/@lang[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="main_title">
-              <path>title</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:title</relative>
-                <absolute>//oxns:relatedItem[@type="host"]/oxns:titleInfo/oxns:title</absolute>
-                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-          </children>
+          <children/>
         </term>
-        <term name="person">
+        <term name="conference">
           <path>name</path>
           <namespace_prefix>oxns</namespace_prefix>
           <attributes>
-            <type>personal</type>
+            <type>conference</type>
           </attributes>
           <index_as>
             <index_type/>
@@ -1752,11 +2246,24 @@
           <required>false</required>
           <data_type>string</data_type>
           <xpath>
-            <relative>oxns:name[@type="personal"]</relative>
-            <absolute>//oxns:mods/oxns:name[@type="personal"]</absolute>
-            <constrained>//oxns:mods/oxns:name[@type=\"personal\" and contains(., \"#{constraint_value}\")]</constrained>
+            <relative>oxns:name[@type="conference"]</relative>
+            <absolute>//oxns:mods/oxns:name[@type="conference"]</absolute>
+            <constrained>//oxns:mods/oxns:name[@type=\"conference\" and contains(., \"#{constraint_value}\")]</constrained>
           </xpath>
           <children>
+            <term name="affiliation">
+              <path>affiliation</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:affiliation</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
             <term name="computing_id">
               <path>computing_id</path>
               <namespace_prefix>oxns</namespace_prefix>
@@ -1765,21 +2272,23 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:computing_id</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:computing_id</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:computing_id</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-            <term name="displayForm">
-              <path>displayForm</path>
+            <term name="institution">
+              <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
+              <index_as>
+                <index_type/>
+              </index_as>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:displayForm</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:affiliation</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1791,50 +2300,21 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>text()[normalize-space(.)]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/text()[normalize-space(.)]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/text()[normalize-space(.)]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-            <term name="role">
-              <path>role</path>
+            <term name="displayForm">
+              <path>displayForm</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:role</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:role</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="last_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>family</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="family"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="family"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="namePart">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:displayForm</relative>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:displayForm</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1849,53 +2329,8 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="date">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>date</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="date"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="date"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="affiliation">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="terms_of_address">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>termsOfAddress</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="termsOfAddress"]</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:namePart[@type="termsOfAddress"]</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="given"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1909,62 +2344,8 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:description</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:description</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="institution">
-              <path>affiliation</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:mods/oxns:name[@type="personal"]/oxns:affiliation</absolute>
-                <constrained>//oxns:mods/oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="computing_id">
-              <path>computing_id</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:computing_id</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:computing_id</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="displayForm">
-              <path>displayForm</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:displayForm</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:displayForm</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="name_content">
-              <path>text()</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>text()[normalize-space(.)]</relative>
-                <absolute>//oxns:name[@type="personal"]/text()[normalize-space(.)]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:description</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1976,8 +2357,8 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:role</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:role</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:role</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -1992,37 +2373,8 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:namePart[@type="family"]</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="family"]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="namePart">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:namePart</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="first_name">
-              <path>namePart</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <attributes>
-                <type>given</type>
-              </attributes>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:namePart[@type="given"]</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="given"]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="family"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -2037,21 +2389,21 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:namePart[@type="date"]</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="date"]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="date"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-            <term name="affiliation">
-              <path>affiliation</path>
+            <term name="namePart">
+              <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:affiliation</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:namePart</relative>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -2066,23 +2418,34 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:namePart[@type="termsOfAddress"]</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:namePart[@type="termsOfAddress"]</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:mods/oxns:name[@type="conference"]/oxns:namePart[@type="termsOfAddress"]</absolute>
+                <constrained>//oxns:mods/oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-            <term name="description">
-              <path>description</path>
+            <term name="affiliation">
+              <path>affiliation</path>
               <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
+              <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:description</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:description</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:affiliation</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:affiliation</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="computing_id">
+              <path>computing_id</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:computing_id</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:computing_id</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:computing_id[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
@@ -2096,358 +2459,55 @@
               <data_type>string</data_type>
               <xpath>
                 <relative>oxns:affiliation</relative>
-                <absolute>//oxns:name[@type="personal"]/oxns:affiliation</absolute>
-                <constrained>//oxns:name[@type=\"personal\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
+                <absolute>//oxns:name[@type="conference"]/oxns:affiliation</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:affiliation[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-          </children>
-        </term>
-        <term name="abstract">
-          <path>abstract</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <index_as/>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:abstract</relative>
-            <absolute>//oxns:mods/oxns:abstract</absolute>
-            <constrained>//oxns:mods/oxns:abstract[contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children/>
-        </term>
-        <term name="journal">
-          <path>relatedItem</path>
-          <namespace_prefix>oxns</namespace_prefix>
-          <attributes>
-            <type>host</type>
-          </attributes>
-          <index_as/>
-          <required>false</required>
-          <data_type>string</data_type>
-          <xpath>
-            <relative>oxns:relatedItem[@type="host"]</relative>
-            <absolute>//oxns:mods/oxns:relatedItem[@type="host"]</absolute>
-            <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\" and contains(., \"#{constraint_value}\")]</constrained>
-          </xpath>
-          <children>
-            <term name="issue">
-              <path>part</path>
+            <term name="name_content">
+              <path>text()</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:part</relative>
-                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part</absolute>
-                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>text()[normalize-space(.)]</relative>
+                <absolute>//oxns:name[@type="conference"]/text()[normalize-space(.)]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/text()[normalize-space(.) and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
-              <children>
-                <term name="volume">
-                  <path>detail</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <attributes>
-                    <type>volume</type>
-                  </attributes>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <default_content_path>number</default_content_path>
-                  <xpath>
-                    <relative>oxns:detail[@type="volume"]</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume"]</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="level">
-                  <path>detail</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <attributes>
-                    <type>number</type>
-                  </attributes>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <default_content_path>number</default_content_path>
-                  <xpath>
-                    <relative>oxns:detail[@type="number"]</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="number"]</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"number\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="publication_date">
-                  <path>date</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:date</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:date</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:date[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="extent">
-                  <path>extent</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:extent</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="pages">
-                  <path>extent</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <attributes>
-                    <unit>pages</unit>
-                  </attributes>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:extent[@unit="pages"]</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\" and contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children>
-                    <term name="start">
-                      <path>start</path>
-                      <namespace_prefix>oxns</namespace_prefix>
-                      <index_as/>
-                      <required>false</required>
-                      <data_type>string</data_type>
-                      <xpath>
-                        <relative>oxns:start</relative>
-                        <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:start</absolute>
-                        <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:start[contains(., \"#{constraint_value}\")]</constrained>
-                      </xpath>
-                      <children/>
-                    </term>
-                    <term name="end">
-                      <path>end</path>
-                      <namespace_prefix>oxns</namespace_prefix>
-                      <index_as/>
-                      <required>false</required>
-                      <data_type>string</data_type>
-                      <xpath>
-                        <relative>oxns:end</relative>
-                        <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:end</absolute>
-                        <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:end[contains(., \"#{constraint_value}\")]</constrained>
-                      </xpath>
-                      <children/>
-                    </term>
-                    <term name="start">
-                      <path>start</path>
-                      <namespace_prefix>oxns</namespace_prefix>
-                      <index_as/>
-                      <required>false</required>
-                      <data_type>string</data_type>
-                      <xpath>
-                        <relative>oxns:start</relative>
-                        <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:start</absolute>
-                        <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:start[contains(., \"#{constraint_value}\")]</constrained>
-                      </xpath>
-                      <children/>
-                    </term>
-                    <term name="end">
-                      <path>end</path>
-                      <namespace_prefix>oxns</namespace_prefix>
-                      <index_as/>
-                      <required>false</required>
-                      <data_type>string</data_type>
-                      <xpath>
-                        <relative>oxns:end</relative>
-                        <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]/oxns:end</absolute>
-                        <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\"]/oxns:end[contains(., \"#{constraint_value}\")]</constrained>
-                      </xpath>
-                      <children/>
-                    </term>
-                  </children>
-                </term>
-                <term name="volume">
-                  <path>detail</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <attributes>
-                    <type>volume</type>
-                  </attributes>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <default_content_path>number</default_content_path>
-                  <xpath>
-                    <relative>oxns:detail[@type="volume"]</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume"]</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="level">
-                  <path>detail</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <attributes>
-                    <type>number</type>
-                  </attributes>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <default_content_path>number</default_content_path>
-                  <xpath>
-                    <relative>oxns:detail[@type="number"]</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="number"]</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"number\" and contains(oxns:number, \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="publication_date">
-                  <path>date</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:date</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:date</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:date[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="extent">
-                  <path>extent</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:extent</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="pages">
-                  <path>extent</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <attributes>
-                    <unit>pages</unit>
-                  </attributes>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:extent[@unit="pages"]</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:part/oxns:extent[@unit="pages"]</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:extent[@unit=\"pages\" and contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-              </children>
+              <children/>
             </term>
-            <term name="origin_info">
-              <path>originInfo</path>
+            <term name="displayForm">
+              <path>displayForm</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:originInfo</relative>
-                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo</absolute>
-                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:displayForm</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:displayForm</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:displayForm[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
-              <children>
-                <term name="publisher">
-                  <path>publisher</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:publisher</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:publisher</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:publisher[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="date_issued">
-                  <path>dateIssued</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:dateIssued</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:dateIssued</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:dateIssued[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="issuance">
-                  <path>issuance</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as>
-                    <index_type/>
-                  </index_as>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:issuance</relative>
-                    <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:issuance</absolute>
-                    <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:issuance[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="publisher">
-                  <path>publisher</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:publisher</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:publisher</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:publisher[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="date_issued">
-                  <path>dateIssued</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as/>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:dateIssued</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:dateIssued</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:dateIssued[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-                <term name="issuance">
-                  <path>issuance</path>
-                  <namespace_prefix>oxns</namespace_prefix>
-                  <index_as>
-                    <index_type/>
-                  </index_as>
-                  <required>false</required>
-                  <data_type>string</data_type>
-                  <xpath>
-                    <relative>oxns:issuance</relative>
-                    <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo/oxns:issuance</absolute>
-                    <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo/oxns:issuance[contains(., \"#{constraint_value}\")]</constrained>
-                  </xpath>
-                  <children/>
-                </term>
-              </children>
+              <children/>
             </term>
-            <term name="title_info">
-              <path>titleInfo</path>
+            <term name="first_name">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>given</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="given"]</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="given"]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"given\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="description">
+              <path>description</path>
               <namespace_prefix>oxns</namespace_prefix>
               <index_as>
                 <index_type/>
@@ -2455,88 +2515,102 @@
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:titleInfo</relative>
-                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:titleInfo</absolute>
-                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:description</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:description</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:description[contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-            <term name="issn">
-              <path>identifier</path>
+            <term name="role">
+              <path>role</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:role</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:role</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:role[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="last_name">
+              <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
               <attributes>
-                <type>issn</type>
+                <type>family</type>
               </attributes>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:identifier[@type="issn"]</relative>
-                <absolute>//oxns:mods/oxns:relatedItem[@type="host"]/oxns:identifier[@type="issn"]</absolute>
-                <constrained>//oxns:mods/oxns:relatedItem[@type=\"host\"]/oxns:identifier[@type=\"issn\" and contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:namePart[@type="family"]</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="family"]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"family\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
-            <term name="issue">
-              <path>part</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:part</relative>
-                <absolute>//oxns:relatedItem[@type="host"]/oxns:part</absolute>
-                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:part[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="origin_info">
-              <path>originInfo</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as/>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:originInfo</relative>
-                <absolute>//oxns:relatedItem[@type="host"]/oxns:originInfo</absolute>
-                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:originInfo[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="title_info">
-              <path>titleInfo</path>
-              <namespace_prefix>oxns</namespace_prefix>
-              <index_as>
-                <index_type/>
-              </index_as>
-              <required>false</required>
-              <data_type>string</data_type>
-              <xpath>
-                <relative>oxns:titleInfo</relative>
-                <absolute>//oxns:relatedItem[@type="host"]/oxns:titleInfo</absolute>
-                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
-              </xpath>
-              <children/>
-            </term>
-            <term name="issn">
-              <path>identifier</path>
+            <term name="date">
+              <path>namePart</path>
               <namespace_prefix>oxns</namespace_prefix>
               <attributes>
-                <type>issn</type>
+                <type>date</type>
               </attributes>
               <index_as/>
               <required>false</required>
               <data_type>string</data_type>
               <xpath>
-                <relative>oxns:identifier[@type="issn"]</relative>
-                <absolute>//oxns:relatedItem[@type="host"]/oxns:identifier[@type="issn"]</absolute>
-                <constrained>//oxns:relatedItem[@type=\"host\"]/oxns:identifier[@type=\"issn\" and contains(., \"#{constraint_value}\")]</constrained>
+                <relative>oxns:namePart[@type="date"]</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="date"]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"date\" and contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="namePart">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:namePart</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[contains(., \"#{constraint_value}\")]</constrained>
+              </xpath>
+              <children/>
+            </term>
+            <term name="terms_of_address">
+              <path>namePart</path>
+              <namespace_prefix>oxns</namespace_prefix>
+              <attributes>
+                <type>termsOfAddress</type>
+              </attributes>
+              <index_as/>
+              <required>false</required>
+              <data_type>string</data_type>
+              <xpath>
+                <relative>oxns:namePart[@type="termsOfAddress"]</relative>
+                <absolute>//oxns:name[@type="conference"]/oxns:namePart[@type="termsOfAddress"]</absolute>
+                <constrained>//oxns:name[@type=\"conference\"]/oxns:namePart[@type=\"termsOfAddress\" and contains(., \"#{constraint_value}\")]</constrained>
               </xpath>
               <children/>
             </term>
           </children>
         </term>
       </children>
+    </term>
+    <term name="subject">
+      <path>subject</path>
+      <namespace_prefix>oxns</namespace_prefix>
+      <index_as/>
+      <required>false</required>
+      <data_type>string</data_type>
+      <xpath>
+        <relative>oxns:subject</relative>
+        <absolute>//oxns:subject</absolute>
+        <constrained>//oxns:subject[contains(., \"#{constraint_value}\")]</constrained>
+      </xpath>
+      <children/>
     </term>
     <term name="role">
       <path>role</path>
@@ -2551,19 +2625,6 @@
       </xpath>
       <children/>
     </term>
-    <term name="language">
-      <path>language</path>
-      <namespace_prefix>oxns</namespace_prefix>
-      <index_as/>
-      <required>false</required>
-      <data_type>string</data_type>
-      <xpath>
-        <relative>oxns:language</relative>
-        <absolute>//oxns:language</absolute>
-        <constrained>//oxns:language[contains(., \"#{constraint_value}\")]</constrained>
-      </xpath>
-      <children/>
-    </term>
     <term name="note">
       <path>note</path>
       <namespace_prefix>oxns</namespace_prefix>
@@ -2574,19 +2635,6 @@
         <relative>oxns:note</relative>
         <absolute>//oxns:note</absolute>
         <constrained>//oxns:note[contains(., \"#{constraint_value}\")]</constrained>
-      </xpath>
-      <children/>
-    </term>
-    <term name="location">
-      <path>location</path>
-      <namespace_prefix>oxns</namespace_prefix>
-      <index_as/>
-      <required>false</required>
-      <data_type>string</data_type>
-      <xpath>
-        <relative>oxns:location</relative>
-        <absolute>//oxns:location</absolute>
-        <constrained>//oxns:location[contains(., \"#{constraint_value}\")]</constrained>
       </xpath>
       <children/>
     </term>
@@ -2608,16 +2656,16 @@
       </xpath>
       <children/>
     </term>
-    <term name="title_info">
-      <path>titleInfo</path>
+    <term name="language">
+      <path>language</path>
       <namespace_prefix>oxns</namespace_prefix>
       <index_as/>
       <required>false</required>
       <data_type>string</data_type>
       <xpath>
-        <relative>oxns:titleInfo</relative>
-        <absolute>//oxns:titleInfo</absolute>
-        <constrained>//oxns:titleInfo[contains(., \"#{constraint_value}\")]</constrained>
+        <relative>oxns:language</relative>
+        <absolute>//oxns:language</absolute>
+        <constrained>//oxns:language[contains(., \"#{constraint_value}\")]</constrained>
       </xpath>
       <children/>
     </term>
@@ -2649,53 +2697,6 @@
         <relative>oxns:name[@type="conference"]</relative>
         <absolute>//oxns:name[@type="conference"]</absolute>
         <constrained>//oxns:name[@type=\"conference\" and contains(., \"#{constraint_value}\")]</constrained>
-      </xpath>
-      <children/>
-    </term>
-    <term name="abstract">
-      <path>abstract</path>
-      <namespace_prefix>oxns</namespace_prefix>
-      <index_as/>
-      <required>false</required>
-      <data_type>string</data_type>
-      <xpath>
-        <relative>oxns:abstract</relative>
-        <absolute>//oxns:abstract</absolute>
-        <constrained>//oxns:abstract[contains(., \"#{constraint_value}\")]</constrained>
-      </xpath>
-      <children/>
-    </term>
-    <term name="person">
-      <path>name</path>
-      <namespace_prefix>oxns</namespace_prefix>
-      <attributes>
-        <type>personal</type>
-      </attributes>
-      <index_as>
-        <index_type/>
-      </index_as>
-      <required>false</required>
-      <data_type>string</data_type>
-      <xpath>
-        <relative>oxns:name[@type="personal"]</relative>
-        <absolute>//oxns:name[@type="personal"]</absolute>
-        <constrained>//oxns:name[@type=\"personal\" and contains(., \"#{constraint_value}\")]</constrained>
-      </xpath>
-      <children/>
-    </term>
-    <term name="journal">
-      <path>relatedItem</path>
-      <namespace_prefix>oxns</namespace_prefix>
-      <attributes>
-        <type>host</type>
-      </attributes>
-      <index_as/>
-      <required>false</required>
-      <data_type>string</data_type>
-      <xpath>
-        <relative>oxns:relatedItem[@type="host"]</relative>
-        <absolute>//oxns:relatedItem[@type="host"]</absolute>
-        <constrained>//oxns:relatedItem[@type=\"host\" and contains(., \"#{constraint_value}\")]</constrained>
       </xpath>
       <children/>
     </term>
