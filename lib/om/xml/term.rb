@@ -233,6 +233,57 @@ class OM::XML::Term
     return self
   end
   
+  # Return an XML representation of the Term
+  # @param [Hash] options, the term will be added to it. If :children=>false, skips rendering child Terms
+  # @param [Nokogiri::XML::Document] (optional) document to insert the term xml into
+  # @return [Nokogiri::XML::Document]
+  # @example If :children=>false, skips rendering child Terms
+  #   term.to_xml(:children=>false)
+  # @example You can provide your own Nokogiri document to insert the xml into
+  #   doc = Nokogiri::XML::Document.new
+  #   term.to_xml({}, document=doc)
+  def to_xml(options={}, document=Nokogiri::XML::Document.new)
+    builder = Nokogiri::XML::Builder.with(document) do |xml|
+      xml.term(:name=>name) {
+        xml.path path
+        xml.namespace_prefix namespace_prefix
+        unless attributes.nil? || attributes.empty?
+          xml.attributes {
+            attributes.each_pair do |attribute_name, attribute_value|
+              xml.send("#{attribute_name}_".to_sym, attribute_value)
+            end
+          }
+        end
+        xml.index_as {
+          unless index_as.nil?
+            index_as.each  { |index_type| xml.index_type }
+          end
+        }
+        xml.required required
+        xml.data_type data_type
+        unless variant_of.nil?
+          xml.variant_of variant_of
+        end
+        unless default_content_path.nil?
+          xml.default_content_path default_content_path
+        end
+        xml.xpath {
+          xml.relative xpath_relative
+          xml.absolute xpath
+          xml.constrained xpath_constrained
+        }
+        if options.fetch(:children, true)
+          xml.children 
+        end
+      }
+    end
+    doc = builder.doc
+    if options.fetch(:children, true)
+      children.values.each {|child| child.to_xml(options, doc.xpath("//term[@name=\"#{name}\"]/children").first)}
+    end
+    return doc
+  end
+  
   # private :update_xpath_values
   
 end

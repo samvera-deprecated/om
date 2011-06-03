@@ -220,6 +220,35 @@ class OM::XML::Terminology
     terms.values.select {|term| term.is_root_term? }
   end
   
+  # Return an XML representation of the Terminology and its terms
+  # @param [Hash] options, the term will be added to it. If :children=>false, skips rendering child Terms
+  # @param [Nokogiri::XML::Document] (optional) document to insert the term xml into
+  # @return [Nokogiri::XML::Document]
+  # @example If :children=>false, skips rendering child Terms
+  #   terminology.to_xml(:children=>false)
+  # @example You can provide your own Nokogiri document to insert the xml into
+  #   doc = Nokogiri::XML::Document.new
+  #   terminology.to_xml({}, document=doc)
+  def to_xml(options={}, document=Nokogiri::XML::Document.new)
+    builder = Nokogiri::XML::Builder.with(document) do |xml|
+      xml.terminology {
+        xml.schema schema
+        xml.namespaces {
+          namespaces.each_pair do |ns_name, ns_value|
+            xml.namespace {
+              xml.name ns_name
+              xml.identifier ns_value
+            }
+          end
+        }
+        xml.terms 
+      }
+    end
+    document = builder.doc
+    terms.values.each {|term| term.to_xml(options,document.xpath("//terms").first)}
+    return document
+  end
+  
   def self.term_generic_name(*pointers)
     pointers_to_flat_array(pointers, false).join("_")
   end

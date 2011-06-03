@@ -3,7 +3,7 @@ class OM::Samples::ModsArticle
     include OM::XML::Document
     
     set_terminology do |t|
-      t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
+      t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd", "xmlns:foo"=>"http://my.custom.namespace")
 
 
       t.title_info(:path=>"titleInfo") {
@@ -71,8 +71,7 @@ class OM::Samples::ModsArticle
         t.url(:path=>"url")
       }
       t.publication_url(:proxy=>[:location,:url])
-      t.peer_reviewed(:proxy=>[:journal,:origin_info,:issuance], :index_as=>[:facetable])
-      t.title(:proxy=>[:mods,:title_info, :main_title])
+      t.title(:proxy=>[:title_info, :main_title])
       t.journal_title(:proxy=>[:journal, :title_info, :main_title])
     end
     

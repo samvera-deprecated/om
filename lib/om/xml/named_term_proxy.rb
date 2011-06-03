@@ -23,9 +23,14 @@ class OM::XML::NamedTermProxy
   
   def proxied_term
     if self.parent.nil?
-      self.terminology.retrieve_term(*self.proxy_pointer)
+      pt = self.terminology.retrieve_term(*self.proxy_pointer)
     else
-      self.parent.retrieve_term(*self.proxy_pointer)
+      pt = self.parent.retrieve_term(*self.proxy_pointer)
+    end
+    if pt.nil?
+      raise OM::XML::Terminology::BadPointerError "The #{name} proxy term points to #{proxy_pointer.inspect} but that term doesn't exist."
+    else
+      return pt
     end
   end
   
