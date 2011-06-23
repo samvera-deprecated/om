@@ -2,6 +2,131 @@ h1. Common Patterns You'll Use with OM
 
 h2. Common Terminology Patterns
 
+h4. element value
+
+We want an OM term to be assigned so its value is the value of an element.
+
+Given this xml:
+
+<pre>
+<outer>
+  <element>my value</element>
+</outer> 
+</pre>
+
+we want to have an OM term named "element" with "my value" as the value.
+
+In the Datastream Model:
+
+<pre>  
+# defines the expected OM terminology for example xml
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  # OM (Opinionated Metadata) terminology mapping 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.element(:index_as => [:searchable, :displayable])
+  end  
+end # class
+</pre>
+
+Q: What if we don't want the OM term to be named "element," but "giraffe"?
+
+A: 
+<pre>  
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.giraffe(:path => "element", :index_as => [:searchable, :displayable])
+  end  
+end # class
+</pre>
+
+h4. element value given a specific attribute value
+
+We want an OM term to be assigned to an element's value, but only when the element has a specific attribute value.
+
+Given this xml:
+
+<pre>
+</outer> 
+  <element my_attr="attr value">element value</element>
+</outer> 
+</pre>
+
+we want to have an OM term named "element" with "element value" as the value.
+
+In the Datastream Model:
+
+<pre>  
+# defines the expected OM terminology for example xml
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  # OM (Opinionated Metadata) terminology mapping 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.element(:attributes=>{:my_attr=>"attr value"}, :index_as => [:searchable, :displayable])
+  end  
+end # class
+</pre>
+
+Q: What if we don't want the OM term to be named "element," but "gazelle"?
+
+A: 
+<pre>  
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.gazelle(:path => "element", :attributes=>{:my_attr=>"attr value"}) :index_as => [:searchable, :displayable])
+  end  
+end
+</pre>
+
+h4. attribute value
+
+We want an OM term to be assigned to an element's attribute value.
+
+Given this xml:
+
+<pre>
+</outer> 
+  <element my_attr="attr value">element value</element>
+</outer> 
+</pre>
+
+we want to have an OM term named "my_attr" with "attr value" as the value.
+
+In the Datastream Model:
+
+FIXME:  is this correct?  (Naomi wonders 2011-06-22)
+
+<pre>  
+# defines the expected OM terminology for example xml
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  # OM (Opinionated Metadata) terminology mapping 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.element {
+      t.my_attr(:path => {:attribute=>"my_attr"}, :index_as => [:searchable, :displayable])
+    }
+  end  
+end # class
+</pre>
+
+Q: What if we don't want the OM term to be named "my_attr," but "hippo"?
+
+A: 
+
+<pre>  
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.element {
+      t.hippo(:path => {:attribute=>"my_attr"}, :index_as => [:searchable, :displayable])
+    }
+  end  
+end
+</pre>
+
+
 h3. Reserved method names (ie. id_, root_)
 
 Like Nokogiri ...
