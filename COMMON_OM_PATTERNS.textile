@@ -24,7 +24,7 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
-    t.element(:index_as => [:searchable, :displayable])
+    t.element
   end  
 end # class
 </pre>
@@ -32,11 +32,12 @@ end # class
 Q: What if we don't want the OM term to be named "element," but "giraffe"?
 
 A: 
+
 <pre>  
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
-    t.giraffe(:path => "element", :index_as => [:searchable, :displayable])
+    t.giraffe(:path => "element")
   end  
 end # class
 </pre>
@@ -63,7 +64,7 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
-    t.element(:attributes=>{:my_attr=>"attr value"}, :index_as => [:searchable, :displayable])
+    t.element(:attributes=>{:my_attr=>"attr value"})
   end  
 end # class
 </pre>
@@ -71,11 +72,12 @@ end # class
 Q: What if we don't want the OM term to be named "element," but "gazelle"?
 
 A: 
+
 <pre>  
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
-    t.gazelle(:path => "element", :attributes=>{:my_attr=>"attr value"}) :index_as => [:searchable, :displayable])
+    t.gazelle(:path => "element", :attributes=>{:my_attr=>"attr value"})
   end  
 end
 </pre>
@@ -105,7 +107,7 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
     t.element {
-      t.my_attr(:path => {:attribute=>"my_attr"}, :index_as => [:searchable, :displayable])
+      t.my_attr(:path => {:attribute=>"my_attr"})
     }
   end  
 end # class
@@ -120,7 +122,7 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
     t.element {
-      t.hippo(:path => {:attribute=>"my_attr"}, :index_as => [:searchable, :displayable])
+      t.hippo(:path => {:attribute=>"my_attr"})
     }
   end  
 end
