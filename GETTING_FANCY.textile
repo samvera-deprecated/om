@@ -4,9 +4,11 @@ h1. Getting Fancy
 
 h2. Alternative ways to Manipulate Terms, Terminologies and their Builders
 
-h3. The Example
+There is more than one way to build a terminology. 
 
-There are a few ways to build a terminology.  The simplest way is to use the Terminology Builder block syntax.  This is what most of the tutorials use.  
+h3. OM::XML::Terminology::Builder":OM/XML/Terminology/Builder.html Block Syntax
+
+The simplest way to create an OM Terminology is to use the "OM::XML::Terminology::Builder":OM/XML/Terminology/Builder.html" block syntax. 
 
 In the following examples, we will show different ways of building this Terminology:
 
@@ -24,21 +26,21 @@ In the following examples, we will show different ways of building this Terminol
 </pre>
 
 
-h3. Using Term::Builders
+h3. Using "OM::XML::Term":OM/XML/Term.html ::Builders
 
-First, create the Terminology Builder object.
+First, create the Terminology Builder object:
 
 <pre>
   terminology_builder = OM::XML::Terminology::Builder.new
 </pre>
 
-The .root method handles creating the root term and setting namespaces, schema, etc on the Terminology
+The .root method handles creating the root term and setting namespaces, schema, etc. on the Terminology:
 
 <pre>
   terminology_builder.root(:path=>"grants", :xmlns=>"http://yourmediashelf.com/schemas/hydra-dataset/v0", :schema=>"http://example.org/schemas/grants-v1.xsd")
 </pre>
 
-As you can see, this sets the namespaces for you and created the "grants" root term.
+This sets the namespaces for you and created the "grants" root term:
 
 <pre>
   terminology_builder.namespaces
@@ -46,7 +48,7 @@ As you can see, this sets the namespaces for you and created the "grants" root t
   terminology_builder.term_builders
 </pre>
 
-Create Term Builders for each of the Terms
+Create Term Builders for each of the Terms:
 
 <pre>
   term1_builder = OM::XML::Term::Builder.new("grant", terminology_builder).path("grant")
@@ -55,7 +57,7 @@ Create Term Builders for each of the Terms
   subterm2_builder = OM::XML::Term::Builder.new("number", terminology_builder)
 </pre>
 
-Assemble the tree of Term builders by adding child builders to their parents, then add those to the Terminology builder.
+Assemble the tree of Term builders by adding child builders to their parents; then add the top level terms to the root term in the Terminology builder:
 
 <pre>
   subterm1_builder.add_child(subsubterm_builder)
@@ -64,7 +66,7 @@ Assemble the tree of Term builders by adding child builders to their parents, th
   terminology_builder.term_builders["grant"] = term1_builder
 </pre>
 
-Now build the Terminology, which will also call .build on each of the Term Builders
+Now build the Terminology, which will also call .build on each of the Term Builders in the tree:
 
 <pre>
   built_terminology = terminology_builder.build
@@ -86,8 +88,8 @@ If you want to manipulate Terms and Terminologies directly rather than using the
 
 People don't often do this, but the option is there if you need it.
 
-Create the Terminology, set its namespaces & (optional) schema 
-Note that you have to set the :oxns namespaces to match :xmlns.  This is usually done for you by the Terminology::Builder.root method.
+Create the Terminology, set its namespaces & (optional) schema:
+(Note that you have to set the :oxns namespaces to match :xmlns.  This is usually done for you by the Terminology::Builder.root method.)
 
 <pre>
   handcrafted_terminology = OM::XML::Terminology.new
@@ -96,7 +98,7 @@ Note that you have to set the :oxns namespaces to match :xmlns.  This is usually
   handcrafted_terminology.schema = "http://example.org/schemas/grants-v1.xsd"
 </pre>
 
-Create the Terms
+Create the Terms:
 
 <pre>
   # Create term1 (the root) and set it as the root term
@@ -126,7 +128,7 @@ Assemble the tree of terms by adding child terms to their parents, then add thos
   handcrafted_terminology.add_term(term1)
 </pre>
 
-Generate the xpath queries for each term.  This is usually done for you by the Term Builder.build method
+Generate the xpath queries for each term.  This is usually done for you by the Term Builder.build method:
 
 <pre>
   [root_term, term1, subterm1, subsubterm, subterm2].each {|t| t.generate_xpath_queries!}
