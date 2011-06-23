@@ -1,6 +1,10 @@
 = opinionated-xml
 
-A library to help you tame sprawling XML schemas like MODS.
+A library to help you tame sprawling XML schemas like MODS.  
+
+OM allows you to define a “terminology” to ease translation between XML and ruby objects – you can query the xml for Nodes or node values without ever writing a line of XPath.
+
+OM “terms” are ruby symbols you define (in the terminology) that map specific XML content into ruby object attributes.
 
 == Note on Patches/Pull Requests
  
