@@ -114,7 +114,8 @@ In a separate window (so you can keep irb running), create the file my_mods_docu
       }
     end
     
-    # overridden to provide (an empty) simple MODS document rather than a plain xml document.
+    # Generates an empty Mods Article (used when you call ModsArticle.new without passing in existing xml)
+    #  (overrides default behavior of creating a plain xml document)
     def self.xml_template
       # use Nokogiri to build the XML
       builder = Nokogiri::XML::Builder.new do |xml|
@@ -190,6 +191,8 @@ doc.find_by_terms(:person)
 doc.find_by_terms(:person).length
 doc.find_by_terms(:person).each {|n| puts n.to_xml}
 </pre>
+
+You might prefer to use nodes as a way of getting multiple values pertaining to a node, rather than doing more expensive lookups for each desired value.
 
 If you want to get directly to the _values_ within those nodes, use OM::XML::Document.term_values:
 
