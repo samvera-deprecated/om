@@ -68,6 +68,12 @@ module OM::XML::Document
       return ng_xml.xpath(xpath, ox_namespaces) 
     end   
   end
+  
+  # Test whether the document has a node corresponding to the given term_pointer
+  # @param [Array] term_pointer to test
+  def node_exists?(*term_pointer)
+    !find_by_terms(*term_pointer).empty?
+  end
 
   # Access the class's template registry
   def template_registry
