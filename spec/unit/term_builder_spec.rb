@@ -142,7 +142,7 @@ describe "OM::XML::Term::Builder" do
 	  end
     it "should raise an error if the referece points to a nonexistent term builder" do
       tb = OM::XML::Term::Builder.new("mork",@test_terminology_builder).ref(:characters, :aliens)
-      lambda { tb.lookup_refs }.should raise_error(OM::XML::Terminology::BadPointerError,"#{tb.name} refers to a Term Builder that doesn't exist.  The bad pointer is [:characters, :aliens]")
+      lambda { tb.lookup_refs }.should raise_error(OM::XML::Terminology::BadPointerError,"This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \":characters\"")
     end
     it "should raise an error with informative error when given circular references" do
       lambda { @pineapple.lookup_refs }.should raise_error(OM::XML::Terminology::CircularReferenceError,"Circular reference in Terminology: :pineapple => :banana => :coconut => :pineapple")

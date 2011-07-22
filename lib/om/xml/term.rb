@@ -1,5 +1,6 @@
-# Special options: data_type, attributes, index_as
-# is_root_term
+# Special options: 
+# data_type, index_as, attributes, 
+# is_root_term, required
 #
 class OM::XML::Term
   
@@ -38,12 +39,7 @@ class OM::XML::Term
         if self.terminology_builder.nil?
           raise "Cannot perform lookup_ref for the #{self.name} builder.  It doesn't have a reference to any terminology builder"
         end
-        begin
-          target = self.terminology_builder.retrieve_term_builder(*@settings[:ref])
-        rescue OM::XML::Terminology::BadPointerError
-          # Clarify message on BadPointerErrors
-          raise OM::XML::Terminology::BadPointerError, "#{self.name} refers to a Term Builder that doesn't exist.  The bad pointer is #{@settings[:ref].inspect}"
-        end
+        target = self.terminology_builder.retrieve_term_builder(*@settings[:ref])
         
         # Fail on circular references and return an intelligible error message
         if nodes_visited.include?(target)
