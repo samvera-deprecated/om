@@ -161,6 +161,9 @@ module OM::XML::TermValueOperators
     until !starting_point.empty?
       to_build = [parent_select.pop] + to_build
       starting_point = find_by_terms(*parent_select)
+      if starting_point.empty? && parent_select.empty? 
+        raise OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty."
+      end
     end
     to_build.each do |term_pointer|      
       parent_select << term_pointer

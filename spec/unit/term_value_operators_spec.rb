@@ -6,6 +6,7 @@ describe "OM::XML::TermValueOperators" do
   before(:each) do
     @sample = OM::Samples::ModsArticle.from_xml( fixture( File.join("test_dummy_mods.xml") ) )
     @article = OM::Samples::ModsArticle.from_xml( fixture( File.join("mods_articles","hydrangea_article1.xml") ) )
+    @empty_sample = OM::Samples::ModsArticle.from_xml("")
   end
   
   describe ".term_values" do
@@ -419,6 +420,19 @@ describe "OM::XML::TermValueOperators" do
       )
       # Check that we're finishing with 1 role
       @sample.find_by_terms_and_value(generic_xpath).length.should == 3
+    end
+  end
+  
+  describe "build_ancestors" do
+    it "should raise an error if it cant find a starting point for building from" do
+      lambda { @empty_sample.build_ancestors( [:journal, :issue], 0) }.should raise_error(OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.") 
+      
+      
+    end
+  end
+  
+  describe "insert_from_template" do
+    it "should support namespaced attributes" do
     end
   end
   

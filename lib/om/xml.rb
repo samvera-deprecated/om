@@ -13,6 +13,9 @@ require "om/xml/template_registry"
 
 module OM::XML
   
+  # Raised when the XML document or XML template can't be found during an operation
+  class TemplateMissingException < StandardError; end
+  
   attr_accessor :ng_xml
   
   # Module Methods -- These methods can be called directly on the Module itself
