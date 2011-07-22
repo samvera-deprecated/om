@@ -57,8 +57,10 @@ module OM::XML::Document
   
 
   # +term_pointer+ Variable length array of values in format [:accessor_name, :accessor_name ...] or [{:accessor_name=>index}, :accessor_name ...]
-  # example: {:person => 1}, :first_name
-  # example: [:person, 1, :first_name]
+  # @example: 
+  #   find_by_terms( {:person => 1}, :first_name )
+  # @example
+  #   find_by_terms( [:person, 1, :first_name] )
   # Currently, indexes must be integers.
   def find_by_terms(*term_pointer)
     xpath = self.class.terminology.xpath_with_indexes(*term_pointer)   

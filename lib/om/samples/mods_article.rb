@@ -7,7 +7,11 @@ class OM::Samples::ModsArticle
 
 
       t.title_info(:path=>"titleInfo") {
-        t.main_title(:index_as=>[:facetable],:path=>"title", :label=>"title")
+        t.main_title(:index_as=>[:facetable],:path=>"title", :label=>"title") {
+          t.main_title_lang(:path=>{:attribute=> "xml:lang"})
+        }
+        t.french_title(:ref=>[:title_info,:main_title], :attributes=>{"xml:lang"=>"fre"})
+        
         t.language(:index_as=>[:facetable],:path=>{:attribute=>"lang"})
       } 
       t.language{
