@@ -163,16 +163,33 @@ describe "OM::XML::Term" do
   describe "#xml_builder_template" do
     
     it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
-      @test_date.xml_builder_template.should == 'xml.namePart( \'#{builder_new_value}\', :type=>\'date\' )'
+      @test_date.xml_builder_template.should == 'xml.namePart( \'#{builder_new_value}\', \'type\'=>\'date\' )'
       @test_affiliation.xml_builder_template.should == 'xml.affiliation( \'#{builder_new_value}\' )'
     end
     it "should accept extra options" do
-      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', :type=>\'code\', :authority=>\'marcrelator\' )'  
+      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', \'type\'=>\'code\', \'authority\'=>\'marcrelator\' )'  
       @test_role_code.xml_builder_template(:attributes=>{"authority"=>"marcrelator"}).should == marcrelator_role_xml_builder_template
     end
     
     it "should work for nodes with default_content_path" do      
-      @test_volume.xml_builder_template.should == "xml.detail( :type=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
+      @test_volume.xml_builder_template.should == "xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
+    end
+    
+    it "should support terms that are attributes" do
+      pending "HYDRA-415"
+      @type_attribute_term = OM::XML::Term.new(:type_attribute, :path=>{:attribute=>:type})
+      @type_attribute_term.xml_builder_template.should == "TODO!"
+    end
+    
+    it "should support terms with namespaced attributes" do
+      @french_title = OM::XML::Term.new(:french_title, :path=>"title", :attributes=>{"xml:lang"=>"fre"})
+      @french_title.xml_builder_template.should == "xml.title( '\#{builder_new_value}', 'xml:lang'=>'fre' )"
+    end
+    
+    it "should support terms that are namespaced attributes" do
+      pending "HYDRA-415"
+      @xml_lang_attribute_term = OM::XML::Term.new(:xml_lang_attribute, :path=>{:attribute=>"xml:lang"})
+      @xml_lang_attribute_term.xml_builder_template.should == "TODO!"
     end
     
   end

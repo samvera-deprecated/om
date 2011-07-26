@@ -114,6 +114,23 @@ describe "OM::XML::TermValueOperators" do
       @article.term_values(:person, :description).should include(" 'phrul gyi lde mig")
     end
     
+    it "should support inserting nodes with namespaced attributes" do
+      @sample.update_values({['title_info', 'french_title']=>'Le Titre'})
+      @sample.term_values('title_info', 'french_title').should == ['Le Titre']
+    end
+
+    it "should support inserting attributes" do
+      pending "HYDRA-415"
+      @sample.update_values({['title_info', 'language']=>'Le Titre'})
+      @sample.term_values('title_info', 'french_title').should == ['Le Titre']
+    end
+    
+    it "should support inserting namespaced attributes" do
+      pending "HYDRA-415"
+      @sample.update_values({['title_info', 'main_title', 'main_title_lang']=>'eng'})
+      @sample.term_values('title_info', 'main_title', 'main_title_lang').should == ['eng']
+    end
+    
     ### Examples copied over form nokogiri_datastream_spec
     
     it "should apply submitted hash to corresponding datastream field values" do
@@ -426,13 +443,6 @@ describe "OM::XML::TermValueOperators" do
   describe "build_ancestors" do
     it "should raise an error if it cant find a starting point for building from" do
       lambda { @empty_sample.build_ancestors( [:journal, :issue], 0) }.should raise_error(OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.") 
-      
-      
-    end
-  end
-  
-  describe "insert_from_template" do
-    it "should support namespaced attributes" do
     end
   end
   

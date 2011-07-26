@@ -212,7 +212,7 @@ class OM::XML::Term
     end
     if !self.attributes.nil?
       self.attributes.merge(extra_attributes).each_pair do |k,v|
-        node_options << ":#{k}=>\'#{v}\'"
+        node_options << "\'#{k}\'=>\'#{v}\'"
       end
     end
     template = "xml.#{self.path}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
