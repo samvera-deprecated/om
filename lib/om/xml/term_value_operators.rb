@@ -162,7 +162,7 @@ module OM::XML::TermValueOperators
       to_build = [parent_select.pop] + to_build
       starting_point = find_by_terms(*parent_select)
       if starting_point.empty? && parent_select.empty? 
-        raise OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty."
+        raise OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.  Try defining self.xml_template on the #{self.class}"
       end
     end
     to_build.each do |term_pointer|      
@@ -187,7 +187,7 @@ module OM::XML::TermValueOperators
       starting_point = find_by_terms(*parent_select+[{}])
       # If pointers in parent_select don't match with the indexes of built ancestors, correct the hash
       if starting_point.empty?
-        raise StandardError "Oops.  Something went wrong adding #{term_pointer} to #{parent_select} while building ancestors"
+        raise ::StandardError, "Oops.  Something went wrong adding #{term_pointer.inspect} to #{parent_select.inspect} while building ancestors.  Expected to find something at #{self.class.terminology.xpath_for(*parent_select)}. The current xml is\n #{self.to_xml}"
       end
     end
     if parent_index > starting_point.length

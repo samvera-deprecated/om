@@ -215,7 +215,13 @@ class OM::XML::Term
         node_options << "\'#{k}\'=>\'#{v}\'"
       end
     end
-    template = "xml.#{self.path}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
+    if self.path.include?(":")
+      ns_prefix = self.path[0..path.index(":")-1]
+      path_name = self.path[path.index(":")+1..-1]
+      template = "xml[\"#{ns_prefix}\"].#{path_name}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
+    else
+      template = "xml.#{self.path}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
+    end
     return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
   end
   

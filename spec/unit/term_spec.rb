@@ -171,6 +171,11 @@ describe "OM::XML::Term" do
       @test_role_code.xml_builder_template(:attributes=>{"authority"=>"marcrelator"}).should == marcrelator_role_xml_builder_template
     end
     
+    it "should work for namespaced nodes" do
+      @ical_date = OM::XML::Term.new(:ical_date, :path=>"ical:date")
+      @ical_date.xml_builder_template.should == "xml[\"ical\"].date( '\#{builder_new_value}' )"
+    end
+    
     it "should work for nodes with default_content_path" do      
       @test_volume.xml_builder_template.should == "xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
     end
