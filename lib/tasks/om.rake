@@ -40,7 +40,7 @@ namespace :om do
       yt.files   = Dir.glob(File.join(project_root, 'lib', '**', '*.rb')) + textile_docs
                    # [ File.join(project_root, 'README.textile') ]
                    # [ File.join(project_root, 'README.textile'),'-', File.join(project_root,'GETTING_STARTED.textile') ]
-      yt.options = ['--output-dir', doc_destination, '--readme', readme_filename]
+      yt.options = ['--private', '--protected', '--output-dir', doc_destination, '--readme', readme_filename]
     end
   rescue LoadError
     desc "Generate YARD Documentation"

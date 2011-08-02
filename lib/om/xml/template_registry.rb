@@ -140,6 +140,12 @@ class OM::XML::TemplateRegistry
   end
 
   private
+  
+  # Create a new Nokogiri::XML::Node based on the template for +node_type+
+  #
+  # @param [Nokogiri::XML::Node] builder_node The node to use as starting point for building the node using Nokogiri::XML::Builder.with(builder_node).  This provides namespace info, etc for constructing the new Node object. If nil, defaults to {OM::XML::TemplateRegistry#empty_root_node}.  This is just used to create the new node and will not be included in the response.
+  # @param node_type a pointer to the template to use when creating the node
+  # @param [Array] args any additional args
   def create_detached_node(builder_node, node_type, *args)
     proc = @templates[node_type]
     if proc.nil?
@@ -155,6 +161,13 @@ class OM::XML::TemplateRegistry
     builder_node.elements.last.remove
   end
 
+  # Create a new XML node of type +node_type+ and attach it to +target_node+ using the specified +method+
+  #
+  # @param [Symbol] method name that should be called on +target_node+, usually a Nokogiri::XML::Node instance method
+  # @param [Nokogiri::XML::Node or Nokogiri::XML::NodeSet with only one Node in it] target_node
+  # @param [Symbol] builder_node_offset Indicates node to use as the starting point for _constructing_ the new node using {OM::XML::TemplateRegistry#create_detached_node}. If this is set to :parent, target_node.parent will be used.  Otherwise, target_node will be used. 
+  # @param node_type
+  # @param [Array] args any additional arguments for creating the node
   def attach_node(method, target_node, builder_node_offset, node_type, *args, &block)
     if target_node.is_a?(Nokogiri::XML::NodeSet) and target_node.length == 1
       target_node = target_node.first
