@@ -162,7 +162,7 @@ module OM::XML::TermValueOperators
       to_build = [parent_select.pop] + to_build
       starting_point = find_by_terms(*parent_select)
       if starting_point.empty? && parent_select.empty? 
-        raise OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.  Try defining self.xml_template on the #{self.class}"
+        raise OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.  Try defining self.xml_template on the #{self.class} class."
       end
     end
     to_build.each do |term_pointer|      

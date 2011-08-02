@@ -442,7 +442,7 @@ describe "OM::XML::TermValueOperators" do
   
   describe "build_ancestors" do
     it "should raise an error if it cant find a starting point for building from" do
-      lambda { @empty_sample.build_ancestors( [:journal, :issue], 0) }.should raise_error(OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.") 
+      lambda { @empty_sample.build_ancestors( [:journal, :issue], 0) }.should raise_error(OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.  Try defining self.xml_template on the OM::Samples::ModsArticle class.") 
     end
   end
   
