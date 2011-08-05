@@ -34,6 +34,7 @@ describe "OM::XML::DynamicNode" do
 
     it "Should work with proxies" do
       @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
+      @article.term_values(:title,:main_title_lang).should == ['eng']
       @article.title.main_title_lang.should == ['eng']
     end
   
