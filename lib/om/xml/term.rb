@@ -219,6 +219,8 @@ class OM::XML::Term
       ns_prefix = self.path[0..path.index(":")-1]
       path_name = self.path[path.index(":")+1..-1]
       template = "xml[\"#{ns_prefix}\"].#{path_name}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
+    elsif !self.namespace_prefix.nil? and self.namespace_prefix != 'oxns'
+      template = "xml[\"#{self.namespace_prefix}\"].#{self.path}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
     else
       template = "xml.#{self.path}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
     end

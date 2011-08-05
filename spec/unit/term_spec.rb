@@ -174,6 +174,8 @@ describe "OM::XML::Term" do
     it "should work for namespaced nodes" do
       @ical_date = OM::XML::Term.new(:ical_date, :path=>"ical:date")
       @ical_date.xml_builder_template.should == "xml[\"ical\"].date( '\#{builder_new_value}' )"
+      @ical_date = OM::XML::Term.new(:ical_date, :path=>"date", :namespace_prefix=>"ical")
+      @ical_date.xml_builder_template.should == "xml[\"ical\"].date( '\#{builder_new_value}' )"
     end
     
     it "should work for nodes with default_content_path" do      
