@@ -9,11 +9,12 @@ module OM
 
 
       def method_missing (name, *args)
-        begin
-          term = @document.class.terminology.retrieve_term( *(to_pointer << name) )
-          OM::XML::DynamicNode.new(name, @document, self)
-        rescue OM::XML::Terminology::BadPointerError
+        #puts "MethodMissing DN: #{name}"
+        term = @document.class.terminology.retrieve_node( *(to_pointer << name) )
+        if term.nil?
           val.send(name, *args)
+        else 
+          OM::XML::DynamicNode.new(name, @document, self)
         end
       end
 
@@ -21,6 +22,10 @@ module OM
         @document.term_values( *to_pointer )
       end
       
+      def inspect
+        val.inspect
+      end
+
       def ==(other)
         val == other
       end

@@ -161,8 +161,9 @@ module OM::XML::TermXpathGenerator
       
       term = terminology.retrieve_term(*keys)  
       # Return nil if there is no term to work with
-      if term.nil? then return nil end
+      return if term.nil?
       
+      # TODO Looks like this only works if the last key is a NamedTermProxy, what if we cross proxies on the way there?
       # If we've encountered a NamedTermProxy, insert path sections corresponding to 
       # terms corresponding to each entry in its proxy_pointer rather than just the final term that it points to.
       if term.kind_of? OM::XML::NamedTermProxy

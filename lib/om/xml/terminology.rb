@@ -155,40 +155,67 @@ class OM::XML::Terminology
     end
     return current_term
   end
-  
+
+  def pointers_to_xpath(*pointers)
+    if (pointers.empty?)
+      '/'
+    else
+      arg = pointers.shift
+      pointer_to_xpath(pointers) + xpathSegment(arg)
+    end
+  end
+
+  def retrieve_node_subsequent(args, context)
+    current_term = context.children[args.shift]
+    if current_term.kind_of? OM::XML::NamedTermProxy
+      args = (current_term.proxy_pointer + args).flatten
+      current_term = context.children[args.shift]
+    end 
+    args.empty? ? current_term : retrieve_node_subsequent(args, current_term)
+  end
+
+
+  def retrieve_node(*args)
+    current_term = terms[args.shift]
+    if current_term.kind_of? OM::XML::NamedTermProxy
+      args = (current_term.proxy_pointer + args).flatten
+      current_term = terms[args.shift]
+    end 
+    args.empty? ? current_term : retrieve_node_subsequent(args, current_term)
+  end
+
   # Return the appropriate xpath query for retrieving nodes corresponding to the term identified by +pointers+.
   # If the last argument is a String or a Hash, it will be used to add +constraints+ to the resulting xpath query.
   # If you provide an xpath query as the argument, it will be returne untouched.
   def xpath_for(*pointers)
     if pointers.length == 1 && pointers.first.instance_of?(String)
-      xpath_query = pointers.first
-    else
-      query_constraints = nil
-      
-      if pointers.length > 1 && !pointers.last.kind_of?(Symbol)
-        query_constraints = pointers.pop
-      end
-
-      term = retrieve_term( *pointers )
-
-      if !term.nil?
-        if query_constraints.kind_of?(String)
-          constraint_value = query_constraints
-          xpath_template = term.xpath_constrained
-          xpath_query = eval( '"' + xpath_template + '"' )
-        elsif query_constraints.kind_of?(Hash) && !query_constraints.empty?       
-          key_value_pair = query_constraints.first 
-          constraint_value = key_value_pair.last
-          xpath_template = term.children[key_value_pair.first].xpath_constrained
-          xpath_query = eval( '"' + xpath_template + '"' )          
-        else 
-          xpath_query = term.xpath
-        end
-      else
-        xpath_query = nil
-      end
+      return pointers.first
     end
-    return xpath_query
+    query_constraints = nil
+    
+    if pointers.length > 1 && !pointers.last.kind_of?(Symbol)
+      query_constraints = pointers.pop
+    end
+
+    term = retrieve_node( *pointers )
+
+    if !term.nil?
+      if query_constraints.kind_of?(String)
+        constraint_value = query_constraints
+        xpath_template = term.xpath_constrained
+        xpath_query = eval( '"' + xpath_template + '"' )
+      elsif query_constraints.kind_of?(Hash) && !query_constraints.empty?       
+        key_value_pair = query_constraints.first 
+        constraint_value = key_value_pair.last
+        xpath_template = term.children[key_value_pair.first].xpath_constrained
+        xpath_query = eval( '"' + xpath_template + '"' )          
+      else 
+        xpath_query = term.xpath
+      end
+    else
+      xpath_query = nil
+    end
+    xpath_query
   end
   
   # Use the current terminology to generate an xpath with (optional) node indexes for each of the term pointers.

@@ -17,7 +17,9 @@ describe "OM::XML::Terminology" do
       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd")
 
       t.title_info(:path=>"titleInfo") {
-        t.main_title(:path=>"title", :label=>"title")
+        t.main_title(:path=>"title", :label=>"title") {
+          t.main_title_lang(:path=>{:attribute=> "xml:lang"})
+        }
         t.language(:path=>{:attribute=>"lang"})
       }          
       # t.title(:path=>"titleInfo", :default_content_path=>"title") {
@@ -65,6 +67,7 @@ describe "OM::XML::Terminology" do
         t.start_page(:proxy=>[:pages, :start])
         t.end_page(:proxy=>[:pages, :end])
       }
+      t.title(:proxy=>[:title_info, :main_title])
     end
 
     @test_full_terminology = @builder_with_block.build
@@ -80,6 +83,10 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.retrieve_term(:person).xpath.should == '//oxns:name[@type="personal"]'
       @test_full_terminology.retrieve_term(:person).xpath_relative.should == 'oxns:name[@type="personal"]'
       @test_full_terminology.retrieve_term(:person, :person_id).xpath_relative.should == 'oxns:namePart[not(@type)]'
+    end
+
+    it "should expand proxy and get sub terms" do
+      @test_full_terminology.retrieve_node(:title, :main_title_lang).xpath.should == '//oxns:titleInfo/oxns:title/@xml:lang'
     end
 
     it "constructs templates for value-driven searches" do

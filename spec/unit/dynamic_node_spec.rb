@@ -31,6 +31,11 @@ describe "OM::XML::DynamicNode" do
     it "should allow you to call methods on the return value" do
       @article.name.name_content.first.should == "Describes a person"
     end
+
+    it "Should work with proxies" do
+      @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
+      @article.title.main_title_lang.should == ['eng']
+    end
   
   end
 end
