@@ -44,6 +44,15 @@ module OM::XML::Document
     klass.send(:include, OM::XML::TermValueOperators)
     klass.send(:include, OM::XML::Validation)
   end
+
+  def method_missing(name, *args)
+    if (self.class.terminology.has_term? name)
+      val = self.term_values(name)
+      OM::XML::DynamicNode.new(name, self)
+    else
+      super
+    end
+  end
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
   def find_by_terms_and_value(*term_pointer)
