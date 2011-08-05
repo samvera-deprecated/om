@@ -140,6 +140,7 @@ class OM::XML::Terminology
   end
   
   # Returns the Term corresponding to the given _pointer_.
+  # Proxies are not expanded
   def retrieve_term(*args)
     args_cp = args.dup
     current_term = terms[args_cp.delete_at(0)]
@@ -174,7 +175,9 @@ class OM::XML::Terminology
     args.empty? ? current_term : retrieve_node_subsequent(args, current_term)
   end
 
-
+ 
+  ##
+  # This is very similar to retrieve_term, however it expands proxy paths out into their cannonical paths
   def retrieve_node(*args)
     current_term = terms[args.shift]
     if current_term.kind_of? OM::XML::NamedTermProxy
