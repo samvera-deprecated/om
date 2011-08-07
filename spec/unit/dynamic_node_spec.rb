@@ -56,8 +56,11 @@ describe "OM::XML::DynamicNode" do
       @article.term_values(:subject, {:topic => 1}).should == "TOPIC 2"
     end
 
-    ##TODO insert records
-    ##TODO constrained records
+    it "should append nodes at the specified index if possible" do
+      @article.journal.title_info = ["all", "for", "the"]
+      @article.journal.title_info[3] = 'glory'
+      @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
+    end
   
   end
 end

@@ -10,15 +10,56 @@ module OM
       end
 
       def method_missing (name, *args)
-#        self.addressed_node = retrieve_addressed_node( (to_pointer << name) )
-        
         #Nil term means this is an index accessor
-        child =  term_child_by_name(term.nil? ? parent.term : term, name)
-        if child
-          OM::XML::DynamicNode.new(name, @document, child, self)
-        else 
-          val.send(name, *args)
+        if /=$/.match(name.to_s)
+          new_update_node(name, args)
+        else
+          child =  term_child_by_name(term.nil? ? parent.term : term, name)
+          if child
+            OM::XML::DynamicNode.new(name, @document, child, self)
+          else 
+            val.send(name, *args)
+          end
         end
+      end
+
+      def new_update_node(name, args)
+        modified_name = name.to_s.chop.to_sym
+        node = nil
+        if modified_name == :[]
+          self.val=[{args.shift =>args.first}]
+        else  
+          child = term.retrieve_term(modified_name)
+          node = OM::XML::DynamicNode.new(modified_name, @document, child, self)
+          node.val=args
+        end
+      end
+
+
+      def val=(args)
+        new_values = sanitize_new_values(args.first)
+        new_values.each do |y,z|   
+## If we pass something that already has an index on it, we should be able to add it.
+          if @document.find_by_xpath(xpath)[y.to_i].nil? || y.to_i == -1
+            @document.term_values_append(:parent_select=> parent.to_pointer,:parent_index=>0,:template=>to_pointer,:values=>z)
+          else
+            @document.term_value_update(xpath, y.to_i, z)
+          end
+        end
+      end
+
+      def sanitize_new_values(new_values)
+          # Sanitize new_values to always be a hash with indexes
+          case new_values
+          when Hash
+          when Array
+            nv = new_values.dup
+            new_values = {}
+            nv.each {|v| new_values[nv.index(v).to_s] = v}
+          else
+            new_values = {"0"=>new_values}
+          end
+          new_values
       end
 
       def term_child_by_name(term, name)
@@ -32,7 +73,6 @@ module OM
       def [](n)
         ptr = to_pointer
         last = ptr.pop
-        #self.addressed_node = retrieve_addressed_node( (ptr << {last =>n }) )
         OM::XML::DynamicNode.new(n, @document, nil, self)
       end
 
