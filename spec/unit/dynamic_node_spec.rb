@@ -18,10 +18,9 @@ describe "OM::XML::DynamicNode" do
     end
 
     it "should find elements two deep" do
-      #TODO ensure that method_missing with name is only called once.  Create a new method for name.
+      #TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
       @article.name.name_content.val.should == ["Describes a person"]
       @article.name.name_content.should == ["Describes a person"]
-      #@article.name.retrieve_addressed_node([:name, :name_content]).should == '//one/two'
     end
 
     it "should not find elements that don't  exist" do
@@ -36,7 +35,6 @@ describe "OM::XML::DynamicNode" do
        @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
       # ## TODO WHY ARE WE FAILING ON THIS NEXT LINE. HAS NOTHING TO DO WITH DYNAMIC NODES
       # @article.term_values(:title,:main_title_lang).should == ['eng']
-      # puts "\n" + @article.title.main_title_lang.xpath
       @article.title.main_title_lang.should == ['eng']
 
       @article.title[1].to_pointer.should == [{:title => 1}]
