@@ -157,15 +157,6 @@ class OM::XML::Terminology
     return current_term
   end
 
-  def pointers_to_xpath(*pointers)
-    if (pointers.empty?)
-      '/'
-    else
-      arg = pointers.shift
-      pointer_to_xpath(pointers) + xpathSegment(arg)
-    end
-  end
-
   def retrieve_node_subsequent(args, context)
     current_term = context.children[args.shift]
     if current_term.kind_of? OM::XML::NamedTermProxy
@@ -186,6 +177,7 @@ class OM::XML::Terminology
     end 
     args.empty? ? current_term : retrieve_node_subsequent(args, current_term)
   end
+
 
   # Return the appropriate xpath query for retrieving nodes corresponding to the term identified by +pointers+.
   # If the last argument is a String or a Hash, it will be used to add +constraints+ to the resulting xpath query.
