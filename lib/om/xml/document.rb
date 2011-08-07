@@ -46,10 +46,11 @@ module OM::XML::Document
   end
 
   def method_missing(name, *args)
-    if (self.class.terminology.has_term? name)
-      val = self.term_values(name)
+    term = self.class.terminology.retrieve_term(name)
+    if (term)
+      #val = self.term_values(name)
       #puts "MethodMissing: #{name}"
-      OM::XML::DynamicNode.new(name, self)
+      OM::XML::DynamicNode.new(name, self, term)
     else
       super
     end
