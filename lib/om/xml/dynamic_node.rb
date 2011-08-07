@@ -19,17 +19,16 @@ module OM
       end
 
       def [](n)
+        ptr = to_pointer
+        last = ptr.pop
+        self.addressed_node = retrieve_addressed_node( (ptr << {last =>n }) )
         OM::XML::DynamicNode.new(n, @document, self)
       end
 
       def val 
-        if parent.nil?
-          return @document.term_values( *to_pointer )
-        end
-        result = []
-        xpath = parent.addressed_node.xpath
-        trim_text = !xpath.nil? && !xpath.index("text()").nil?
-        @document.find_by_xpath(xpath).collect {|node| (trim_text ? node.text.strip : node.text) }
+        query = xpath
+        trim_text = !query.index("text()").nil?
+        @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
       end
       
       def inspect
@@ -54,6 +53,11 @@ module OM
       end 
 
       def xpath
+        if parent.nil?
+          @document.class.terminology.xpath_with_indexes(*to_pointer)
+        else
+          parent.addressed_node.xpath
+        end
         
       end
 
@@ -79,10 +83,24 @@ module OM
         current_term = @document.class.terminology.retrieve_node(*pointer) # need all of the addresses
         return if current_term.nil?
         path = parent.nil? ? '/' : parent.xpath
-        if index
-          path += '/' + OM::XML::TermXpathGenerator.add_node_index_predicate(current_term.xpath_relative, index)
+        proxy_check = @document.class.terminology.retrieve_term(*pointer) # need all of the addresses
+
+        ### if the current_term was resolved from a proxy, we need to get the xpath for all of that.
+        if (proxy_check.kind_of? NamedTermProxy)
+           ptr = proxy_check.proxy_pointer.dup
+           if (index)
+             last = ptr.pop
+             ptr << {last =>index }
+           end
+          
+           ### TODO This only works with root level proxies 
+           path = retrieve_addressed_node(ptr).xpath
         else 
-          path += '/' + current_term.xpath_relative
+          if index
+            path +=  '/' + OM::XML::TermXpathGenerator.add_node_index_predicate(current_term.xpath_relative, index)
+          else 
+            path += '/' + current_term.xpath_relative
+          end
         end
         node = AddressedNode.new(pointer, path, current_term)
         if args.empty? 
