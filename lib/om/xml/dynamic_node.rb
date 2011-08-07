@@ -1,18 +1,15 @@
 module OM
   module XML
     class DynamicNode
-      attr_accessor :term, :parent
+      attr_accessor :term, :parent, :addressed_node
       def initialize(term, document, parent=nil)
         self.term = term
         @document = document
         self.parent = parent
       end
 
-
       def method_missing (name, *args)
-        #puts "MethodMissing DN: #{name}"
-        #term = @document.class.terminology.retrieve_addressed_node( (to_pointer << name) )
-        addressed_node = retrieve_addressed_node( (to_pointer << name) )
+        self.addressed_node = retrieve_addressed_node( (to_pointer << name) )
         
         if addressed_node.nil?
           val.send(name, *args)
@@ -26,7 +23,13 @@ module OM
       end
 
       def val 
-        @document.term_values( *to_pointer )
+        if parent.nil?
+          return @document.term_values( *to_pointer )
+        end
+        result = []
+        xpath = parent.addressed_node.xpath
+        trim_text = !xpath.nil? && !xpath.index("text()").nil?
+        @document.find_by_xpath(xpath).collect {|node| (trim_text ? node.text.strip : node.text) }
       end
       
       def inspect
