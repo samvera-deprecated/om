@@ -84,7 +84,6 @@ module OM
         return if current_term.nil?
         path = parent.nil? ? '/' : parent.xpath
         proxy_check = @document.class.terminology.retrieve_term(*pointer) # need all of the addresses
-
         ### if the current_term was resolved from a proxy, we need to get the xpath for all of that.
         if (proxy_check.kind_of? NamedTermProxy)
            ptr = proxy_check.proxy_pointer.dup
@@ -92,9 +91,11 @@ module OM
              last = ptr.pop
              ptr << {last =>index }
            end
+           ptr += args
           
            ### TODO This only works with root level proxies 
-           path = retrieve_addressed_node(ptr).xpath
+           return retrieve_addressed_node(ptr)
+           #return path
         else 
           if index
             path +=  '/' + OM::XML::TermXpathGenerator.add_node_index_predicate(current_term.xpath_relative, index)
@@ -103,6 +104,7 @@ module OM
           end
         end
         node = AddressedNode.new(pointer, path, current_term)
+
         if args.empty? 
           node
         else
