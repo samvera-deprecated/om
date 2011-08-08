@@ -126,16 +126,45 @@ class OM::XML::Term
     end
   end
   
-  # Term Class Definition
-  
-  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix, :is_root_term
-  attr_accessor :children, :internal_xml, :terminology
+  #
+  # Class Definition for Term 
+  #
   
   include OM::TreeNode
   
-  # h2. Namespaces
-  # By default, OM assumes that all terms in a Terminology have the namespace set in the root of the document.  If you want to set a different namespace for a Term, pass :namespasce_prefix into its initializer (or call .namespace_prefix= on its builder)
-  # If a node has _no_ namespace, you must explicitly set namespace_prefix to nil.
+  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, , :default_content_path, :is_root_term
+  attr_accessor :children, :internal_xml, :terminology
+  
+  # Any XML attributes that qualify the Term.
+  #
+  # @example Declare a Term that has a given attribute (ie. //title[@xml:lang='eng'])
+  #   t.english_title(:path=>"title", :attributes=>{"xml:lang"=>"eng"}
+  # @example Use nil to point to nodes that do not have a given attribute (ie. //title[not(@xml:lang)])
+  #   t.title_without_lang_attribute(:path=>"title", :attributes=>{"xml:lang"=>nil})
+  attr_accessor :attributes
+  
+  # Namespace Prefix (xmlns) for the Term.
+  #
+  # By default, OM assumes that all terms in a Terminology have the namespace set in the root of the document.  If you want to set a different namespace for a Term, pass :namespace_prefix into its initializer (or call .namespace_prefix= on its builder)
+  # If a node has _no_ namespace, you must explicitly set namespace_prefix to nil.  Currently you have to do this on _each_ term, you can't set namespace_prefix to nil for an entire Terminology.
+  # 
+  # @example
+  #   # For xml like this
+  #   <foo xmlns="http://foo.com/schemas/fooschema" xmlns:bar="http://bar.com/schemas/barschema">
+  #     <address>1400 Pennsylvania Avenue</address>
+  #     <bar:latitude>56</bar:latitude>
+  #   </foo>
+  #   
+  #   # The Terminology would look like this
+  #   OM::XML::Terminology::Builder.new do |t|
+  #     t.root(:name=>:foo, :path=>"foo", :xmlns=>"http://foo.com/schemas/fooschema", "xmlns:bar"=>"http://bar.com/schemas/barschema")
+  #     t.address
+  #     t.latitude(:namespace_prefix=>"bar")
+  #   end
+  #   
+  attr_accessor :namespace_prefix
+  
+  
   def initialize(name, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
