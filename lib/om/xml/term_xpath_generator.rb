@@ -163,9 +163,8 @@ module OM::XML::TermXpathGenerator
       # Return nil if there is no term to work with
       return if term.nil?
       
+      # If we've encountered a NamedTermProxy, insert path sections corresponding to each entry in its proxy_pointer (rather than just the final term that it points to).
       # TODO Looks like this only works if the last key is a NamedTermProxy, what if we cross proxies on the way there?
-      # If we've encountered a NamedTermProxy, insert path sections corresponding to 
-      # terms corresponding to each entry in its proxy_pointer rather than just the final term that it points to.
       if term.kind_of? OM::XML::NamedTermProxy
         current_location = term.parent.nil? ? term.terminology : term.parent
         relative_path = ""
