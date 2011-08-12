@@ -33,16 +33,12 @@ describe "OM::XML::DynamicNode" do
 
     it "Should work with proxies" do
       @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
-      # ## TODO WHY ARE WE FAILING ON THIS NEXT LINE. HAS NOTHING TO DO WITH DYNAMIC NODES
-      # @article.term_values(:title,:main_title_lang).should == ['eng']
       @article.title.main_title_lang.should == ['eng']
 
       @article.title(1).to_pointer.should == [{:title => 1}]
 
-      ### You can't subscript proxies, that's why this fails.
-      @article.class.terminology.xpath_with_indexes({:title=>1}).should == "//oxns:titleInfo/oxns:title[2]"
-      @article.title(1).xpath.should == "//oxns:titleInfo/oxns:title[2]"
-      @article.title(1).should == "Artikkelin otsikko Hydrangea artiklan 1"
+      @article.journal_title.xpath.should == "//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title"
+      @article.journal_title.should == ["TITLE OF HOST JOURNAL"]
     end
 
     it "Should be addressable to a specific node" do
@@ -56,8 +52,7 @@ describe "OM::XML::DynamicNode" do
       @article.journal(0).issue(1).pages.start.first.should == "434"
 
       @article.subject.topic(1).should == ["TOPIC 2"]
-      ### TODO why doesn't this work?
-      @article.term_values(:subject, {:topic => 1}).should == "TOPIC 2"
+      @article.subject.topic(1).xpath.should == "//oxns:subject/oxns:topic[2]"
     end
 
     it "should append nodes at the specified index if possible" do

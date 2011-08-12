@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     om (1.3.0)
+      mediashelf-loggable
       nokogiri (>= 1.4.2)
 
 GEM
@@ -12,6 +13,7 @@ GEM
     equivalent-xml (0.2.6)
       nokogiri (>= 1.4.3)
     linecache (0.43)
+    mediashelf-loggable (0.4.7)
     mocha (0.9.12)
     nokogiri (1.4.4)
     rcov (0.9.9)

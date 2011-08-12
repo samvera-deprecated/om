@@ -18,7 +18,6 @@ module OM
         else
           child =  term_child_by_name(term.nil? ? parent.term : term, name)
           if child
-            puts "We made #{name} and args are #{args.first}"
             OM::XML::DynamicNode.new(name, args.first, @document, child, self)
           else 
             val.send(name, *args)
@@ -73,12 +72,6 @@ module OM
           term.retrieve_term(name)
         end
       end
-
-      # def [](n)
-      #   ptr = to_pointer
-      #   last = ptr.pop
-      #   OM::XML::DynamicNode.new(n, @document, nil, self)
-      # end
 
       def val 
         query = xpath
