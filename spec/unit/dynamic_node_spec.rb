@@ -21,6 +21,7 @@ describe "OM::XML::DynamicNode" do
       #TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
       @article.name.name_content.val.should == ["Describes a person"]
       @article.name.name_content.should == ["Describes a person"]
+      @article.name.name_content(0).should == ["Describes a person"]
     end
 
     it "should not find elements that don't  exist" do

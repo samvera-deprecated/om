@@ -105,9 +105,9 @@ describe "OM::XML::TermValueOperators" do
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length.should == 1
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length.should == 1
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "434"
-      ### FIXME why doesn't this work?
-      @article.class.terminology.xpath_with_indexes(:subject, {:topic=>1}).should == '//oxns:subject/onxs:topic[2]'
-      @article.find_by_terms(:subject, {:topic => 1}).should == "TOPIC 2"
+      #Last argument is a filter, we must explicitly pass no filter
+      @article.class.terminology.xpath_with_indexes(:subject, {:topic=>1}, {}).should == '//oxns:subject/oxns:topic[2]'
+      @article.find_by_terms(:subject, {:topic => 1}, {}).text.should == "TOPIC 2"
 	  end
 	  
 	  it "should accommodate appending term values with apostrophes in them"  do

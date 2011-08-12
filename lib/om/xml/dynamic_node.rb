@@ -101,7 +101,7 @@ module OM
 
       def xpath
         if parent.nil?
-          @document.class.terminology.xpath_with_indexes(*to_pointer)
+          @document.class.terminology.xpath_with_indexes(*(to_pointer << {})) ### last element is always filters
         else
           chain = retrieve_addressed_node( )
           '//' + chain.map { |n| n.xpath}.join('/')

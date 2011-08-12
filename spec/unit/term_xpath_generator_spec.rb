@@ -107,7 +107,8 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     end
     it "should destringify term pointers before using them" do
       generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, {"person"=>"1"}, "first_name" ).should == '//oxns:name[@type="personal"][2]/oxns:namePart[@type="given"]'
-      @sample_terminology.xpath_with_indexes(:name, {:family_name=>1}).should == '//oxns:name/oxns:namePart[@type="family"][2]'
+      ### Last argument is a filter, we are passing no filters
+      @sample_terminology.xpath_with_indexes(:name, {:family_name=>1},{}).should == '//oxns:name/oxns:namePart[@type="family"][2]'
     end
     it "should warn about indexes on a proxy" do
       Logger.any_instance.expects(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
