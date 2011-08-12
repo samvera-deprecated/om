@@ -1,22 +1,25 @@
 module OM
   module XML
     class DynamicNode
-      attr_accessor :key, :parent, :addressed_node, :term
-      def initialize(key, document, term, parent=nil)  ##TODO a real term object in here would make it easier to lookup
-        self.term = term
+      attr_accessor :key, :index, :parent, :addressed_node, :term
+      def initialize(key, index, document, term, parent=nil)  ##TODO a real term object in here would make it easier to lookup
         self.key = key
+        self.index = index
         @document = document
+        self.term = term
         self.parent = parent
       end
 
       def method_missing (name, *args)
-        #Nil term means this is an index accessor
         if /=$/.match(name.to_s)
           new_update_node(name, args)
+        elsif args.length > 1
+          new_update_node_with_index(name, args)
         else
           child =  term_child_by_name(term.nil? ? parent.term : term, name)
           if child
-            OM::XML::DynamicNode.new(name, @document, child, self)
+            puts "We made #{name} and args are #{args.first}"
+            OM::XML::DynamicNode.new(name, args.first, @document, child, self)
           else 
             val.send(name, *args)
           end
@@ -25,16 +28,17 @@ module OM
 
       def new_update_node(name, args)
         modified_name = name.to_s.chop.to_sym
-        node = nil
-        if modified_name == :[]
-          self.val=[{args.shift =>args.first}]
-        else  
-          child = term.retrieve_term(modified_name)
-          node = OM::XML::DynamicNode.new(modified_name, @document, child, self)
-          node.val=args
-        end
+        child = term.retrieve_term(modified_name)
+        node = OM::XML::DynamicNode.new(modified_name, nil, @document, child, self)
+        node.val=args
       end
 
+      def new_update_node_with_index(name, args)
+        index = args.shift
+        child = term.retrieve_term(name)
+        node = OM::XML::DynamicNode.new(name, index, @document, child, self)
+        node.val=args
+      end
 
       def val=(args)
         new_values = sanitize_new_values(args.first)
@@ -70,11 +74,11 @@ module OM
         end
       end
 
-      def [](n)
-        ptr = to_pointer
-        last = ptr.pop
-        OM::XML::DynamicNode.new(n, @document, nil, self)
-      end
+      # def [](n)
+      #   ptr = to_pointer
+      #   last = ptr.pop
+      #   OM::XML::DynamicNode.new(n, @document, nil, self)
+      # end
 
       def val 
         query = xpath
@@ -95,9 +99,8 @@ module OM
       end
 
       def to_pointer
-        #key can either be a pointer or an index
-        if (key.kind_of? Fixnum)
-          parent.parent.nil? ?  [{parent.key => key}] : parent.parent.to_pointer << {parent.key => key}
+        if self.index
+          parent.nil? ?  [{key => index}] : parent.to_pointer << {key => index}
         else ### A pointer
           parent.nil? ? [key] : parent.to_pointer << key
         end
@@ -131,10 +134,10 @@ module OM
          if parent
            chain += parent.retrieve_addressed_node()
          end
-         if (term.nil?)
+         if (self.index)
            ### This is an index
-           node = chain.pop
-           node.xpath = OM::XML::TermXpathGenerator.add_node_index_predicate(node.xpath, key)
+           node = AddressedNode.new(key, term.xpath_relative, self)
+           node.xpath = OM::XML::TermXpathGenerator.add_node_index_predicate(node.xpath, index)
            chain << node
          elsif (term.kind_of? NamedTermProxy)
             proxy = term.proxy_pointer.dup

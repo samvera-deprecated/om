@@ -32,33 +32,37 @@ describe "OM::XML::DynamicNode" do
     end
 
     it "Should work with proxies" do
-       @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
+      @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
       # ## TODO WHY ARE WE FAILING ON THIS NEXT LINE. HAS NOTHING TO DO WITH DYNAMIC NODES
       # @article.term_values(:title,:main_title_lang).should == ['eng']
       @article.title.main_title_lang.should == ['eng']
 
-      @article.title[1].to_pointer.should == [{:title => 1}]
-      @article.title[1].xpath.should == "//oxns:titleInfo/oxns:title[2]"
-      @article.title[1].should == "Artikkelin otsikko Hydrangea artiklan 1"
+      @article.title(1).to_pointer.should == [{:title => 1}]
+
+      ### You can't subscript proxies, that's why this fails.
+      @article.class.terminology.xpath_with_indexes({:title=>1}).should == "//oxns:titleInfo/oxns:title[2]"
+      @article.title(1).xpath.should == "//oxns:titleInfo/oxns:title[2]"
+      @article.title(1).should == "Artikkelin otsikko Hydrangea artiklan 1"
     end
 
-    it "Should be addressable as an array" do
+    it "Should be addressable to a specific node" do
       @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>{"0"=>"434"} })
 
-      @article.subject.topic[1].to_pointer == [:subject, {:topic => 1}]
-      @article.journal[0].issue.length.should == 2
-      @article.journal[0].issue[1].pages.length.should == 1
-      @article.journal[0].issue[1].pages.start.length.should == 1
-      @article.journal[0].issue[1].pages.start.first.should == "434"
+      @article.subject.topic(1).to_pointer == [:subject, {:topic => 1}]
+      @article.journal(0).issue.length.should == 2
+      @article.journal(0).issue(1).pages.to_pointer == [{:journal=>0}, {:issue=>1}, :pages]
+      @article.journal(0).issue(1).pages.length.should == 1
+      @article.journal(0).issue(1).pages.start.length.should == 1
+      @article.journal(0).issue(1).pages.start.first.should == "434"
 
-      @article.subject.topic[1].should == ["TOPIC 2"]
+      @article.subject.topic(1).should == ["TOPIC 2"]
       ### TODO why doesn't this work?
       @article.term_values(:subject, {:topic => 1}).should == "TOPIC 2"
     end
 
     it "should append nodes at the specified index if possible" do
       @article.journal.title_info = ["all", "for", "the"]
-      @article.journal.title_info[3] = 'glory'
+      @article.journal.title_info(3, 'glory')
       @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
     end
   

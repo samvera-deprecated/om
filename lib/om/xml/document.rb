@@ -49,8 +49,8 @@ module OM::XML::Document
     term = self.class.terminology.retrieve_term(name)
     if (term)
       #val = self.term_values(name)
-      #puts "MethodMissing: #{name}"
-      OM::XML::DynamicNode.new(name, self, term)
+      puts "MethodMissing: #{name} args #{args}"
+      OM::XML::DynamicNode.new(name, args.first, self, term)
     else
       super
     end
