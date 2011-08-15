@@ -1,5 +1,29 @@
 module OM
   module XML
+    #
+    # Provides a natural syntax for using OM Terminologies to access values from xml Documents
+    # 
+    # @example Return an array of the value(s) "start page" node(s) from the second issue node within the first journal node
+    #   # Using DynamicNode syntax:
+    #   @article.journal(0).issue(1).pages.start
+    #   # Other ways to perform this query:
+    #   @article.find_by_terms({:journal => 0}, {:issue => 1}, :pages, :start)
+    #   @article.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:part[2]/extent[@unit="pages"]")
+    #
+    # @example Return an NodeSet of the _first titles_ of all journal nodes
+    #   # Using DynamicNode syntax:
+    #   @article.journal.title(1)
+    #   # Other ways to perform this query:
+    #   @article.find_by_terms(:journal, {:title => 1})
+    #   @article.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[1]")
+    #
+    # @example Find all of the titles from all journals & return the first title Node from that NodeSet
+    #   # Using DynamicNode syntax:
+    #   @article.journal.title[1]
+    #   # Other ways to perform this query:
+    #   @article.find_by_terms(:journal, :title)[1]
+    #   @article.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title")[1]
+    #
     class DynamicNode
       attr_accessor :key, :index, :parent, :addressed_node, :term
       def initialize(key, index, document, term, parent=nil)  ##TODO a real term object in here would make it easier to lookup
@@ -76,7 +100,13 @@ module OM
       def val 
         query = xpath
         trim_text = !query.index("text()").nil?
-        @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
+        return @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
+      end
+      
+      def nodeset
+        query = xpath
+        trim_text = !query.index("text()").nil?
+        return @document.find_by_xpath(query)
       end
       
       def inspect
