@@ -1,4 +1,6 @@
+require 'loggable'
 module OM::XML::TermXpathGenerator
+  include Loggable
   
   # Generate relative xpath for a term
   # @param [OM::XML::Term] term that you want to generate relative xpath for
@@ -161,11 +163,12 @@ module OM::XML::TermXpathGenerator
       
       term = terminology.retrieve_term(*keys)  
       # Return nil if there is no term to work with
-      if term.nil? then return nil end
+      return if term.nil?
       
-      # If we've encountered a NamedTermProxy, insert path sections corresponding to 
-      # terms corresponding to each entry in its proxy_pointer rather than just the final term that it points to.
+      # If we've encountered a NamedTermProxy, insert path sections corresponding to each entry in its proxy_pointer (rather than just the final term that it points to).
+      # TODO Looks like this only works if the last key is a NamedTermProxy, what if we cross proxies on the way there?
       if term.kind_of? OM::XML::NamedTermProxy
+        logger.warn "You attempted to call an index value of #{index} on the term \"#{k.inspect}\". However \"#{k.inspect}\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643" if index
         current_location = term.parent.nil? ? term.terminology : term.parent
         relative_path = ""
         term.proxy_pointer.each_with_index do |proxy_pointer, proxy_pointer_index|

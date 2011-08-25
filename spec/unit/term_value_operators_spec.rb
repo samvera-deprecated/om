@@ -105,6 +105,9 @@ describe "OM::XML::TermValueOperators" do
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length.should == 1
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length.should == 1
       @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "434"
+      #Last argument is a filter, we must explicitly pass no filter
+      @article.class.terminology.xpath_with_indexes(:subject, {:topic=>1}, {}).should == '//oxns:subject/oxns:topic[2]'
+      @article.find_by_terms(:subject, {:topic => 1}, {}).text.should == "TOPIC 2"
 	  end
 	  
 	  it "should accommodate appending term values with apostrophes in them"  do
@@ -129,6 +132,8 @@ describe "OM::XML::TermValueOperators" do
       pending "HYDRA-415"
       @sample.update_values({['title_info', 'main_title', 'main_title_lang']=>'eng'})
       @sample.term_values('title_info', 'main_title', 'main_title_lang').should == ['eng']
+      ## After a proxy
+      @article.term_values(:title,:main_title_lang).should == ['eng']
     end
     
     ### Examples copied over form nokogiri_datastream_spec

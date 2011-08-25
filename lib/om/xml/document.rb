@@ -44,15 +44,26 @@ module OM::XML::Document
     klass.send(:include, OM::XML::TermValueOperators)
     klass.send(:include, OM::XML::Validation)
   end
+
+  def method_missing(name, *args)
+    term = self.class.terminology.retrieve_term(name)
+    if (term)
+      OM::XML::DynamicNode.new(name, args.first, self, term)
+    else
+      super
+    end
+  end
+
+
+  def find_by_xpath(xpath)
+    ng_xml.xpath(xpath, ox_namespaces) 
+  end
+  
   
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
   def find_by_terms_and_value(*term_pointer)
     xpath = self.class.terminology.xpath_for(*term_pointer)    
-    if xpath.nil?
-      return nil
-    else
-      return ng_xml.xpath(xpath, ox_namespaces) 
-    end
+    find_by_xpath(xpath) unless xpath.nil?
   end
   
 
@@ -64,11 +75,7 @@ module OM::XML::Document
   # Currently, indexes must be integers.
   def find_by_terms(*term_pointer)
     xpath = self.class.terminology.xpath_with_indexes(*term_pointer)   
-    if xpath.nil?
-      return nil
-    else
-      return ng_xml.xpath(xpath, ox_namespaces) 
-    end   
+    find_by_xpath(xpath) unless xpath.nil?
   end
   
   # Test whether the document has a node corresponding to the given term_pointer

@@ -79,6 +79,8 @@ describe "OM::XML::Terminology::Builder" do
       terminology.retrieve_term(:title).should be_kind_of OM::XML::NamedTermProxy
       terminology.xpath_for(:title).should == '//oxns:titleInfo/oxns:title'
       terminology.xpath_with_indexes({:title=>0}).should == "//oxns:titleInfo/oxns:title"
+      # @builder_with_block.build.xpath_for_pointer(:issue).should == '//oxns:part'
+      # terminology.xpath_for_pointer(:title).should == '//oxns:titleInfo/oxns:title'
     end
     
     describe '#new' do

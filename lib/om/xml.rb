@@ -8,6 +8,7 @@ require "om/xml/node_generator"
 require "om/xml/term_value_operators"
 require "om/xml/named_term_proxy"
 require "om/xml/document"
+require "om/xml/dynamic_node"
 
 require "om/xml/template_registry"
 

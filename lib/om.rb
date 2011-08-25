@@ -34,12 +34,17 @@ module OM
     end
   end
   
-  # @pointers pointers array that you would pass into other Accessor methods
-  # @include_indices (default: true) if set to false, parent indices will be excluded from the array
-  # Converts an array of accessor pointers into a flat array.
-  # ie. [{:conference=>0}, {:role=>1}, :text] becomes [:conference, 0, :role, 1, :text]
-  #   if include_indices is set to false,
-  #     [{:conference=>0}, {:role=>1}, :text] becomes [:conference, :role, :text]
+  # Convert a Term pointer into a flat array without Hashes.
+  # If include_indices is set to false, node indices will be removed.
+  #
+  # @param [Array] pointers array that you would pass into other Accessor methods
+  # @param [Boolean] include_indices (default: true) if set to false, parent indices will be excluded from the array
+  # @example Turn a pointer into a flat array with node indices preserved
+  #   OM.pointers_to_flat_array( [{:conference=>0}, {:role=>1}, :text] ) 
+  #   => [:conference, 0, :role, 1, :text]
+  # @example Remove node indices by setting include_indices to false
+  #   OM.pointers_to_flat_array( [{:conference=>0}, {:role=>1}, :text], false ) 
+  #   => [:conference, :role, :text]
   def self.pointers_to_flat_array(pointers, include_indices=true)
     flat_array = []
     pointers.each do |pointer|
