@@ -87,6 +87,8 @@ describe "OM::XML::Terminology" do
 
     it "should expand proxy and get sub terms" do
       @test_full_terminology.retrieve_node(:title, :main_title_lang).xpath.should == '//oxns:titleInfo/oxns:title/@xml:lang'
+      ### retrieve_term() will not cross proxies
+      @test_full_terminology.retrieve_term(:title_info, :main_title, :main_title_lang).xpath.should == '//oxns:titleInfo/oxns:title/@xml:lang'
     end
 
     it "constructs templates for value-driven searches" do
