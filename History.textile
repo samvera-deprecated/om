@@ -1,3 +1,7 @@
+h3. 1.4.2
+  
+  "HYDRA-667":https://jira.duraspace.org/browse/HYDRA-667 Fixed bug where updating nodes wasn't marking the document as dirty
+
 h3. 1.4.0
 
   Added dynamic node access DSL. Added a warning when calling an index on a proxy term.

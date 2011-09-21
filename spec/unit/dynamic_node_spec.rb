@@ -67,6 +67,7 @@ describe "OM::XML::DynamicNode" do
     end
 
     it "should append nodes at the specified index if possible" do
+      @article.expects(:dirty=).with(true).twice
       @article.journal.title_info = ["all", "for", "the"]
       @article.journal.title_info(3, 'glory')
       @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
