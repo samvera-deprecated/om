@@ -82,6 +82,34 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
 end
 </pre>
 
+h4. element value given absence of a specific attribute
+
+We want an OM term to be assigned to an element's value, but only when the element does not have a specific attribute.
+
+Given this xml:
+
+<pre>
+</outer> 
+  <element my_attr="attr value">element value</element>
+  <element>element without attribute</element>
+</outer> 
+</pre>
+
+we want to have an OM term named "element_plain" with "element without attribute" as the value.
+
+In the Datastream Model:
+
+<pre>  
+# defines the expected OM terminology for example xml
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  # OM (Opinionated Metadata) terminology mapping 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '')
+    t.element(:attributes=>{:my_attr=>:none})
+  end  
+end # class
+</pre>
+
 h4. attribute value
 
 We want an OM term to be assigned to an element's attribute value.
