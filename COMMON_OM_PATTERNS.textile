@@ -2,19 +2,32 @@ h1. Common Patterns You'll Use with OM
 
 h2. Common Terminology Patterns
 
-h4. element value
-
-We want an OM term to be assigned so its value is the value of an element.
-
-Given this xml:
+Let's say we have xml like this:
 
 <pre>
-<outer>
-  <element>my value</element>
-</outer> 
+<outer outerId="hypatia:outer" type="outer type">
+  <elementA>valA</elementA>
+  <elementB>valB1</elementB>
+  <elementB animal="vole">valB2<elementC>
+  <elementC type="c type" animal="seagull">valC<elementC>
+  <resource type="ead" id="coll.ead" objectId="hypatia:ead_file_asset_fixture">
+    <file id="my_ead.xml" format="XML" mimetype="text/xml" size="47570">
+      <checksum type="md5">123</checksum>
+      <checksum type="sha1">456</checksum>
+    </file>
+  </resource>
+  <resource type="image" id="image" objectId="hypatia:coll_img_file_asset_fixture">
+    <file id="my_image.jpg" format="JPG" mimetype="image/jpeg" size="302080">
+      <checksum type="md5">789</checksum>
+      <checksum type="sha1">666</checksum>
+    </file>
+  </resource>
+</outer>
 </pre>
 
-we want to have an OM term named "element" with "my value" as the value.
+h4. element value
+
+We want an OM term for the value of an element. 
 
 In the Datastream Model:
 
@@ -23,38 +36,19 @@ In the Datastream Model:
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
-    t.root(:path => "outer", :xmlns => '')
-    t.element
+    t.root(:path => "outer", :xmlns => '', :namespace_prefix => nil)
+    t.elementA
+    t.elB(:path => "elementB", :namespace_prefix => nil)
+    t.elC(:path => "elementC", :namespace_prefix => nil)
   end  
-end # class
+end
 </pre>
 
-Q: What if we don't want the OM term to be named "element," but "giraffe"?
-
-A: 
-
-<pre>  
-class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
-  set_terminology do |t|
-    t.root(:path => "outer", :xmlns => '')
-    t.giraffe(:path => "element")
-  end  
-end # class
-</pre>
+This results in :elementA having a value of "valA" and :elB having two values of "valB1" and "valB2", and :elC having a value of "valC"
 
 h4. element value given a specific attribute value
 
-We want an OM term to be assigned to an element's value, but only when the element has a specific attribute value.
-
-Given this xml:
-
-<pre>
-</outer> 
-  <element my_attr="attr value">element value</element>
-</outer> 
-</pre>
-
-we want to have an OM term named "element" with "element value" as the value.
+We want an OM term for the value of an element, but only if the element has a specific attribute value.
 
 In the Datastream Model:
 
@@ -64,97 +58,114 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '')
-    t.element(:attributes=>{:my_attr=>"attr value"})
+    t.elementC(:attributes=>{:animal=>"seagull"}, :namespace_prefix => nil)
+    t.here(:path=>"resource", :attributes=>{:type=>"ead"}, :namespace_prefix => nil)
+    t.there(:path=>"resource", :attributes=>{:type=>"nowhere"}, :namespace_prefix => nil)
   end  
-end # class
+end 
 </pre>
 
-Q: What if we don't want the OM term to be named "element," but "gazelle"?
-
-A: 
-
-<pre>  
-class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
-  set_terminology do |t|
-    t.root(:path => "outer", :xmlns => '')
-    t.gazelle(:path => "element", :attributes=>{:my_attr=>"attr value"})
-  end  
-end
-</pre>
+This results in :elementC having a value of "valC" and :here having a value of "123 456", and :there having a value of nil (or is it ""?)
 
 h4. element value given absence of a specific attribute
 
-We want an OM term to be assigned to an element's value, but only when the element does not have a specific attribute.
-
-Given this xml:
-
-<pre>
-</outer> 
-  <element my_attr="attr value">element value</element>
-  <element>element without attribute</element>
-</outer> 
-</pre>
-
-we want to have an OM term named "element_plain" with "element without attribute" as the value.
-
-In the Datastream Model:
+We want an OM term for an element's value, but only if the element does not have a specific attribute.
 
 <pre>  
 # defines the expected OM terminology for example xml
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
-    t.root(:path => "outer", :xmlns => '')
-    t.element(:attributes=>{:my_attr=>:none})
+    t.root(:path => "outer", :xmlns => '', :namespace_prefix => nil)
+    t.elementB(:attributes=>{:animal=>:none}, :namespace_prefix => nil)
+    t.no_attrib(:path => "elementB", :attributes=>{:animal=>:none}, :namespace_prefix => nil)
   end  
-end # class
+end 
 </pre>
+
+This results in both :elementB and :no_attib having the single value "valB1"
+
 
 h4. attribute value
 
-We want an OM term to be assigned to an element's attribute value.
-
-Given this xml:
-
-<pre>
-</outer> 
-  <element my_attr="attr value">element value</element>
-</outer> 
-</pre>
-
-we want to have an OM term named "my_attr" with "attr value" as the value.
-
-In the Datastream Model:
-
-FIXME:  is this correct?  (Naomi wonders 2011-06-22)
+We want an OM term for an attribute value
 
 <pre>  
 # defines the expected OM terminology for example xml
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
-    t.root(:path => "outer", :xmlns => '')
-    t.element {
-      t.my_attr(:path => {:attribute=>"my_attr"})
+    t.root(:path => "outer", :xmlns => '', :namespace_prefix => nil)
+    t.elementB {
+      t.my_attr(:path => {:attribute=>"animal"}, :namespace_prefix => nil)
     }
-  end  
-end # class
-</pre>
-
-Q: What if we don't want the OM term to be named "my_attr," but "hippo"?
-
-A: 
-
-<pre>  
-class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
-  set_terminology do |t|
-    t.root(:path => "outer", :xmlns => '')
-    t.element {
-      t.hippo(:path => {:attribute=>"my_attr"})
-    }
+    t.alternate(:path => "elementB/@animal", :namespace_prefix => nil)
+    t.another(:proxy=>[:elementB, :my_attr_])
+    t.animal_attrib(:path => {:attribute=>"animal"}, :namespace_prefix => nil)
   end  
 end
 </pre>
+
+This results in :my_attr, :alternate and :another all having the single value of "vole", and :animal_attrib having the values "vole" and "seagull"
+
+
+h4. an example with :proxy and :ref
+
+<pre>  
+# defines the expected OM terminology for example xml
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  # OM (Opinionated Metadata) terminology mapping 
+  set_terminology do |t|
+    t.root(:path => "outer", :xmlns => '', :namespace_prefix => nil)
+
+    t.resource(:namespace_prefix => nil) {
+      t.fedora_pid(:path=>{:attribute=>"objectId"}, :namespace_prefix => nil)
+      t.file(:ref=>[:file], :namespace_prefix => nil, :namespace_prefix => nil)
+    }
+    t.file(:namespace_prefix => nil) {
+      t.ds_label(:path=>{:attribute=>"id"}, :namespace_prefix => nil)
+      t.size(:path=>{:attribute=>"size"}, :namespace_prefix => nil)
+      t.md5(:path=>"checksum", :attributes=>{:type=>"md5"}, :namespace_prefix => nil)
+      t.sha1(:path=>"checksum", :attributes=>{:type=>"sha1"}, :namespace_prefix => nil)
+    }
+    #  really want ead where the type is ead and the file format is XML and the file mimetype is text/xml (and the file id is (?coll_ead.xml ... can be whatever the label of the DS is in the FileAsset object)) 
+    t.ead(:ref=>:resource, :attributes=>{:type=>"ead"}) 
+    t.image(:ref=>:resource, :attributes=>{:type=>"image"})
+
+    t.ead_fedora_pid(:proxy=>[:ead, :fedora_pid])
+    t.ead_ds_label(:proxy=>[:ead, :file, :ds_label])
+    t.ead_size(:proxy=>[:ead, :file, :size])
+    t.ead_md5(:proxy=>[:ead, :file, :md5])
+    t.ead_sha1(:proxy=>[:ead, :file, :sha1])
+
+    t.image_fedora_pid(:proxy=>[:image, :fedora_pid])
+    t.image_ds_label(:proxy=>[:image, :file, :ds_label])
+    t.image_size(:proxy=>[:image, :file, :size])
+    t.image_md5(:proxy=>[:image, :file, :md5])
+    t.image_sha1(:proxy=>[:image, :file, :sha1])
+  end  
+end
+</pre>
+
+This results in 
+:ead_fedora_pid has value "hypatia:ead_file_asset_fixture"
+:ead_ds_label has value "my_ead.xml"
+:ead_size has value "47570"
+:ead_md5 has value"123"
+:ead_sha1 has value "456"
+
+:image_fedora_pid has value "hypatia:coll_img_file_asset_fixture"
+:image_ds_label has value "my_image.jpg"
+:image_size has value "302080"
+:image_md5 has value "789"
+:image_sha1 has value "666"
+
+
+h3. Arguments that can be used in the terminology
+
+e.g. :path, :default_content_path, :namespace_prefix ...
+
+ok if this is a link to the rdoc that describes ALL of these with 
 
 
 h3. Reserved method names (ie. id_, root_)
