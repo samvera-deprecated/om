@@ -73,6 +73,8 @@ module OM::XML::Document
   # @example
   #   find_by_terms( [:person, 1, :first_name] )
   # Currently, indexes must be integers.
+  # @example Pass in your own xpath query if you don't want to bother with Term pointers but do want OM to handle namespaces for you.
+  #   find_by_terms('//oxns:name[@type="personal"][contains(oxns:role, "donor")]')
   def find_by_terms(*term_pointer)
     xpath = self.class.terminology.xpath_with_indexes(*term_pointer)   
     find_by_xpath(xpath) unless xpath.nil?

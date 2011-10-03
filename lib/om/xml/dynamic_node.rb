@@ -2,27 +2,29 @@ module OM
   module XML
     #
     # Provides a natural syntax for using OM Terminologies to access values from xml Documents
+    #
+    # *Note*: All of these examples assume that @article is an instance of OM::Samples::ModsArticle.  Look at that file to see the Terminology. 
     # 
     # @example Return an array of the value(s) "start page" node(s) from the second issue node within the first journal node
     #   # Using DynamicNode syntax:
     #   @article.journal(0).issue(1).pages.start
     #   # Other ways to perform this query:
     #   @article.find_by_terms({:journal => 0}, {:issue => 1}, :pages, :start)
-    #   @article.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:part[2]/extent[@unit="pages"]")
+    #   @article.ng_xml.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:part[2]/extent[@unit="pages"]", {"oxns"=>"http://www.loc.gov/mods/v3"})
     #
     # @example Return an NodeSet of the _first titles_ of all journal nodes
     #   # Using DynamicNode syntax:
     #   @article.journal.title(1)
     #   # Other ways to perform this query:
     #   @article.find_by_terms(:journal, {:title => 1})
-    #   @article.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[1]")
+    #   @article.ng_xml.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title[1]", {"oxns"=>"http://www.loc.gov/mods/v3"})
     #
     # @example Find all of the titles from all journals & return the first title Node from that NodeSet
     #   # Using DynamicNode syntax:
     #   @article.journal.title[1]
     #   # Other ways to perform this query:
     #   @article.find_by_terms(:journal, :title)[1]
-    #   @article.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title")[1]
+    #   @article.ng_xml.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title", {"oxns"=>"http://www.loc.gov/mods/v3"})[1]
     #
     class DynamicNode
       attr_accessor :key, :index, :parent, :addressed_node, :term
