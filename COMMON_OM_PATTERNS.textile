@@ -161,6 +161,57 @@ This results in
 :image_sha1 has value "666"
 
 
+h4. need the value of a child element to select the current element
+
+Let's say we have xml like this:
+
+<pre>
+<contentMetadata>
+   <resource type="file" id="BU3A5" objectId="val2">
+    <file id="BURCH1" format="BINARY">
+      <location>content</location>
+    </file>
+    <file id="BURCH1.html" format="HTML">
+      <location>html</location>
+    </file>
+  </resource>
+</contentMetadata>
+</pre>
+
+We want an OM term corresponding to the <file> element based on the value of the <location> element.  That is, we want to have a :content term when the value of <location> is "content" and an :html term when the value of <location> is "html".
+
+In the Datastream Model:
+
+<pre>  
+# defines the expected OM terminology for example xml
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
+  # OM (Opinionated Metadata) terminology mapping 
+  t.root(:path=>"contentMetadata", :xmlns => '', :namespace_prefix => nil) 
+
+  t.resource(:namespace_prefix => nil) {
+    t.file(:ref=>[:file], :namespace_prefix => nil)
+  }
+
+  t.file(:namespace_prefix => nil) {
+    t.location(:path=>"location", :namespace_prefix => nil)
+    t.filename(:path=>{:attribute=>"id"}, :namespace_prefix => nil)
+    t.format(:path=>{:attribute=>"format"}, :namespace_prefix => nil)
+  }
+  t.content(:ref=>:file, :path=>'resource/file[location="content"]', :namespace_prefix => nil)
+  t.html(:ref=>:file, :path=>'resource/file[location="derivative_html"]', :namespace_prefix => nil)
+
+  t.content_location(:proxy=>[:content, :location])
+  t.content_filename(:proxy=>[:content, :filename])
+  t.content_format(:proxy=>[:content, :format])
+
+  t.html_location(:proxy=>[:html, :location])
+  t.html_filename(:proxy=>[:html, :filename])
+  t.html_format(:proxy=>[:html, :format])
+
+end
+</pre>
+
+
 h3. Arguments that can be used in the terminology
 
 e.g. :path, :default_content_path, :namespace_prefix ...
