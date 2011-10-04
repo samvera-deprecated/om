@@ -161,7 +161,7 @@ This results in
 :image_sha1 has value "666"
 
 
-h4. xpath-y stuff
+h4. xpath-y stuff, also using :ref and :proxy and namespaces
 
 Let's say we have xml like this:
 
@@ -212,8 +212,8 @@ end
 
 Another example from Molly Pickral of UVa:
 
-We to access just the author and the advisor from the XML below.  The two <name> elements must be distinguished by their <roleTerm> value, a grandchild of the <name> element.
-We like to have an :author term with value "Mary Pickral", and an :advisor term with value "David Jones".
+We want to access just the author and the advisor from the XML below.  The two <name> elements must be distinguished by their <roleTerm> value, a grandchild of the <name> element.
+We want an :author term with value "Mary Pickral", and an :advisor term with value "David Jones".
 
 <pre>
   <mods xmlns="http://www.loc.gov/mods/v3"
@@ -251,17 +251,17 @@ In the Datastream Model:
 # defines the expected OM terminology for mods thesis example xml
 class ModsThesis < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
-  t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3"))
+    t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3"))
     t.person(:path=>"name", :namespace_prefix => nil) {
       t.given(:path=>"namePart", attribtues=>{:type=>"given"})
         t.family(:path=>"namePart", attribtues=>{:type=>"family"})
         t.role(:namespace_prefix => nil) {
-          t.text(:path=>"roleTerm", :attributes=>{:type=>"text"}, :namespace_prefix => nil)
-          t.code(:path=>"roleTerm", :attributes=>{:type=>"code"}, :namespace_prefix => nil)
+          t.text(:path=>"roleTerm", :attributes=>{:type=>"text"})
+          t.code(:path=>"roleTerm", :attributes=>{:type=>"code"})
         }
     }
-    t.author(:ref=>:person, :path=>'name[./role/roleTerm="aut"]', :namespace_prefix => nil)
-    t.advisor(:ref=>:person, :path=>'name[./role/roleTerm="ths"]', :namespace_prefix => nil)
+    t.author(:ref=>:person, :path=>'name[./role/roleTerm="aut"]')
+    t.advisor(:ref=>:person, :path=>'name[./role/roleTerm="ths"]')
 
     t.author_given(:proxy=>[:author, :given])
     t.author_family(:proxy=>[:author, :family])
@@ -270,6 +270,65 @@ class ModsThesis < ActiveFedora::NokogiriDatastream
   end
 end
 </pre>
+
+This isn't quite what the doctor ordered, but :author_given and :author_family can be used to get the author name;  similarly for advisor.
+
+
+
+And a variant on the previous example using namespace prefixes.
+
+We want to access just the creator and the repository from the XML below.  The two <name> elements must be distinguished by their <roleTerm> value, a grandchild of the <name> element.
+We want a :creator term with value "David Small", and a :repository term with value "Graphic Novel Repository".
+
+Our xml:
+
+<pre>
+<mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+  
+  <mods:name type="personal">
+    <mods:namePart>David Small</mods:namePart>
+    <mods:role>
+      <mods:roleTerm authority="marcrelator" type="text">creator</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+  <mods:name type="corporate">
+    <mods:namePart>Graphic Novel Repository</mods:namePart>
+    <mods:role>
+      <mods:roleTerm authority="local" type="text">repository</mods:roleTerm>
+    </mods:role>
+  </mods:name>
+</mods:mods>
+</pre>
+
+In the Datastream model:
+
+<pre>
+# defines the expected OM terminology for mods name example xml
+class ModsName < ActiveFedora::NokogiriDatastream
+  t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", :namespace_prefix => "mods")
+
+  t.name_ {
+    t.name_part(:path=>"namePart")
+    t.family_name(:path=>"namePart", :attributes=>{:type=>"family"})
+    t.given_name(:path=>"namePart", :attributes=>{:type=>"given"}, :label=>"first name")
+    t.terms_of_address(:path=>"namePart", :attributes=>{:type=>"termsOfAddress"})
+    t.role(:ref=>[:role])
+  }
+  t.role {
+    t.role_term_text(:path=>"roleTerm", :attributes=>{:type=>"text"})
+  }
+
+  t.person_full(:ref=>:name, :attributes=>{:type=>"personal"}) 
+  t.person(:proxy=>[:person_full, :name_part])
+  t.creator(:ref=>:person, :path=>'name[mods:role/mods:roleTerm="creator"]', :xmlns=>"http://www.loc.gov/mods/v3", :namespace_prefix => "mods")
+
+  t.corporate_full(:ref=>:name, :attributes=>{:type=>"corporate"})
+  t.corporate(:proxy=>[:corporate_full, :name_part])
+  t.repository(:ref=>:corporate, :path=>'name[mods:role/mods:roleTerm="repository"]', :xmlns=>"http://www.loc.gov/mods/v3", :namespace_prefix => "mods")
+end
+</pre>
+
+This terminology not only gives the :creator and :repository values as desired, but also has :person and :corporate terms for more generic <name> xml.  The :person_full and :corporate_full values include the value of the <roleTerm> field, which is undesirable for display, if not the index.
 
 
 h3. Arguments that can be used in the terminology
