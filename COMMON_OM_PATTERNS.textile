@@ -260,8 +260,8 @@ class ModsThesis < ActiveFedora::NokogiriDatastream
           t.code(:path=>"roleTerm", :attributes=>{:type=>"code"}, :namespace_prefix => nil)
         }
     }
-    t.author(:ref=>:name, :path=>'name[./role/roleTerm="aut"]', :namespace_prefix => nil)
-    t.advisor(:ref=>:name, :path=>'name[./role/roleTerm="ths"]', :namespace_prefix => nil)
+    t.author(:ref=>:person, :path=>'name[./role/roleTerm="aut"]', :namespace_prefix => nil)
+    t.advisor(:ref=>:person, :path=>'name[./role/roleTerm="ths"]', :namespace_prefix => nil)
 
     t.author_given(:proxy=>[:author, :given])
     t.author_family(:proxy=>[:author, :family])
