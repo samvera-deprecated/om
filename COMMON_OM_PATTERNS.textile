@@ -161,7 +161,7 @@ This results in
 :image_sha1 has value "666"
 
 
-h4. need the value of a child element to select the current element
+h4. xpath-y stuff
 
 Let's say we have xml like this:
 
@@ -207,7 +207,67 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   t.html_location(:proxy=>[:html, :location])
   t.html_filename(:proxy=>[:html, :filename])
   t.html_format(:proxy=>[:html, :format])
+end
+</pre>
 
+Another example from Molly Pickral of UVa:
+
+We to access just the author and the advisor from the XML below.  The two <name> elements must be distinguished by their <roleTerm> value, a grandchild of the <name> element.
+We like to have an :author term with value "Mary Pickral", and an :advisor term with value "David Jones".
+
+<pre>
+  <mods xmlns="http://www.loc.gov/mods/v3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3"
+  xsi:schemaLocation="http://www.loc.gov/mods/v3
+  http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+     <name type="personal">
+         <namePart type="given">Mary</namePart>
+         <namePart type="family">Pickral</namePart>
+         <affiliation>University of Virginia</affiliation>
+         <namePart>mpc3c</namePart>
+         <affiliation>University of Virginia Library</affiliation>
+         <role>
+             <roleTerm authority="marcrelator" type="code">aut</roleTerm>
+             <roleTerm authority="marcrelator" type="text">author</roleTerm>
+         </role>
+     </name>
+    <name type="personal">
+      <namePart>der5y</namePart>
+      <namePart type="given">David</namePart>
+      <namePart type="family">Jones</namePart>
+      <affiliation>University of Virginia</affiliation>
+      <affiliation>Architectural History Dept.</affiliation>
+      <role>
+           <roleTerm authority="marcrelator" type="code">ths</roleTerm>
+           <roleTerm authority="marcrelator" type="text">advisor</roleTerm>
+      </role>
+    </name>
+  </mods>
+</pre>
+
+In the Datastream Model:
+
+<pre>  
+# defines the expected OM terminology for mods thesis example xml
+class ModsThesis < ActiveFedora::NokogiriDatastream
+  set_terminology do |t|
+  t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3"))
+    t.person(:path=>"name", :namespace_prefix => nil) {
+      t.given(:path=>"namePart", attribtues=>{:type=>"given"})
+        t.family(:path=>"namePart", attribtues=>{:type=>"family"})
+        t.role(:namespace_prefix => nil) {
+          t.text(:path=>"roleTerm", :attributes=>{:type=>"text"}, :namespace_prefix => nil)
+          t.code(:path=>"roleTerm", :attributes=>{:type=>"code"}, :namespace_prefix => nil)
+        }
+    }
+    t.author(:ref=>:name, :path=>'name[./role/roleTerm="aut"]', :namespace_prefix => nil)
+    t.advisor(:ref=>:name, :path=>'name[./role/roleTerm="ths"]', :namespace_prefix => nil)
+
+    t.author_given(:proxy=>[:author, :given])
+    t.author_family(:proxy=>[:author, :family])
+    t.advisor_given(:proxy=>[:advisor, :given])
+    t.advisor_family(:proxy=>[:advisor, :family])
+  end
 end
 </pre>
 
