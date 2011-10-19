@@ -75,7 +75,9 @@ module OM
             @document.term_value_update(xpath, y.to_i, z)
           end
         end
-        @document.dirty = true
+        if @document.respond_to?(:dirty=)
+          @document.dirty = true
+        end
       end
 
       def sanitize_new_values(new_values)

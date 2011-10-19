@@ -66,7 +66,8 @@ describe "OM::XML::DynamicNode" do
       end
     end
 
-    it "should append nodes at the specified index if possible" do
+    it "should append nodes at the specified index if possible, setting dirty to true if the object responds to dirty" do
+      @article.stubs(:respond_to?).with(:dirty=).returns(true)
       @article.expects(:dirty=).with(true).twice
       @article.journal.title_info = ["all", "for", "the"]
       @article.journal.title_info(3, 'glory')
