@@ -17,6 +17,11 @@ describe "OM::XML::DynamicNode" do
       expected_values.each {|v| result.should include(v)}
     end
 
+    it "should be able to set first level elements" do
+      @article.abstract = "My Abstract"
+      @article.abstract.should == ["My Abstract"]
+    end
+
     it "should find elements two deep" do
       #TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
       @article.name.name_content.val.should == ["Describes a person"]

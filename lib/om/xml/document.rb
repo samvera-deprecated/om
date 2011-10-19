@@ -46,12 +46,25 @@ module OM::XML::Document
   end
 
   def method_missing(name, *args)
-    term = self.class.terminology.retrieve_term(name)
-    if (term)
-      OM::XML::DynamicNode.new(name, args.first, self, term)
+    if matches = /([^=]*)=$/.match(name.to_s)
+      modified_name = matches[1].to_sym
+      term = self.class.terminology.retrieve_term(modified_name)
+      if (term)
+        node = OM::XML::DynamicNode.new(modified_name, nil, self, term)
+        node.val=args
+      else
+        super
+      end 
     else
-      super
+      term = self.class.terminology.retrieve_term(name)
+      if (term)
+        OM::XML::DynamicNode.new(name, args.first, self, term)
+      else
+        super
+      end
     end
+    
+
   end
 
 
