@@ -20,6 +20,10 @@ module OM::XML::Container
       return tmpl
     end
     
+    # By default, new OM Document instances will create an empty xml document, but if you override self.xml_template to return a different object (e.g. Nokogiri::XML::Document), that will be created instead.
+    # You can make this method create the documents however you want as long as it returns a Nokogiri::XML::Document.
+    # In the tutorials, we use Nokogiri::XML::Builder in this mehtod and call its .doc method at the end of xml_template in order to return the Nokogiri::XML::Document object. Instead of using Nokogiri::XML::Builder, you could put your template into an actual xml file and have xml_template use Nokogiri::XML::Document.parse to load it. That’s up to you. 
+    # @return Nokogiri::XML::Document
     def xml_template
       Nokogiri::XML::Document.parse("")
     end
