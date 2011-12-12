@@ -50,11 +50,7 @@ class OM::XML::NamedTermProxy
   
   # Any unknown method calls will be proxied to the proxied term
   def method_missing method, *args, &block 
-    if args.empty?
-      return self.proxied_term.send(method)
-    else
-      return self.proxied_term.send(method, args)
-    end
+    return self.proxied_term.send(method, *args)
   end
   
 end
