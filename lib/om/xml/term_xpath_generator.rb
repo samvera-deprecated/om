@@ -224,7 +224,7 @@ module OM::XML::TermXpathGenerator
   # @param [Array] values_array to convert
   # @param [String] delimiter.  Default: ", "
   def self.delimited_list( values_array, delimiter=", ")
-    result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
+    values_array.join(delimiter)
   end
   
   # Adds xpath xpath node index predicate to the end of your xpath query
