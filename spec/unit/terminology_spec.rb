@@ -123,11 +123,13 @@ describe "OM::XML::Terminology" do
       # role_term.xpath_constrained.should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
     end
 
-    it "supports treating attributes as properties" do    
-      language_term = @test_full_terminology.retrieve_term(:title_info, :language)
-      language_term.xpath.should == '//oxns:titleInfo/@lang'
-      language_term.xpath_relative.should == '@lang'
-      language_term.xpath_constrained.should == '//oxns:titleInfo/@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"')
+    describe "treating attributes as properties" do
+      it "should build correct xpath" do    
+        language_term = @test_full_terminology.retrieve_term(:title_info, :language)
+        language_term.xpath.should == '//oxns:titleInfo/@lang'
+        language_term.xpath_relative.should == '@lang'
+        language_term.xpath_constrained.should == '//oxns:titleInfo/@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"')
+      end
     end
 
     it "should support deep nesting of properties" do

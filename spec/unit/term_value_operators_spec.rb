@@ -258,13 +258,13 @@ describe "OM::XML::TermValueOperators" do
     end
     
     it "should support adding attribute values" do
-      pending 
-      pointer = [:title_info, :language]
+      pointer = [{:title_info=>0}, :language]
       test_val = "language value"
+debugger
       @article.term_values_append( 
-        :parent_select => :title_info,
-        :parent_index => :first,
-        :template => [:title_info, :language],
+        :parent_select => [{:title_info=>0}],
+        :parent_index => 0,
+        :template => [{:title_info=>0}, :language],
         :values => test_val
       )
       @article.term_values(*pointer).first.should == test_val

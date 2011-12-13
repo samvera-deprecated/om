@@ -183,9 +183,8 @@ describe "OM::XML::Term" do
     end
     
     it "should support terms that are attributes" do
-      pending "HYDRA-415"
       @type_attribute_term = OM::XML::Term.new(:type_attribute, :path=>{:attribute=>:type})
-      @type_attribute_term.xml_builder_template.should == "TODO!"
+      @type_attribute_term.xml_builder_template.should == "xml.@type( '\#{builder_new_value}' )"
     end
     
     it "should support terms with namespaced attributes" do
@@ -194,9 +193,8 @@ describe "OM::XML::Term" do
     end
     
     it "should support terms that are namespaced attributes" do
-      pending "HYDRA-415"
       @xml_lang_attribute_term = OM::XML::Term.new(:xml_lang_attribute, :path=>{:attribute=>"xml:lang"})
-      @xml_lang_attribute_term.xml_builder_template.should == "TODO!"
+      @xml_lang_attribute_term.xml_builder_template.should == "xml.@xml:lang( '\#{builder_new_value}' )"
     end
     
   end

@@ -22,6 +22,19 @@ describe "OM::XML::DynamicNode" do
       @article.abstract.should == ["My Abstract"]
     end
 
+    describe "setting attributes" do
+      it "when they exist" do
+        @article.title_info(0).main_title.main_title_lang = "ger"
+        @article.title_info(0).main_title.main_title_lang.should == ["ger"]
+      end
+      it "when they don't exist" do
+        title = @article.title_info(0)
+        title.language = "rus"
+        @article.title_info(0).language.should == ["rus"]
+      end
+
+    end
+
     it "should find elements two deep" do
       #TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
       @article.name.name_content.val.should == ["Describes a person"]
