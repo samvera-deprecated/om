@@ -7,18 +7,16 @@ end
 
 namespace :om do    
 
-  require 'spec/rake/spectask'
-  Spec::Rake::SpecTask.new(:rspec) do |spec|
-    spec.libs << 'lib' << 'spec'
-    spec.spec_files = FileList['spec/**/*_spec.rb']
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:rspec) do |spec|
+      spec.pattern = FileList['spec/**/*_spec.rb']
+        spec.pattern += FileList['spec/*_spec.rb']
   end
 
-  require 'rcov/rcovtask'
-  Spec::Rake::SpecTask.new(:rcov) do |spec|
-    spec.libs << 'lib' << 'spec'
-    spec.pattern = 'spec/**/*_spec.rb'
-    spec.rcov_opts << "--exclude \"gems/*\" --rails" 
-    spec.rcov = true
+  RSpec::Core::RakeTask.new(:rcov) do |spec|
+     spec.pattern = FileList['spec/**/*_spec.rb']
+     spec.pattern += FileList['spec/*_spec.rb']
+     spec.rcov = true
   end
 
   # Use yard to build docs

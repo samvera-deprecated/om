@@ -23,7 +23,7 @@ module OM::XML
   
   # Transforms an array of values into a string delimited by +delimiter+
   def self.delimited_list( values_array, delimiter=", ")
-    result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
+    values_array.join(delimiter)
   end
   
   # Class Methods -- These methods will be available on classes that include this Module 

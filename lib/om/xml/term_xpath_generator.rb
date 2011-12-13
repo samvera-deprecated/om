@@ -220,11 +220,9 @@ module OM::XML::TermXpathGenerator
     return xpath
   end
   
-  # Turns an Array into a String containing values separated by a delimiter.  Defaults to comma as a delimiter.
-  # @param [Array] values_array to convert
-  # @param [String] delimiter.  Default: ", "
-  def self.delimited_list( values_array, delimiter=", ")
-    result = values_array.collect{|a| a + delimiter}.to_s.chomp(delimiter)
+  # @see OM::XML.delimited_list
+  def self.delimited_list(*args)
+    OM::XML.delimited_list(*args)
   end
   
   # Adds xpath xpath node index predicate to the end of your xpath query
