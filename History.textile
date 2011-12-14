@@ -1,3 +1,16 @@
+h3. 1.4.4
+
+  HYDRA-415 https://jira.duraspace.org/browse/HYDRA-415 Fixed insert of attribute nodes
+  update to rspec2
+  compatibility fixes for ruby 1.9
+  RedCloth updated to 4.2.9
+  Replace local 'delimited_list' logic with Array#join
+
+h3. 1.4.3
+
+  HYDRA-681 https://jira.duraspace.org/browse/HYDRA-681 Om was calling .dirty when updating nodes, it should only do that when it's operating on a Nokogiri:Datastream
+  HYDRA-682 https://jira.duraspace.org/browse/HYDRA-682 Om first level terms support update
+
 h3. 1.4.2
   
   "HYDRA-667":https://jira.duraspace.org/browse/HYDRA-667 Fixed bug where updating nodes wasn't marking the document as dirty
