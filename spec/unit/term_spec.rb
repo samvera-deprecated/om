@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require "om"
 
 describe "OM::XML::Term" do
-  
+
   before(:each) do
     @test_name_part = OM::XML::Term.new(:namePart, {}).generate_xpath_queries!
     @test_volume = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
@@ -10,7 +10,7 @@ describe "OM::XML::Term" do
     @test_affiliation = OM::XML::Term.new(:affiliation)
     @test_role_code = OM::XML::Term.new(:roleTerm, :attributes=>{:type=>"code"})
   end
-  
+
   describe '#new' do
     it "should set path from mapper name if no path is provided" do
       @test_name_part.path.should == "namePart"
@@ -22,14 +22,14 @@ describe "OM::XML::Term" do
       local_mapping.xpath_constrained.should be_nil
     end
   end
-  
+
   describe 'inner_xml' do
     it "should be a kind of Nokogiri::XML::Node" do
       pending
       @test_mapping.inner_xml.should be_kind_of(Nokogiri::XML::Node)
     end
   end
-  
+
   describe '#from_node' do
     it "should create a mapper from a nokogiri node" do
       pending "probably should do this in the Builder"
@@ -49,7 +49,7 @@ describe "OM::XML::Term" do
       mapper.path.should == "name"
       mapper.attributes.should == {:type=>"personal"}
       mapper.internal_xml.should == node
-            
+
       child = mapper.children[:first_name]
 
       child.name.should == :first_name
@@ -58,35 +58,35 @@ describe "OM::XML::Term" do
       child.internal_xml.should == node.xpath("./mapper").first
     end
   end
-  
+
   describe ".label" do
     it "should default to the mapper name with underscores converted to spaces"
   end
-  
+
   describe ".retrieve_term" do
     it "should crawl down into mapper children to find the desired term" do
       mock_role = mock("mapper", :children =>{:text=>"the target"})
-      mock_conference = mock("mapper", :children =>{:role=>mock_role})   
-      @test_name_part.expects(:children).returns({:conference=>mock_conference})   
+      mock_conference = mock("mapper", :children =>{:role=>mock_role})
+      @test_name_part.expects(:children).returns({:conference=>mock_conference})
       @test_name_part.retrieve_term(:conference, :role, :text).should == "the target"
     end
     it "should return an empty hash if no term can be found" do
       @test_name_part.retrieve_term(:journal, :issue, :end_page).should == nil
     end
   end
-  
+
   describe 'inner_xml' do
     it "should be a kind of Nokogiri::XML::Node" do
       pending
       @test_name_part.inner_xml.should be_kind_of(Nokogiri::XML::Node)
     end
   end
-  
+
   describe "getters/setters" do
     it "should set the corresponding .settings value and return the current value" do
       [:path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
         @test_name_part.send(method_name.to_s+"=", "#{method_name.to_s}foo").should == "#{method_name.to_s}foo"
-        @test_name_part.send(method_name).should == "#{method_name.to_s}foo"        
+        @test_name_part.send(method_name).should == "#{method_name.to_s}foo"
       end
     end
   end
@@ -133,21 +133,21 @@ describe "OM::XML::Term" do
       @test_name_part.ancestors.should include(@test_volume)
     end
   end
-  
+
   describe "generate_xpath_queries!" do
     it "should return the current object" do
       @test_name_part.generate_xpath_queries!.should == @test_name_part
     end
-    it "should regenerate the xpath values" do      
+    it "should regenerate the xpath values" do
       @test_volume.xpath_relative.should be_nil
       @test_volume.xpath.should be_nil
       @test_volume.xpath_constrained.should be_nil
-      
+
       @test_volume.generate_xpath_queries!.should == @test_volume
-      
-      @test_volume.xpath_relative.should == 'oxns:detail[@type="volume"]'
-      @test_volume.xpath.should == '//oxns:detail[@type="volume"]'
-      @test_volume.xpath_constrained.should == '//oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"') 
+
+      @test_volume.xpath_relative.should == 'detail[@type="volume"]'
+      @test_volume.xpath.should == '//detail[@type="volume"]'
+      @test_volume.xpath_constrained.should == '//detail[@type="volume" and contains(number, "#{constraint_value}")]'.gsub('"', '\"')
     end
     it "should trigger update on any child objects" do
       mock_child = mock("child term")
@@ -156,44 +156,44 @@ describe "OM::XML::Term" do
       @test_name_part.generate_xpath_queries!
     end
   end
-  
+
   describe "#xml_builder_template" do
-    
+
     it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
       @test_date.xml_builder_template.should == 'xml.namePart( \'#{builder_new_value}\', \'type\'=>\'date\' )'
       @test_affiliation.xml_builder_template.should == 'xml.affiliation( \'#{builder_new_value}\' )'
     end
     it "should accept extra options" do
-      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', \'type\'=>\'code\', \'authority\'=>\'marcrelator\' )'  
+      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', \'type\'=>\'code\', \'authority\'=>\'marcrelator\' )'
       @test_role_code.xml_builder_template(:attributes=>{"authority"=>"marcrelator"}).should == marcrelator_role_xml_builder_template
     end
-    
+
     it "should work for namespaced nodes" do
       @ical_date = OM::XML::Term.new(:ical_date, :path=>"ical:date")
       @ical_date.xml_builder_template.should == "xml[\'ical\'].date( '\#{builder_new_value}' )"
       @ical_date = OM::XML::Term.new(:ical_date, :path=>"date", :namespace_prefix=>"ical")
       @ical_date.xml_builder_template.should == "xml[\'ical\'].date( '\#{builder_new_value}' )"
     end
-    
-    it "should work for nodes with default_content_path" do      
+
+    it "should work for nodes with default_content_path" do
       @test_volume.xml_builder_template.should == "xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
     end
-    
+
     it "should support terms that are attributes" do
       @type_attribute_term = OM::XML::Term.new(:type_attribute, :path=>{:attribute=>:type})
       @type_attribute_term.xml_builder_template.should == "xml.@type( '\#{builder_new_value}' )"
     end
-    
+
     it "should support terms with namespaced attributes" do
       @french_title = OM::XML::Term.new(:french_title, :path=>"title", :attributes=>{"xml:lang"=>"fre"})
       @french_title.xml_builder_template.should == "xml.title( '\#{builder_new_value}', 'xml:lang'=>'fre' )"
     end
-    
+
     it "should support terms that are namespaced attributes" do
       @xml_lang_attribute_term = OM::XML::Term.new(:xml_lang_attribute, :path=>{:attribute=>"xml:lang"})
       @xml_lang_attribute_term.xml_builder_template.should == "xml.@xml:lang( '\#{builder_new_value}' )"
     end
-    
+
   end
-  
+
 end

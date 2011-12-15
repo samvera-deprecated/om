@@ -1,37 +1,37 @@
-# Special options: 
-# data_type, index_as, attributes, 
+# Special options:
+# data_type, index_as, attributes,
 # is_root_term, required
 #
 class OM::XML::Term
-  
+
   # Term::Builder Class Definition
   #
   # @example
-  #   tb2 = OM::XML::Term::Builder.new("my_term_name").path("fooPath").attributes({:lang=>"foo"}).index_as([:searchable, :facetable]).required(true).data_type(:text) 
+  #   tb2 = OM::XML::Term::Builder.new("my_term_name").path("fooPath").attributes({:lang=>"foo"}).index_as([:searchable, :facetable]).required(true).data_type(:text)
   #
-  #   
   #
-  # When coding against Builders, remember that they rely on MethodMissing, 
-  # so any time you call a method on the Builder that it doesn't explicitly recognize, 
+  #
+  # When coding against Builders, remember that they rely on MethodMissing,
+  # so any time you call a method on the Builder that it doesn't explicitly recognize,
   # the Builder will add your method & arguments to the it's settings and return itself.
   class Builder
     attr_accessor :name, :settings, :children, :terminology_builder
-    
+
     def initialize(name, terminology_builder=nil)
       @name = name.to_sym
       @terminology_builder = terminology_builder
       @settings = {:required=>false, :data_type=>:string}
       @children = {}
     end
-    
+
     def add_child(child)
       @children[child.name] = child
     end
-    
+
     def retrieve_child(child_name)
       child = @children.fetch(child_name, nil)
     end
-    
+
     def lookup_refs(nodes_visited=[])
       result = []
       if @settings[:ref]
@@ -40,7 +40,7 @@ class OM::XML::Term
           raise "Cannot perform lookup_ref for the #{self.name} builder.  It doesn't have a reference to any terminology builder"
         end
         target = self.terminology_builder.retrieve_term_builder(*@settings[:ref])
-        
+
         # Fail on circular references and return an intelligible error message
         if nodes_visited.include?(target)
           nodes_visited << self
@@ -59,12 +59,12 @@ class OM::XML::Term
       end
       return result
     end
-    
+
     # If a :ref value has been set, looks up the target of that ref and merges the target's settings & children with the current builder's settings & children
     # operates recursively, so it is possible to apply refs that in turn refer to other nodes.
     def resolve_refs!
       name_of_last_ref = nil
-      lookup_refs.each_with_index do |ref,z|        
+      lookup_refs.each_with_index do |ref,z|
         @settings = two_layer_merge(@settings, ref.settings)
         @children.merge!(ref.children)
         name_of_last_ref = ref.name
@@ -75,22 +75,22 @@ class OM::XML::Term
       @settings.delete :ref
       return self
     end
-    
+
     # Returns a new Hash that merges +downstream_hash+ with +upstream_hash+
-    # similar to calling +upstream_hash+.merge(+downstream_hash+) only it also merges 
+    # similar to calling +upstream_hash+.merge(+downstream_hash+) only it also merges
     # any internal values that are themselves Hashes.
     def two_layer_merge(downstream_hash, upstream_hash)
       up = upstream_hash.dup
       dn = downstream_hash.dup
       up.each_pair do |setting_name, value|
-        if value.kind_of?(Hash) && downstream_hash.has_key?(setting_name)  
+        if value.kind_of?(Hash) && downstream_hash.has_key?(setting_name)
           dn[setting_name] = value.merge(downstream_hash[setting_name])
           up.delete(setting_name)
         end
       end
       return up.merge(dn)
     end
-    
+
     # Builds a new OM::XML::Term based on the Builder object's current settings
     # If no path has been provided, uses the Builder object's name as the term's path
     # Recursively builds any children, appending the results as children of the Term that's being built.
@@ -101,8 +101,8 @@ class OM::XML::Term
         term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy], terminology, self.settings)
       else
         term = OM::XML::Term.new(self.name, {}, terminology)
-      
-        self.settings.each do |name, values|  
+
+        self.settings.each do |name, values|
           if term.respond_to?(name.to_s+"=")
             term.instance_variable_set("@#{name}", values)
           end
@@ -112,12 +112,12 @@ class OM::XML::Term
         end
         term.generate_xpath_queries!
       end
-      
+
       return term
     end
-    
+
     # Any unknown method calls will add an entry to the settings hash and return the current object
-    def method_missing method, *args, &block 
+    def method_missing method, *args, &block
       if args.length == 1
         args = args.first
       end
@@ -125,16 +125,16 @@ class OM::XML::Term
       return self
     end
   end
-  
+
   #
-  # Class Definition for Term 
+  # Class Definition for Term
   #
 
   include OM::TreeNode
 
   attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :default_content_path, :is_root_term
   attr_accessor :children, :internal_xml, :terminology
-  
+
   # Any XML attributes that qualify the Term.
   #
   # @example Declare a Term that has a given attribute (ie. //title[@xml:lang='eng'])
@@ -142,19 +142,19 @@ class OM::XML::Term
   # @example Use nil to point to nodes that do not have a given attribute (ie. //title[not(@xml:lang)])
   #   t.title_without_lang_attribute(:path=>"title", :attributes=>{"xml:lang"=>nil})
   attr_accessor :attributes
-  
+
   # Namespace Prefix (xmlns) for the Term.
   #
   # By default, OM assumes that all terms in a Terminology have the namespace set in the root of the document.  If you want to set a different namespace for a Term, pass :namespace_prefix into its initializer (or call .namespace_prefix= on its builder)
   # If a node has _no_ namespace, you must explicitly set namespace_prefix to nil.  Currently you have to do this on _each_ term, you can't set namespace_prefix to nil for an entire Terminology.
-  # 
+  #
   # @example
   #   # For xml like this
   #   <foo xmlns="http://foo.com/schemas/fooschema" xmlns:bar="http://bar.com/schemas/barschema">
   #     <address>1400 Pennsylvania Avenue</address>
   #     <bar:latitude>56</bar:latitude>
   #   </foo>
-  #   
+  #
   #   # The Terminology would look like this
   #   OM::XML::Terminology::Builder.new do |t|
   #     t.root(:name=>:foo, :path=>"foo", :xmlns=>"http://foo.com/schemas/fooschema", "xmlns:bar"=>"http://bar.com/schemas/barschema")
@@ -163,18 +163,20 @@ class OM::XML::Term
   #   end
   #
   attr_accessor :namespace_prefix
-  
-  
+
+
   # h2. Namespaces
-  # By default, OM assumes that all terms in a Terminology have the namespace set in the root of the document.  If you want to set a different namespace for a Term, pass :namespasce_prefix into its initializer (or call .namespace_prefix= on its builder)
-  # If a node has _no_ namespace, you must explicitly set namespace_prefix to nil.
+  # By default, OM assumes you have no namespace defined unless it is explicitly defined at the root of your document.
+  # If you want to specify which namespace a term is using, use:
+  #   namspace_prefix => "bar"
+  # This value defaults to nil, in which case if a default namespace is set in the termnology, that namespace will be used.
   def initialize(name, opts={}, terminology=nil)
     opts = {:ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
-      instance_variable_set("@#{accessor_name}", opts.fetch(accessor_name, nil) )     
+      instance_variable_set("@#{accessor_name}", opts.fetch(accessor_name, nil) )
     end
     unless terminology.nil?
-      if opts[:namespace_prefix].nil? 
+      if opts[:namespace_prefix].nil?
         unless terminology.namespaces["xmlns"].nil?
           @namespace_prefix = "oxns"
         end
@@ -185,8 +187,8 @@ class OM::XML::Term
       @path = name.to_s
     end
   end
-  
-  def self.from_node(mapper_xml)    
+
+  def self.from_node(mapper_xml)
     name = mapper_xml.attribute("name").text.to_sym
     attributes = {}
     mapper_xml.xpath("./attribute").each do |a|
@@ -196,19 +198,19 @@ class OM::XML::Term
     [:index_as, :required, :type, :variant_of, :path, :default_content_path, :namespace_prefix].each do |accessor_name|
       attribute =  mapper_xml.attribute(accessor_name.to_s)
       unless attribute.nil?
-        new_mapper.instance_variable_set("@#{accessor_name}", attribute.text )      
-      end     
+        new_mapper.instance_variable_set("@#{accessor_name}", attribute.text )
+      end
     end
     new_mapper.internal_xml = mapper_xml
-    
+
     mapper_xml.xpath("./mapper").each do |child_node|
       child = self.from_node(child_node)
       new_mapper.add_child(child)
     end
-    
+
     return new_mapper
   end
-  
+
   # crawl down into mapper's children hash to find the desired mapper
   # ie. @test_mapper.retrieve_mapper(:conference, :role, :text)
   def retrieve_term(*pointers)
@@ -227,19 +229,19 @@ class OM::XML::Term
     end
     return target
   end
-  
+
   def is_root_term?
     @is_root_term == true
   end
-  
+
   def xpath_absolute
     @xpath
   end
-  
+
   # +term_pointers+ reference to the property you want to generate a builder template for
   # @opts
   def xml_builder_template(extra_opts = {})
-    extra_attributes = extra_opts.fetch(:attributes, {})  
+    extra_attributes = extra_opts.fetch(:attributes, {})
 
     node_options = []
     node_child_template = ""
@@ -267,7 +269,7 @@ class OM::XML::Term
     end
     return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
   end
-  
+
   # Generates absolute, relative, and constrained xpaths for the term, setting xpath, xpath_relative, and xpath_constrained accordingly.
   # Also triggers update_xpath_values! on all child nodes, as their absolute paths rely on those of their parent nodes.
   def generate_xpath_queries!
@@ -277,7 +279,7 @@ class OM::XML::Term
     self.children.each_value {|child| child.generate_xpath_queries! }
     return self
   end
-  
+
   # Return an XML representation of the Term
   # @param [Hash] options, the term will be added to it. If :children=>false, skips rendering child Terms
   # @param [Nokogiri::XML::Document] (optional) document to insert the term xml into
@@ -321,7 +323,7 @@ class OM::XML::Term
           xml.constrained xpath_constrained
         }
         if options.fetch(:children, true)
-          xml.children 
+          xml.children
         end
       }
     end
@@ -331,7 +333,7 @@ class OM::XML::Term
     end
     return doc
   end
-  
+
   # private :update_xpath_values
-  
+
 end
