@@ -12,9 +12,6 @@ describe "OM::XML::Term" do
   end
   
   describe '#new' do
-    it "should set default values" do
-      @test_name_part.namespace_prefix.should == "oxns"
-    end
     it "should set path from mapper name if no path is provided" do
       @test_name_part.path.should == "namePart"
     end

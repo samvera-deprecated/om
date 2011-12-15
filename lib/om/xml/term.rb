@@ -100,7 +100,7 @@ class OM::XML::Term
       if term.self.settings.has_key?(:proxy)
         term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy], terminology, self.settings)
       else
-        term = OM::XML::Term.new(self.name)
+        term = OM::XML::Term.new(self.name, {}, terminology)
       
         self.settings.each do |name, values|  
           if term.respond_to?(name.to_s+"=")
@@ -168,10 +168,17 @@ class OM::XML::Term
   # h2. Namespaces
   # By default, OM assumes that all terms in a Terminology have the namespace set in the root of the document.  If you want to set a different namespace for a Term, pass :namespasce_prefix into its initializer (or call .namespace_prefix= on its builder)
   # If a node has _no_ namespace, you must explicitly set namespace_prefix to nil.
-  def initialize(name, opts={})
-    opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
+  def initialize(name, opts={}, terminology=nil)
+    opts = {:ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
       instance_variable_set("@#{accessor_name}", opts.fetch(accessor_name, nil) )     
+    end
+    unless terminology.nil?
+      if opts[:namespace_prefix].nil? 
+        unless terminology.namespaces["xmlns"].nil?
+          @namespace_prefix = "oxns"
+        end
+      end
     end
     @name = name
     if @path.nil? || @path.empty?

@@ -72,6 +72,25 @@ describe "OM::XML::Terminology" do
 
     @test_full_terminology = @builder_with_block.build
 
+    @namespaceless_terminology = OM::XML::Terminology::Builder.new do |t|
+      t.root(:path=>"identityMetadata", :xmlns=> nil )
+      t.person {
+        t.name
+      }
+    end
+    @namespaceless_terminology = @namespaceless_terminology.build
+  end
+  
+  describe "namespaceless terminologies" do
+    it "should generate xpath queries without namespaces" do
+      
+      @namespaceless_terminology.xpath_for(:person).should == "//person"
+      @namespaceless_terminology.xpath_for(:person, :name).should == "//person/name"
+    end
+    
+    it "should generate new nodes without namespaces" do
+      @namespaceless_terminology.xpath_for(:person, :name).should == "//person/name"
+    end
   end
     
   describe "basics" do
