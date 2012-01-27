@@ -67,7 +67,8 @@ module OM
 
       def val=(args)
         new_values = sanitize_new_values(args.first)
-        new_values.each do |y,z|   
+        new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
+          z = new_values[y]
 ## If we pass something that already has an index on it, we should be able to add it.
           if @document.find_by_xpath(xpath)[y.to_i].nil? || y.to_i == -1
             @document.term_values_append(:parent_select=> parent.to_pointer,:parent_index=>0,:template=>to_pointer,:values=>z)

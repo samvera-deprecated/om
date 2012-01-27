@@ -57,11 +57,10 @@ module OM::XML::TermValueOperators
       
       # Skip any submitted values if the new value matches the current values
       current_values = term_values(*pointer)
-      new_values.delete_if do |y,z| 
+      new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
+        z = new_values[y]
         if current_values[y.to_i]==z and y.to_i > -1
-          true
-        else
-          false
+          new_values.delete(y)
         end
       end 
       
@@ -78,7 +77,8 @@ module OM::XML::TermValueOperators
       parent_xpath = self.class.terminology.xpath_with_indexes(*parent_pointer)
       
       # If the value doesn't exist yet, append it.  Otherwise, update the existing value.
-      new_values.each do |y,z|   
+      new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
+        z = new_values[y]
         if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
           result[hn].delete(y)
           term_values_append(:parent_select=>parent_pointer,:parent_index=>0,:template=>template_pointer,:values=>z)
