@@ -1,3 +1,7 @@
+h3. 1.5.2
+
+  HYDRA-742 Can't modify frozen string (parameters in rails 3.2, when using ruby 1.9.3)
+
 h3. 1.5.1
 
   HYDRA-737 OM tests fail under ree 1.8.7-2011.12

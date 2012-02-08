@@ -137,7 +137,7 @@ module OM::XML::TermValueOperators
     
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|
-        builder_new_value.gsub!(/'/, "\\\\'") # escape any apostrophes in the new value
+        builder_new_value = builder_new_value.gsub(/'/, "\\\\'") # escape any apostrophes in the new value
         if matchdata = /xml\.@(\w+)/.match(template)
           parent_node.set_attribute(matchdata[1], builder_new_value)
         else 
