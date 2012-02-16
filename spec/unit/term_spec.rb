@@ -10,6 +10,7 @@ describe "OM::XML::Term" do
     @test_person = OM::XML::Term.new(:namePart, :attributes=>{:type=> :none})
     @test_affiliation = OM::XML::Term.new(:affiliation)
     @test_role_code = OM::XML::Term.new(:roleTerm, :attributes=>{:type=>"code"})
+    @test_type = OM::XML::Term.new(:type)
   end
 
   describe '#new' do
@@ -195,7 +196,9 @@ describe "OM::XML::Term" do
       @xml_lang_attribute_term = OM::XML::Term.new(:xml_lang_attribute, :path=>{:attribute=>"xml:lang"})
       @xml_lang_attribute_term.xml_builder_template.should == "xml.@xml:lang( '\#{builder_new_value}' )"
     end
-
+    it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block) for terms that share a name with an existing method on the builder" do
+     	@test_type.xml_builder_template.should == 'xml.type_( \'#{builder_new_value}\' )'
+    end
   end
 
 end
