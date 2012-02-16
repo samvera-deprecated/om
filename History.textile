@@ -1,3 +1,8 @@
+h3. 1.5.3
+
+  HYDRA-657 OM Terms that share a name with methods on Nokogiri Builders have incorrect builder templates
+  HYDRA-674 XML Builder templates incorrect for :none attributes
+
 h3. 1.5.2
 
   HYDRA-742 Can't modify frozen string (parameters in rails 3.2, when using ruby 1.9.3)
