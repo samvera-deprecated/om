@@ -253,7 +253,7 @@ class OM::XML::Term
     end
     if !self.attributes.nil?
       self.attributes.merge(extra_attributes).each_pair do |k,v|
-        node_options << "\'#{k}\'=>\'#{v}\'"
+        node_options << "\'#{k}\'=>\'#{v}\'" unless v == :none
       end
     end
     if self.path.include?(":")

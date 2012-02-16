@@ -317,6 +317,7 @@ describe "OM::XML::Terminology" do
 
     it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
       @test_full_terminology.xml_builder_template(:person,:date).should == 'xml.namePart( \'#{builder_new_value}\', \'type\'=>\'date\' )'
+      @test_full_terminology.xml_builder_template(:person,:person_id).should == 'xml.namePart( \'#{builder_new_value}\' )'
       @test_full_terminology.xml_builder_template(:name,:affiliation).should == 'xml.affiliation( \'#{builder_new_value}\' )'
     end
     it "should accept extra options" do
