@@ -22,6 +22,12 @@ describe "OM::XML::DynamicNode" do
       @article.abstract.should == ["My Abstract"]
     end
 
+    it "should delegate all methods (i.e. to_s, first, etc.) to the found array" do
+      @article.person.last_name.to_s.should == ["FAMILY NAME", "Gautama"].to_s
+      @article.person.last_name.first.should == "FAMILY NAME"
+    end
+
+
     describe "setting attributes" do
       it "when they exist" do
         @article.title_info(0).main_title.main_title_lang = "ger"

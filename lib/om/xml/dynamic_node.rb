@@ -27,6 +27,8 @@ module OM
     #   @article.ng_xml.xpath("//oxns:relatedItem[@type=\"host\"]/oxns:titleInfo/oxns:title", {"oxns"=>"http://www.loc.gov/mods/v3"})[1]
     #
     class DynamicNode
+      instance_methods.each { |m| undef_method m unless m.to_s =~ /^(?:nil\?|send|object_id|to_a)$|^__|^respond_to|proxy_/ }
+
       attr_accessor :key, :index, :parent, :addressed_node, :term
       def initialize(key, index, document, term, parent=nil)  ##TODO a real term object in here would make it easier to lookup
         self.key = key
