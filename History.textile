@@ -1,3 +1,6 @@
+h3. 1.6.0
+  Delegate all methods on the dynamic node to the found values
+
 h3. 1.5.3
 
   HYDRA-657 OM Terms that share a name with methods on Nokogiri Builders have incorrect builder templates
