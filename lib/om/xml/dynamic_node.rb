@@ -73,7 +73,8 @@ module OM
           z = new_values[y]
 ## If we pass something that already has an index on it, we should be able to add it.
           if @document.find_by_xpath(xpath)[y.to_i].nil? || y.to_i == -1
-            @document.term_values_append(:parent_select=> parent.to_pointer,:parent_index=>0,:template=>to_pointer,:values=>z)
+            parent_pointer = parent ? parent.to_pointer : nil
+            @document.term_values_append(:parent_select=> parent_pointer,:parent_index=>0,:template=>to_pointer,:values=>z)
           else
             @document.term_value_update(xpath, y.to_i, z)
           end

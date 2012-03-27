@@ -22,6 +22,11 @@ describe "OM::XML::DynamicNode" do
       @article.abstract.should == ["My Abstract"]
     end
 
+    it "should be able to set first level elements that are arrays" do
+      @article.abstract = ["My Abstract", "two"]
+      @article.abstract.should == ["My Abstract", 'two']
+    end
+
     it "should delegate all methods (i.e. to_s, first, etc.) to the found array" do
       @article.person.last_name.to_s.should == ["FAMILY NAME", "Gautama"].to_s
       @article.person.last_name.first.should == "FAMILY NAME"
