@@ -170,6 +170,7 @@ module OM::XML::Document
     if target.is_a?(Array)
       target = self.find_by_terms(*target)
     end
+    raise "You must call define_template before calling #{method}" if template_registry.nil?
     template_registry.send(method, target, *args, &block)
   end
 end

@@ -103,7 +103,11 @@ module OM::XML::TermValueOperators
     parent_node = node_from_set(parent_nodeset, parent_index)
     
     if parent_node.nil?
-      parent_node, parent_select = build_ancestors(parent_select, parent_index)
+      if parent_select.empty?
+        parent_node = add_root_node_child(template.first, parent_index)
+      else
+        parent_node, parent_select = build_ancestors(parent_select, parent_index)
+      end
       # parent_nodeset = find_by_terms(*parent_select)
       # parent_node = node_from_set(parent_nodeset, :last)
       # raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
@@ -113,6 +117,13 @@ module OM::XML::TermValueOperators
     
     return parent_node
     
+  end
+
+  # Given a term, try to create a node using the template for that term.
+  # @option[Symbol] term the template name to use
+  def add_root_node_child(term, idx)
+    add_child_node(ng_xml.root, term)
+    node_from_set(find_by_terms(*[]), idx)
   end
   
   # Insert xml containing +new_values+ into +parent_node+.  Generate the xml based on +template+ 
