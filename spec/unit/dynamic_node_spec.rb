@@ -9,11 +9,7 @@ describe "OM::XML::DynamicNode" do
 
         set_terminology do |t|
           t.root(:path=>"dc", :xmlns=>"http://purl.org/dc/terms/")
-          t.creator
-        end
-
-        define_template :creator do |xml|
-          xml.creator()
+          t.creator(:xmlns=>"http://www.loc.gov/mods/v3", :namespace_prefix => "dcterms")
         end
 
         def self.xml_template
@@ -28,7 +24,11 @@ describe "OM::XML::DynamicNode" do
     end
     it "should create templates for dynamic nodes" do
       @sample.creator = "Foo"
-      
+      @sample.creator.should == ['Foo']
+    end
+    it "should create templates for dynamic nodes with multiple values" do
+      @sample.creator = ["Foo", "Bar"]
+      @sample.creator.should == ['Foo', 'Bar']
     end
   end
         

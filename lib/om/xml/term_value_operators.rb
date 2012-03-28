@@ -104,13 +104,10 @@ module OM::XML::TermValueOperators
     
     if parent_node.nil?
       if parent_select.empty?
-        parent_node = add_root_node_child(template.first, parent_index)
+        parent_node = ng_xml.root
       else
-        parent_node, parent_select = build_ancestors(parent_select, parent_index)
+        parent_node = build_ancestors(parent_select, parent_index)
       end
-      # parent_nodeset = find_by_terms(*parent_select)
-      # parent_node = node_from_set(parent_nodeset, :last)
-      # raise OM::XML::ParentNodeNotFoundError, "Failed to find a parent node to insert values into based on :parent_select #{parent_select.inspect} with :parent_index #{parent_index.inspect}"
     end
 
     insert_from_template(parent_node, new_values, template)
@@ -119,13 +116,6 @@ module OM::XML::TermValueOperators
     
   end
 
-  # Given a term, try to create a node using the template for that term.
-  # @option[Symbol] term the template name to use
-  def add_root_node_child(term, idx)
-    add_child_node(ng_xml.root, term)
-    node_from_set(find_by_terms(*[]), idx)
-  end
-  
   # Insert xml containing +new_values+ into +parent_node+.  Generate the xml based on +template+ 
   # @param [Nokogiri::XML::Node] parent_node to insert new xml into
   # @param [Array] new_values to build the xml around
@@ -208,7 +198,7 @@ module OM::XML::TermValueOperators
     if parent_index > starting_point.length
       parent_index = starting_point.length - 1
     end
-    return node_from_set(starting_point, parent_index), parent_select
+    return node_from_set(starting_point, parent_index)
   end
   
   def term_value_update(node_select,node_index,new_value,opts={})
