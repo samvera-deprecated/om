@@ -63,6 +63,12 @@ describe "OM::XML::DynamicNode" do
         @article.person.last_name.first.should == "FAMILY NAME"
       end
 
+      it "should delegate with blocks to the found array" do
+        arr = []
+        @article.person.last_name.each{|x| arr << x}
+        arr.should == ["FAMILY NAME", "Gautama"]
+      end
+
 
       describe "setting attributes" do
         it "when they exist" do

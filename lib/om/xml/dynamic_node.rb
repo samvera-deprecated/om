@@ -38,7 +38,7 @@ module OM
         self.parent = parent
       end
 
-      def method_missing (name, *args)
+      def method_missing (name, *args, &block)
         if /=$/.match(name.to_s)
           new_update_node(name, args)
         elsif args.length > 1
@@ -48,7 +48,7 @@ module OM
           if child
             OM::XML::DynamicNode.new(name, args.first, @document, child, self)
           else 
-            val.send(name, *args)
+            val.send(name, *args, &block)
           end
         end
       end
