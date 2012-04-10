@@ -348,3 +348,15 @@ document namespaces & node namespaces
 _no namespace_ (suppressing oxns in xpath queries)
 
 h3. :ref and :proxy Terms
+
+If needed (as a differentiator) you can use the root element as a member of the proxy address:
+<pre>
+    t.root(:path=>"mods")
+    t.titleInfo {
+      t.title
+    } 
+    ## This produces a relative xpath: (e.g. //titleInfo/title)
+    t.title(:proxy=>[:titleInfo, :title])
+    ## This produces an absolute query (e.g. /mods/titleInfo/title)
+    t.title(:proxy=>[:mods, :titleInfo, :title])
+</pre>
