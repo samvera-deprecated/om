@@ -355,8 +355,8 @@ If needed (as a differentiator) you can use the root element as a member of the 
     t.titleInfo {
       t.title
     } 
-    ## This produces a relative xpath: (e.g. //titleInfo/title)
+    This produces a relative xpath: (e.g. //titleInfo/title)
     t.title(:proxy=>[:titleInfo, :title])
-    ## This produces an absolute query (e.g. /mods/titleInfo/title)
+    This produces an absolute query (e.g. /mods/titleInfo/title)
     t.title(:proxy=>[:mods, :titleInfo, :title])
 </pre>
