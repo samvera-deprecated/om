@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.add_dependency('nokogiri', ">= 1.4.2")
   s.add_dependency('mediashelf-loggable')
   s.add_development_dependency "rspec", "~> 2.0"
+  s.add_development_dependency "rake"
   s.add_development_dependency "mocha", ">= 0.9.8"
   s.add_development_dependency "equivalent-xml", ">= 0.2.4"
 
