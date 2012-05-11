@@ -5,6 +5,29 @@ task :hudson do
   Rake::Task["om:rspec"].invoke
 end
 
+
+desc "Execute specs with coverage"
+task :coverage do 
+  # Put spec opts in a file named .rspec in root
+  ruby_engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
+  ENV['COVERAGE'] = 'true' unless ruby_engine == 'jruby'
+
+
+  Rake::Task['om:rspec'].invoke
+end
+
+namespace :coverage do
+desc "Execute ci build with coverage"
+task :ci do 
+  # Put spec opts in a file named .rspec in root
+  ruby_engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
+  ENV['COVERAGE'] = 'true' unless ruby_engine == 'jruby'
+
+
+  Rake::Task['hudson'].invoke
+end
+end
+
 namespace :om do    
 
   require 'rspec/core/rake_task'
