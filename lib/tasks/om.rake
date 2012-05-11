@@ -2,7 +2,7 @@ desc "Task to execute builds on a Hudson Continuous Integration Server."
 task :hudson do
   Rake::Task["om:doc"].invoke
   Rake::Task["om:rcov"].invoke
-  Rake::Task["om:rspec"].invoke
+  Rake::Task["coverage"].invoke
 end
 
 
@@ -14,18 +14,6 @@ task :coverage do
 
 
   Rake::Task['om:rspec'].invoke
-end
-
-namespace :coverage do
-desc "Execute ci build with coverage"
-task :ci do 
-  # Put spec opts in a file named .rspec in root
-  ruby_engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
-  ENV['COVERAGE'] = 'true' unless ruby_engine == 'jruby'
-
-
-  Rake::Task['hudson'].invoke
-end
 end
 
 namespace :om do    
