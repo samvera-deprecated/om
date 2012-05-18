@@ -1,5 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-require "om"
+require 'spec_helper'
 
 describe "OM::XML::Term" do
 

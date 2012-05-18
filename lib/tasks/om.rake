@@ -1,7 +1,6 @@
 desc "Task to execute builds on a Hudson Continuous Integration Server."
 task :hudson do
   Rake::Task["om:doc"].invoke
-  Rake::Task["om:rcov"].invoke
   Rake::Task["coverage"].invoke
 end
 
@@ -20,14 +19,10 @@ namespace :om do
 
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:rspec) do |spec|
-      spec.pattern = FileList['spec/**/*_spec.rb']
-        spec.pattern += FileList['spec/*_spec.rb']
-  end
-
-  RSpec::Core::RakeTask.new(:rcov) do |spec|
-     spec.pattern = FileList['spec/**/*_spec.rb']
-     spec.pattern += FileList['spec/*_spec.rb']
-     spec.rcov = true
+    if ENV['COVERAGE'] and RUBY_VERSION =~ /^1.8/
+      spec.rcov = true
+      spec.rcov_opts = %w{-I../../app -I../../lib --exclude spec\/*,gems\/*,ruby\/* --aggregate coverage.data}
+    end
   end
 
   # Use yard to build docs

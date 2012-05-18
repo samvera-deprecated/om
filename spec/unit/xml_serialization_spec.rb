@@ -1,6 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-require "om"
-require "om/samples"
+require 'spec_helper'
 
 describe "OM::XML::Terminology.to_xml" do
   before(:all) do
