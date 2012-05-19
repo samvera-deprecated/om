@@ -219,7 +219,7 @@ describe "OM::XML::TermValueOperators" do
       @article.term_values(:name,:name_content).should == ["Describes a person"]
       @article.update_values({[:name, :name_content]=>"Test text"})
       @article.term_values(:name,:name_content).should == ["Test text"]
-      @article.find_by_terms(:name).children.length().should == 30
+      @article.find_by_terms(:name).children.length().should == 35
     end
     
   end
