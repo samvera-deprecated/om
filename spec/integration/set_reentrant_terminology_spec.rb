@@ -1,0 +1,59 @@
+require 'spec_helper'
+
+describe "calling set_terminology more than once" do
+
+  before(:all) do
+    class ReentrantTerminology
+      include OM::XML::Document
+
+      set_terminology do |t|
+        t.root :path => 'root', :xmlns => "asdf"
+        t.foo
+      end
+    end
+  end
+
+  describe "before" do
+
+    subject do
+      xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
+      ReentrantTerminology.from_xml(xml)
+    end
+
+    it "can get foo" do
+      subject.foo.should == ['fooval']
+    end
+
+    it "cannot get bar" do
+      expect { subject.bar }.to raise_error OM::XML::Terminology::BadPointerError
+    end
+
+  end
+
+  describe "after" do
+
+    before(:all) do
+      class ReentrantTerminology
+        set_terminology do |t|
+          t.root :path => 'root', :xmlns => "asdf"
+          t.bar
+        end
+      end
+    end
+
+    subject do
+      xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
+      ReentrantTerminology.from_xml(xml)
+    end
+
+    it "cannot get foo" do
+      expect { subject.foo }.to raise_error OM::XML::Terminology::BadPointerError
+    end
+
+    it "can now get bar" do
+      subject.bar.should == ['barval']
+    end
+
+  end
+
+end
