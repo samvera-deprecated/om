@@ -102,6 +102,11 @@ class OM::XML::Terminology
       return current_term
     end
 
+    # Add additional terms into this terminology
+    def extend_terminology &block
+      yield self if block_given?
+    end
+
     def build
       terminology = OM::XML::Terminology.new(:schema=>@schema, :namespaces=>@namespaces)
       root_term_builders.each do |root_term_builder|
