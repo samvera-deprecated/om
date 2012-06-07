@@ -5,12 +5,26 @@ module OM::XML::Document
 
   module ClassMethods
 
-    attr_accessor :terminology, :template_registry
+    attr_accessor :terminology, :terminology_builder, :template_registry
 
     # Sets the OM::XML::Terminology for the Document
     # Expects +&block+ that will be passed into OM::XML::Terminology::Builder.new
     def set_terminology &block
-      @terminology = OM::XML::Terminology::Builder.new( &block ).build
+      @terminology_builder = OM::XML::Terminology::Builder.new( &block )
+      
+      @terminology = @terminology_builder.build
+    end
+
+    # Update the OM::XML::Terminology with additional terms
+    def extend_terminology &block
+      @terminology_builder.extend_terminology(&block)
+      @terminology = @terminology_builder.build
+    end
+
+    # (Explicitly) inherit terminology from upstream classes
+    def use_terminology klass
+      @terminology_builder = klass.terminology_builder.dup
+      @terminology = @terminology_builder.build
     end
 
     # Define a new node template with the OM::XML::TemplateRegistry.
