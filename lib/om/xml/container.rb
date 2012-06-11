@@ -1,4 +1,5 @@
 module OM::XML::Container
+  extend ActiveSupport::Concern
   
   attr_accessor :ng_xml
   
@@ -32,10 +33,6 @@ module OM::XML::Container
   
   # Instance Methods -- These methods will be available on instances of classes that include this module
   
-  def self.included(klass)
-    klass.extend(ClassMethods)
-  end
-    
   def to_xml(xml = ng_xml)
     if xml == ng_xml
       return xml.to_xml

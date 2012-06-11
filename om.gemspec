@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
 
+  s.add_dependency 'active_support'
   s.add_dependency('nokogiri', ">= 1.4.2")
   s.add_dependency('mediashelf-loggable')
   s.add_development_dependency "rspec", "~> 2.0"

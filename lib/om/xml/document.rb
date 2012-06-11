@@ -1,4 +1,5 @@
 module OM::XML::Document
+  extend ActiveSupport::Concern
 
 
   # Class Methods -- These methods will be available on classes that include this Module
@@ -51,12 +52,10 @@ module OM::XML::Document
 
   attr_accessor :ox_namespaces
 
-  def self.included(klass)
-    klass.extend(ClassMethods)
-
-    klass.send(:include, OM::XML::Container)
-    klass.send(:include, OM::XML::TermValueOperators)
-    klass.send(:include, OM::XML::Validation)
+  included do
+    include OM::XML::Container
+    include OM::XML::TermValueOperators
+    include OM::XML::Validation
   end
 
   def method_missing(name, *args)

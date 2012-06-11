@@ -1,4 +1,5 @@
 module OM::XML::Validation
+  extend ActiveSupport::Concern
     
   # Class Methods -- These methods will be available on classes that include this Module 
   
@@ -51,10 +52,6 @@ module OM::XML::Validation
   end
   
   # Instance Methods -- These methods will be available on instances of classes that include this module
-  
-  def self.included(klass)
-    klass.extend(ClassMethods)
-  end
   
   def validate
     self.class.validate(self)
