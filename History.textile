@@ -1,3 +1,7 @@
+h3. 1.6.1
+  Integration spec to illustrate selective querying.
+  Add #use_terminology and #extend_terminology methods to extend existing OM terminologies
+
 h3. 1.6.0
   Delegate all methods on the dynamic node to the found values
   Allow arrays to be set on dynamic nodes
