@@ -8,24 +8,39 @@ module OM::XML::Document
 
     attr_accessor :terminology, :terminology_builder, :template_registry
 
+    def terminology
+      @terminology ||= terminology_builder.build
+    end
+
+    def terminology_builder
+      @terminology_builder ||= OM::XML::Terminology::Builder.new
+    end
+
+    def template_registry
+      @template_registry ||= OM::XML::TemplateRegistry.new
+    end
+
+    def rebuild_terminology!
+      @terminology = @terminology_builder.build
+    end
+
     # Sets the OM::XML::Terminology for the Document
     # Expects +&block+ that will be passed into OM::XML::Terminology::Builder.new
     def set_terminology &block
-      @terminology_builder = OM::XML::Terminology::Builder.new( &block )
-      
-      @terminology = @terminology_builder.build
+      @terminology_builder = OM::XML::Terminology::Builder.new(&block)
+      rebuild_terminology!
     end
 
     # Update the OM::XML::Terminology with additional terms
     def extend_terminology &block
-      @terminology_builder.extend_terminology(&block)
-      @terminology = @terminology_builder.build
+      self.terminology_builder.extend_terminology(&block)
+      rebuild_terminology!
     end
-
+    
     # (Explicitly) inherit terminology from upstream classes
     def use_terminology klass
-      @terminology_builder = klass.terminology_builder.dup
-      @terminology = @terminology_builder.build
+      self.terminology_builder = klass.terminology_builder.dup
+      rebuild_terminology!
     end
 
     # Define a new node template with the OM::XML::TemplateRegistry.
@@ -33,19 +48,13 @@ module OM::XML::Document
     # * The +block+ does the work of creating the new node, and will receive
     #   a Nokogiri::XML::Builder and any other args passed to one of the node instantiation methods.
     def define_template name, &block
-      @template_registry ||= OM::XML::TemplateRegistry.new
-      @template_registry.define name, &block
+      self.template_registry.define name, &block
     end
 
     # Returns any namespaces defined by the Class' Terminology
     def ox_namespaces
-      if @terminology.nil?
-        return {}
-      else
-        return @terminology.namespaces
-      end
+      self.terminology.namespaces
     end
-
   end
 
   # Instance Methods -- These methods will be available on instances of classes that include this module
@@ -76,19 +85,12 @@ module OM::XML::Document
         super
       end
     end
-
-
   end
 
 
   def find_by_xpath(xpath)
-    if ox_namespaces.values.compact.empty?
-      ng_xml.xpath(xpath)
-    else
-      ng_xml.xpath(xpath, ox_namespaces)
-    end
+    ng_xml.xpath(xpath, ox_namespaces)
   end
-
 
   # Applies the property's corresponding xpath query, returning the result Nokogiri::XML::NodeSet
   def find_by_terms_and_value(*term_pointer)
@@ -175,7 +177,7 @@ module OM::XML::Document
   # Returns a hash combining the current documents namespaces (provided by nokogiri) and any namespaces that have been set up by your Terminology.
   # Most importantly, this matches the 'oxns' namespace to the namespace you provided in your Terminology's root term config
   def ox_namespaces
-    @ox_namespaces ||= ng_xml.namespaces.merge(self.class.ox_namespaces)
+    @ox_namespaces ||= ng_xml.namespaces.merge(self.class.ox_namespaces).reject { |k,v| v.nil? || v.empty? }
   end
 
   private
