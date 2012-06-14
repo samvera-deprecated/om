@@ -8,21 +8,25 @@ describe "OM::XML::Container" do
     end
   end
   
-  before(:each) do
-    @container = ContainerTest.from_xml("<foo><bar>1</bar></foo>")
-  end
-  
+  subject {
+    ContainerTest.from_xml("<foo><bar>1</bar></foo>")
+  }
+
   it "should add .ng_xml accessor" do
-    @container.should respond_to(:ng_xml)
-    @container.should respond_to(:ng_xml=)    
+    subject.should respond_to(:ng_xml)
+    subject.should respond_to(:ng_xml=)    
+  end
+
+  it "should initialize" do
+    ContainerTest.new.ng_xml.should be_a_kind_of Nokogiri::XML::Document
   end
   
   describe "new" do
     it "should populate ng_xml with an instance of Nokogiri::XML::Document" do
-      @container.ng_xml.class.should == Nokogiri::XML::Document
+      subject.ng_xml.class.should == Nokogiri::XML::Document
     end
   end
-  
+
   describe "#from_xml" do
     it "should accept a String, parse it and store it in .ng_xml" do
       Nokogiri::XML::Document.expects(:parse).returns("parsed xml")
@@ -44,20 +48,20 @@ describe "OM::XML::Container" do
   
   describe ".to_xml" do
     it  "should call .ng_xml.to_xml" do
-      @container.ng_xml.expects(:to_xml).returns("ng xml")
-      @container.to_xml.should == "ng xml"
+      subject.ng_xml.expects(:to_xml).returns("ng xml")
+      subject.to_xml.should == "ng xml"
     end
     
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (mocked test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
       mock_new_node = mock("new node")
-      doc.root.expects(:add_child).with(@container.ng_xml.root).returns(mock_new_node)
-      result = @container.to_xml(doc)
+      doc.root.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
+      result = subject.to_xml(doc)
     end
     
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (functional test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
-      @container.to_xml(doc).should == "<?xml version=\"1.0\"?>\n<test_xml>\n  <foo>\n    <bar>1</bar>\n  </foo>\n</test_xml>\n"
+      subject.to_xml(doc).should == "<?xml version=\"1.0\"?>\n<test_xml>\n  <foo>\n    <bar>1</bar>\n  </foo>\n</test_xml>\n"
     end
     
     it 'should add to root of Nokogiri::XML::Documents, but add directly to the elements if a Nokogiri::XML::Node is passed in' do
@@ -66,10 +70,10 @@ describe "OM::XML::Container" do
       
       doc = Nokogiri::XML::Document.parse("<test_document/>")
       el = Nokogiri::XML::Node.new("test_element", Nokogiri::XML::Document.new)
-      doc.root.expects(:add_child).with(@container.ng_xml.root).returns(mock_new_node)
-      el.expects(:add_child).with(@container.ng_xml.root).returns(mock_new_node)
-      @container.to_xml(doc).should 
-      @container.to_xml(el)
+      doc.root.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
+      el.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
+      subject.to_xml(doc).should 
+      subject.to_xml(el)
     end
   end
   

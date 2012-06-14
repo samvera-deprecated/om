@@ -12,7 +12,7 @@ module OM::XML::Container
     # Careful! If you call this from a constructor, be sure to provide something 'ie. self' as the @tmpl. Otherwise, you will get an infinite loop!
     def from_xml(xml=nil, tmpl=self.new) # :nodoc:
       if xml.nil?
-        tmpl.ng_xml = self.xml_template
+        # noop: handled in #ng_xml accessor..  tmpl.ng_xml = self.xml_template
       elsif xml.kind_of? Nokogiri::XML::Node
         tmpl.ng_xml = xml
       else
@@ -31,6 +31,10 @@ module OM::XML::Container
     
   end
   
+  def ng_xml
+    @ng_xml ||= self.class.xml_template
+  end
+
   # Instance Methods -- These methods will be available on instances of classes that include this module
   
   def to_xml(xml = ng_xml)
