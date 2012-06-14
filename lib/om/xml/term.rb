@@ -211,6 +211,12 @@ class OM::XML::Term
     return new_mapper
   end
 
+  ##
+  # Always co-erce :index_as attributes into an Array
+  def index_as
+    Array(@index_as)
+  end
+
   # crawl down into mapper's children hash to find the desired mapper
   # ie. @test_mapper.retrieve_mapper(:conference, :role, :text)
   def retrieve_term(*pointers)

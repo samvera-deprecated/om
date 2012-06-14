@@ -85,10 +85,35 @@ describe "OM::XML::Term" do
 
   describe "getters/setters" do
     it "should set the corresponding .settings value and return the current value" do
-      [:path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
+      # :index_as is a special case
+      [:path, :required, :data_type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
         @test_name_part.send(method_name.to_s+"=", "#{method_name.to_s}foo").should == "#{method_name.to_s}foo"
         @test_name_part.send(method_name).should == "#{method_name.to_s}foo"
       end
+    end
+  end
+
+  describe "OM terminology should accept a symbol as a value to :index_as" do
+    subject {
+      class TestTerminology
+        include OM::XML::Document
+        
+        set_terminology do |t|
+          t.as_array :index_as => [:not_searchable]
+          t.as_symbol :index_as => :not_searchable
+        end
+      end
+
+    TestTerminology
+    }
+
+    it "should accept an array as an :index_as value" do
+      subject.terminology.terms[:as_array].index_as.should be_a_kind_of(Array)
+      subject.terminology.terms[:as_array].index_as.should == [:not_searchable]
+    end
+    it "should accept a plain symbol as a value to :index_as" do
+      subject.terminology.terms[:as_symbol].index_as.should be_a_kind_of(Array)
+      subject.terminology.terms[:as_symbol].index_as.should == [:not_searchable]
     end
   end
   it "should have a .terminology attribute accessor" do
