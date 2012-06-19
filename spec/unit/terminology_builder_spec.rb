@@ -71,11 +71,13 @@ describe "OM::XML::Terminology::Builder" do
           t.main_title(:path=>"title", :label=>"title") 
           t.language(:path=>{:attribute=>"lang"}) 
         } 
-        t.title(:proxy=>[:title_info, :main_title]) 
+        t.title(:proxy=>[:title_info, :main_title], :index_as =>[:facetable, :not_searchable]) 
       end 
 
       terminology = t_builder.build 
       terminology.retrieve_term(:title).should be_kind_of OM::XML::NamedTermProxy
+      terminology.retrieve_term(:title).index_as.should == [:facetable, :not_searchable]
+      terminology.retrieve_term(:title_info, :main_title).index_as.should == []
       terminology.xpath_for(:title).should == '//oxns:titleInfo/oxns:title'
       terminology.xpath_with_indexes({:title=>0}).should == "//oxns:titleInfo/oxns:title"
       # @builder_with_block.build.xpath_for_pointer(:issue).should == '//oxns:part'
