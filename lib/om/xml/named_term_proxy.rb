@@ -13,7 +13,7 @@ class OM::XML::NamedTermProxy
   # @param [Hash] opts additional Term options
   def initialize(name, proxy_pointer, terminology, opts={})
     opts = {:namespace_prefix=>"oxns", :ancestors=>[], :children=>{}}.merge(opts)
-    [:children, :ancestors].each do |accessor_name|
+    [:children, :ancestors, :index_as].each do |accessor_name|
       instance_variable_set("@#{accessor_name}", opts.fetch(accessor_name, nil) )     
     end
     @terminology = terminology
@@ -43,6 +43,16 @@ class OM::XML::NamedTermProxy
   # Explicitly setting is_root_term? to return false to support proxies that are _at_ the root of the Terminology but aren't _the_ root term.
   def is_root_term?
     return false
+  end
+  
+  ##
+  # Always co-erce :index_as attributes into an Array
+  def index_as
+    if @index_as
+      Array(@index_as)
+    else
+      self.proxied_term.index_as
+    end
   end
   
   # Any unknown method calls will be proxied to the proxied term
