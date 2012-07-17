@@ -64,8 +64,7 @@ module OM::XML::Document
     include OM::XML::Container
     include OM::XML::TermValueOperators
     include OM::XML::Validation
-  include ActiveModel::Dirty
-  define_attribute_methods [:ng_xml]
+    include ActiveModel::Dirty
 
   end
 
@@ -76,6 +75,10 @@ module OM::XML::Document
 
     # throw away older version.
     changed_attributes['ng_xml'] = nil
+  end
+
+  def ng_xml_changed?
+    changed.include?('ng_xml')
   end
 
   def method_missing(name, *args)
