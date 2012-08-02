@@ -1,7 +1,6 @@
 module OM::XML::Document
   extend ActiveSupport::Concern
 
-
   # Class Methods -- These methods will be available on classes that include this Module
 
   module ClassMethods
@@ -65,6 +64,21 @@ module OM::XML::Document
     include OM::XML::Container
     include OM::XML::TermValueOperators
     include OM::XML::Validation
+    include ActiveModel::Dirty
+
+  end
+
+  def ng_xml_will_change!
+    if self.respond_to?(:dirty=)
+      self.dirty = true
+    end
+
+    # throw away older version.
+    changed_attributes['ng_xml'] = nil
+  end
+
+  def ng_xml_changed?
+    changed.include?('ng_xml')
   end
 
   def method_missing(name, *args)
@@ -186,6 +200,7 @@ module OM::XML::Document
       target = self.find_by_terms(*target)
     end
     raise "You must call define_template before calling #{method}" if template_registry.nil?
+    ng_xml_will_change!
     template_registry.send(method, target, *args, &block)
   end
 end

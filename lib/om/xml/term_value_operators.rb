@@ -122,6 +122,7 @@ module OM::XML::TermValueOperators
   # @param [Array -- (OM term pointer array) OR String -- (like what you would pass into Nokogiri::XML::Builder.new)] template for building the new xml.  Use the syntax that Nokogiri::XML::Builder uses.
   # @return [Nokogiri::XML::Node] the parent_node with new chldren inserted into it
   def insert_from_template(parent_node, new_values, template)
+    ng_xml_will_change!
     # If template is a string, use it as the template, otherwise use it as arguments to xml_builder_template
     unless template.instance_of?(String)
       template_args = Array(template)
@@ -202,6 +203,7 @@ module OM::XML::TermValueOperators
   end
   
   def term_value_update(node_select,node_index,new_value,opts={})
+    ng_xml_will_change!
     # template = opts.fetch(:template,nil)
     
     node = find_by_terms_and_value(*node_select)[node_index]
@@ -216,6 +218,7 @@ module OM::XML::TermValueOperators
   # end
   
   def term_value_delete(opts={})
+    ng_xml_will_change!
     parent_select = Array( opts[:parent_select] )
     parent_index = opts[:parent_index]
     child_index = opts[:child_index]

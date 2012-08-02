@@ -68,6 +68,7 @@ module OM
       end
 
       def val=(args)
+        @document.ng_xml_will_change!
         new_values = sanitize_new_values(args.first)
         new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
           z = new_values[y]
@@ -78,9 +79,6 @@ module OM
           else
             @document.term_value_update(xpath, y.to_i, z)
           end
-        end
-        if @document.respond_to?(:dirty=)
-          @document.dirty = true
         end
       end
 
@@ -116,6 +114,10 @@ module OM
         query = xpath
         trim_text = !query.index("text()").nil?
         return @document.find_by_xpath(query)
+      end
+
+      def delete
+        nodeset.delete
       end
       
       def inspect
