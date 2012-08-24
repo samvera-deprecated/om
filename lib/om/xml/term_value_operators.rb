@@ -207,11 +207,15 @@ module OM::XML::TermValueOperators
     # template = opts.fetch(:template,nil)
     
     node = find_by_terms_and_value(*node_select)[node_index]
-    if new_value == "" || new_value == :delete
+    if delete_on_update?(node, new_value)
       node.remove
     else
       node.content = new_value
     end
+  end
+
+  def delete_on_update?(node, new_value)
+    new_value == "" || new_value == :delete
   end
   
   # def term_value_set(term_ref, query_opts, node_index, new_value)
