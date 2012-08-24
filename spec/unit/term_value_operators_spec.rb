@@ -215,6 +215,27 @@ describe "OM::XML::TermValueOperators" do
       @article.term_values(:journal, :title_info).should == ['mork']
     end
 
+    describe "delete_on_update?" do
+
+      before(:each) do
+        att= {[:journal, :title_info]=>{"0"=>"york", "1"=>"mangle","2"=>"mork"}}
+        @article.update_values(att)
+        @article.term_values(:journal, :title_info).should == ['york', 'mangle', 'mork']
+      end
+
+      it "by default, setting to empty string deletes the node" do
+        @article.update_values({[:journal, :title_info]=>{"1"=>""}})
+        @article.term_values(:journal, :title_info).should == ['york', 'mork']
+      end
+
+      it "if delete_on_update? returns false, setting to empty string won't delete node" do
+        @article.stubs('delete_on_update?').returns(false)
+        @article.update_values({[:journal, :title_info]=>{"1"=>""}})
+        @article.term_values(:journal, :title_info).should == ['york', '', 'mork']
+      end
+
+    end
+
     it "should retain other child nodes when updating a text content term and shoud not append an additional text node but update text in place" do
       @article.term_values(:name,:name_content).should == ["Describes a person"]
       @article.update_values({[:name, :name_content]=>"Test text"})
@@ -259,7 +280,6 @@ describe "OM::XML::TermValueOperators" do
     it "should support adding attribute values" do
       pointer = [{:title_info=>0}, :language]
       test_val = "language value"
-debugger
       @article.term_values_append( 
         :parent_select => [{:title_info=>0}],
         :parent_index => 0,
