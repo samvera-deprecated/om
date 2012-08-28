@@ -1,0 +1,12 @@
+Purposes of OM (based on notes from conversation with Matt Zumwalt):
+
+1. Provide convenient names to access information in an XML document --
+   essentially a declarative mechanism to define methods that will issue
+   xpath queries against an XML document.
+
+2. Provides a convient way to create new, empty XML documents (or fragments),
+   with implied parent nodes (if any) and default attribute values (if any).
+   This is done by overriding the class method xml_template() in your XML
+   document class.
+
+3. Provides a way to map your OM terminology into SOLR.
