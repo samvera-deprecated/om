@@ -319,10 +319,16 @@ describe "OM::XML::Terminology" do
       @test_full_terminology.xml_builder_template(:person,:person_id).should == 'xml.namePart( \'#{builder_new_value}\' )'
       @test_full_terminology.xml_builder_template(:name,:affiliation).should == 'xml.affiliation( \'#{builder_new_value}\' )'
     end
+
     it "should accept extra options" do
-      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', \'type\'=>\'code\', \'authority\'=>\'marcrelator\' )'
-      @test_full_terminology.xml_builder_template(:role, :code, {:attributes=>{"authority"=>"marcrelator"}} ).should == marcrelator_role_xml_builder_template
-      @test_full_terminology.xml_builder_template(:person, :role, :code, {:attributes=>{"authority"=>"marcrelator"}} ).should == marcrelator_role_xml_builder_template
+      # Expected marcrelator_role_xml_builder_template.
+      # Include both version to handle either ordering of the hash -- a band-aid hack to fix failing test.
+      e1 = %q{xml.roleTerm( '#{builder_new_value}', 'type'=>'code', 'authority'=>'marcrelator' )}
+      e2 = %q{xml.roleTerm( '#{builder_new_value}', 'authority'=>'marcrelator', 'type'=>'code' )}
+      got = @test_full_terminology.xml_builder_template(:role, :code, {:attributes=>{"authority"=>"marcrelator"}} )
+      [e1, e2].should include(got)
+      got = @test_full_terminology.xml_builder_template(:person, :role, :code, {:attributes=>{"authority"=>"marcrelator"}} )
+      [e1, e2].should include(got)
     end
 
     it "should work with deeply nested properties" do

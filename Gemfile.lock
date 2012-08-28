@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    om (1.6.1)
+    om (1.6.2)
       activemodel
       activesupport
       mediashelf-loggable

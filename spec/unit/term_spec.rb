@@ -190,9 +190,14 @@ describe "OM::XML::Term" do
       @test_person.xml_builder_template.should == 'xml.namePart( \'#{builder_new_value}\' )'
       @test_affiliation.xml_builder_template.should == 'xml.affiliation( \'#{builder_new_value}\' )'
     end
+
     it "should accept extra options" do
-      marcrelator_role_xml_builder_template = 'xml.roleTerm( \'#{builder_new_value}\', \'type\'=>\'code\', \'authority\'=>\'marcrelator\' )'
-      @test_role_code.xml_builder_template(:attributes=>{"authority"=>"marcrelator"}).should == marcrelator_role_xml_builder_template
+      # Expected marcrelator_role_xml_builder_template.
+      # Include both version to handle either ordering of the hash -- a band-aid hack to fix failing test.
+      e1 = %q{xml.roleTerm( '#{builder_new_value}', 'type'=>'code', 'authority'=>'marcrelator' )}
+      e2 = %q{xml.roleTerm( '#{builder_new_value}', 'authority'=>'marcrelator', 'type'=>'code' )}
+      got = @test_role_code.xml_builder_template(:attributes=>{"authority"=>"marcrelator"})
+      [e1, e2].should include(got)
     end
 
     it "should work for namespaced nodes" do
