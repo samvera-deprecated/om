@@ -86,12 +86,13 @@ module OM
           # Sanitize new_values to always be a hash with indexes
           case new_values
           when Hash
+            new_values.each {|k, v|  v = serialize(v) }
           when Array
             nv = new_values.dup
             new_values = {}
-            nv.each {|v| new_values[nv.index(v).to_s] = v}
+            nv.each {|v| new_values[nv.index(v).to_s] = serialize(v)}
           else
-            new_values = {"0"=>new_values}
+            new_values = {"0"=>serialize(new_values)}
           end
           new_values
       end
@@ -107,7 +108,34 @@ module OM
       def val 
         query = xpath
         trim_text = !query.index("text()").nil?
-        return @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
+        val = @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
+        deserialize(val)
+      end
+
+      # @param string
+      # @return [String,Date,Integer]
+      def deserialize(val)
+        case term.type
+        when :date
+          val.map { |v| Date.parse(v)}
+        when :integer
+          val.map { |v| v.to_i}
+        else 
+          val
+        end
+      end
+
+      # @param val [String,Date,Integer]
+      def serialize (val)
+        case term.type
+        when :date
+          val.to_s
+        when :integer
+          val.to_s
+        else 
+          val
+        end
+
       end
       
       def nodeset
