@@ -11,8 +11,14 @@ module OM::XML::TermValueOperators
     #if value is on line by itself sometimes does not trim leading and trailing whitespace for a text node so will detect and fix it
     trim_text = !xpath.nil? && !xpath.index("text()").nil?
     find_by_terms(*term_pointer).each {|node| result << (trim_text ? node.text.strip : node.text) }
-    # find_by_terms(*OM.destringify(term_pointer)).each {|node| result << node.text }
-    return result
+
+    if term_pointer.length == 1 && term_pointer.first.kind_of?(String)
+      logger.warn "Passing a xpath to term_values means that OM can not properly find the associated term. Pass a term pointer instead."
+      result
+    else
+      term = self.class.terminology.retrieve_term(*OM.pointers_to_flat_array(OM.destringify(term_pointer), false))
+      term.deserialize(result)
+    end
   end
   
   # alias for term_values
@@ -40,16 +46,10 @@ module OM::XML::TermValueOperators
       template_pointer = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
       
+      term = self.class.terminology.retrieve_term( *OM.pointers_to_flat_array(pointer,false) )
+
       # Sanitize new_values to always be a hash with indexes
-      case new_values
-      when Hash
-      when Array
-        nv = new_values.dup
-        new_values = {}
-        nv.each {|v| new_values[nv.index(v).to_s] = v}
-      else
-        new_values = {"0"=>new_values}
-      end
+      new_values = term.sanitize_new_values(new_values)
       
       # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
       result.delete(term_pointer)
@@ -65,7 +65,6 @@ module OM::XML::TermValueOperators
       end 
       
       # Fill out the pointer completely if the final term is a NamedTermProxy
-      term = self.class.terminology.retrieve_term( *OM.pointers_to_flat_array(pointer,false) )
       if term.kind_of? OM::XML::NamedTermProxy
         pointer.pop
         pointer = pointer.concat(term.proxy_pointer)

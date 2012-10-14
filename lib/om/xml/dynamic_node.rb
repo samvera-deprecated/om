@@ -69,7 +69,7 @@ module OM
 
       def val=(args)
         @document.ng_xml_will_change!
-        new_values = sanitize_new_values(args.first)
+        new_values = term.sanitize_new_values(args.first)
         new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
           z = new_values[y]
 ## If we pass something that already has an index on it, we should be able to add it.
@@ -82,20 +82,6 @@ module OM
         end
       end
 
-      def sanitize_new_values(new_values)
-          # Sanitize new_values to always be a hash with indexes
-          case new_values
-          when Hash
-            new_values.each {|k, v|  v = serialize(v) }
-          when Array
-            nv = new_values.dup
-            new_values = {}
-            nv.each {|v| new_values[nv.index(v).to_s] = serialize(v)}
-          else
-            new_values = {"0"=>serialize(new_values)}
-          end
-          new_values
-      end
 
       def term_child_by_name(term, name)
         if (term.kind_of? NamedTermProxy)
@@ -109,35 +95,9 @@ module OM
         query = xpath
         trim_text = !query.index("text()").nil?
         val = @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
-        deserialize(val)
+        term.deserialize(val)
       end
 
-      # @param string
-      # @return [String,Date,Integer]
-      def deserialize(val)
-        case term.type
-        when :date
-          val.map { |v| Date.parse(v)}
-        when :integer
-          val.map { |v| v.to_i}
-        else 
-          val
-        end
-      end
-
-      # @param val [String,Date,Integer]
-      def serialize (val)
-        case term.type
-        when :date
-          val.to_s
-        when :integer
-          val.to_s
-        else 
-          val
-        end
-
-      end
-      
       def nodeset
         query = xpath
         trim_text = !query.index("text()").nil?

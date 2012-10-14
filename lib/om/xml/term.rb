@@ -203,6 +203,50 @@ class OM::XML::Term
   end
 
 
+  def sanitize_new_values(new_values)
+      # Sanitize new_values to always be a hash with indexes
+      case new_values
+      when Hash
+        new_values.each {|k, v|  v = serialize(v) }
+      when Array
+        nv = new_values.dup
+        new_values = {}
+        nv.each {|v| new_values[nv.index(v).to_s] = serialize(v)}
+      else
+        new_values = {"0"=>serialize(new_values)}
+      end
+      new_values
+  end
+  
+  # @param val [String,Date,Integer]
+  def serialize (val)
+    case type
+    when :date, :integer
+      val.to_s
+    when :boolean
+      val.to_s
+    else 
+      val
+    end
+  end
+
+  # @param string
+  # @return [String,Date,Integer]
+  def deserialize(val)
+    case type
+    when :date
+      #TODO use present?
+      val.map { |v| !v.empty? ? Date.parse(v) : nil}
+    when :integer
+      #TODO use blank?
+      val.map { |v| v.empty? ? nil : v.to_i}
+    when :boolean
+      val.map { |v| v == 'true' }
+    else 
+      val
+    end
+  end
+
   def self.from_node(mapper_xml)
     name = mapper_xml.attribute("name").text.to_sym
     attributes = {}
