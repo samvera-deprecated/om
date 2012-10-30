@@ -11,7 +11,7 @@ task :rcov => ['om:rcov']
 
 task :default => :spec
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
   version = Om::VERSION 
 

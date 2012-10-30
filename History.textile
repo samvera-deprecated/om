@@ -1,3 +1,6 @@
+h3. 1.7.0
+  Add casting to dates and integers when you specify the :type attribute on a terminology node
+
 h3. 1.6.1
   Integration spec to illustrate selective querying.
   Add #use_terminology and #extend_terminology methods to extend existing OM terminologies

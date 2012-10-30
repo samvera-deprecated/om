@@ -135,6 +135,9 @@ class OM::XML::Term
   attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :default_content_path, :is_root_term
   attr_accessor :children, :internal_xml, :terminology
 
+  # the data type for this node
+  attr_accessor :type
+
   # Any XML attributes that qualify the Term.
   #
   # @example Declare a Term that has a given attribute (ie. //title[@xml:lang='eng'])
@@ -170,11 +173,22 @@ class OM::XML::Term
   # If you want to specify which namespace a term is using, use:
   #   namspace_prefix => "bar"
   # This value defaults to nil, in which case if a default namespace is set in the termnology, that namespace will be used.
+  #
+  # @param name [Symbol] the name to refer to this term by
+  # @param opts [Hash]
+  # @options opts [Array]  :index_as a list of indexing hints provided to to_solr
+  # @options opts [String] :path partial xpath that points to the node.  
+  # @options opts [Hash]   :attributes xml attributes to match in the selector 
+  # @options opts [String] :namespace_prefix xml namespace for this node 
+  # @options opts [Symbol] :type one of :string, :date, :integer. Defaults to :string
   def initialize(name, opts={}, terminology=nil)
     opts = {:ancestors=>[], :children=>{}}.merge(opts)
-    [:children, :ancestors,:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
+    [:children, :ancestors,:path, :index_as, :required, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
       instance_variable_set("@#{accessor_name}", opts.fetch(accessor_name, nil) )
     end
+
+    self.type = opts[:type] || :string
+
     unless terminology.nil?
       if opts[:namespace_prefix].nil?
         unless terminology.namespaces["xmlns"].nil?
@@ -185,6 +199,51 @@ class OM::XML::Term
     @name = name
     if @path.nil? || @path.empty?
       @path = name.to_s
+    end
+  end
+
+
+  def sanitize_new_values(new_values)
+      # Sanitize new_values to always be a hash with indexes
+      case new_values
+      when Hash
+        new_values.each {|k, v|  v = serialize(v) }
+      when Array
+        nv = new_values.dup
+        new_values = {}
+        nv.each {|v| new_values[nv.index(v).to_s] = serialize(v)}
+      else
+        new_values = {"0"=>serialize(new_values)}
+      end
+      new_values
+  end
+  
+  # @param val [String,Date,Integer]
+  def serialize (val)
+    case type
+    when :date, :integer
+      val.to_s
+    when :boolean
+      val.to_s
+    else 
+      val
+    end
+  end
+
+  # @param string
+  # @return [String,Date,Integer]
+  def deserialize(val)
+    case type
+    when :date
+      #TODO use present?
+      val.map { |v| !v.empty? ? Date.parse(v) : nil}
+    when :integer
+      #TODO use blank?
+      val.map { |v| v.empty? ? nil : v.to_i}
+    when :boolean
+      val.map { |v| v == 'true' }
+    else 
+      val
     end
   end
 

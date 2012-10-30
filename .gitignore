@@ -11,7 +11,7 @@ tmtags
 .\#*
 
 ## VIM
-*.swp
+*.sw[po]
 
 ## PROJECT::GENERAL
 coverage
@@ -22,4 +22,4 @@ doc
 .yardoc
 
 ## PROJECT::SPECIFIC
-
+Gemfile.lock

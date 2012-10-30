@@ -69,7 +69,7 @@ module OM
 
       def val=(args)
         @document.ng_xml_will_change!
-        new_values = sanitize_new_values(args.first)
+        new_values = term.sanitize_new_values(args.first)
         new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
           z = new_values[y]
 ## If we pass something that already has an index on it, we should be able to add it.
@@ -82,19 +82,6 @@ module OM
         end
       end
 
-      def sanitize_new_values(new_values)
-          # Sanitize new_values to always be a hash with indexes
-          case new_values
-          when Hash
-          when Array
-            nv = new_values.dup
-            new_values = {}
-            nv.each {|v| new_values[nv.index(v).to_s] = v}
-          else
-            new_values = {"0"=>new_values}
-          end
-          new_values
-      end
 
       def term_child_by_name(term, name)
         if (term.kind_of? NamedTermProxy)
@@ -107,9 +94,10 @@ module OM
       def val 
         query = xpath
         trim_text = !query.index("text()").nil?
-        return @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
+        val = @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
+        term.deserialize(val)
       end
-      
+
       def nodeset
         query = xpath
         trim_text = !query.index("text()").nil?
