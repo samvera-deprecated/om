@@ -40,17 +40,17 @@ describe "OM::XML::Term::Builder" do
   
   describe "configuration methods" do
     it "should set the corresponding .settings value return the mapping object" do
-      [:path, :index_as, :required, :data_type, :variant_of, :path, :attributes, :default_content_path].each do |method_name|
+      [:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path].each do |method_name|
         @test_builder.send(method_name, "#{method_name.to_s}foo").should == @test_builder
         @test_builder.settings[method_name].should == "#{method_name.to_s}foo"
       end
     end
     it "should be chainable" do
-      test_builder = OM::XML::Term::Builder.new("chainableTerm").index_as(:facetable, :searchable, :sortable, :displayable).required(true).data_type(:text)  
+      test_builder = OM::XML::Term::Builder.new("chainableTerm").index_as(:facetable, :searchable, :sortable, :displayable).required(true).type(:text)  
       resulting_settings = test_builder.settings
       resulting_settings[:index_as].should == [:facetable, :searchable, :sortable, :displayable]
       resulting_settings[:required].should == true 
-      resulting_settings[:data_type].should == :text
+      resulting_settings[:type].should == :text
     end
   end
 
@@ -58,11 +58,17 @@ describe "OM::XML::Term::Builder" do
     describe "defaults" do
       it "should be set" do
         @test_builder.settings[:required].should == false
-        @test_builder.settings[:data_type].should == :string
+        @test_builder.settings[:type].should == :string
         @test_builder.settings[:variant_of].should be_nil
         @test_builder.settings[:attributes].should be_nil
         @test_builder.settings[:default_content_path].should be_nil
       end
+    end
+    describe ":data_type" do
+      it "is deprecated and should be assinged to the :type setting" do
+        deprecated_term = OM::XML::Term::Builder.new("depreated_term").data_type(:thing)
+        deprecated_term.settings[:type].should == :thing
+      end 
     end
   end
   
@@ -88,12 +94,12 @@ describe "OM::XML::Term::Builder" do
   
   describe ".build" do
     it "should build a Term with the given settings and generate its xpath values" do
-      test_builder = OM::XML::Term::Builder.new("requiredTextFacet").index_as([:facetable, :searchable, :sortable, :displayable]).required(true).data_type(:text)  
+      test_builder = OM::XML::Term::Builder.new("requiredTextFacet").index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
       result = test_builder.build
       result.should be_instance_of OM::XML::Term
       result.index_as.should == [:facetable, :searchable, :sortable, :displayable]
       result.required.should == true 
-      result.data_type.should == :text
+      result.type.should == :text
       
       result.xpath.should == OM::XML::TermXpathGenerator.generate_absolute_xpath(result)
       result.xpath_constrained.should == OM::XML::TermXpathGenerator.generate_constrained_xpath(result)
@@ -184,7 +190,7 @@ describe "OM::XML::Term::Builder" do
   	it "should preserve any extra settings specific to this builder (for variant terms)" do
   	  tb = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus).attributes(:color=>"orange").required(true)
   	  tb.resolve_refs!
-  	  tb.settings.should == {:path=>"citrus", :attributes=>{"citric_acid"=>"true", :color=>"orange"}, :required=>true, :data_type=>:string, :index_as=>[:facetable]}
+  	  tb.settings.should == {:path=>"citrus", :attributes=>{"citric_acid"=>"true", :color=>"orange"}, :required=>true, :type=>:string, :index_as=>[:facetable]}
 	  end
 	  it "should aggregate all settings from refs, combining them with a cascading approach" do
 	    @almond.resolve_refs!

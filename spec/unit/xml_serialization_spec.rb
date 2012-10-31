@@ -37,7 +37,7 @@ describe "OM::XML::Term.to_xml" do
     xml.xpath("/term/xpath/constrained").first.text.should == "//oxns:name[@type=\\\"personal\\\"]/oxns:namePart[@type=\\\"given\\\" and contains(., \\\"\#{constraint_value}\\\")]"
     xml.xpath("/term/index_as").first.text.should == ""
     xml.xpath("/term/required").first.text.should == "false"
-    xml.xpath("/term/data_type").first.text.should == "string"
+    xml.xpath("/term/type").first.text.should == "string"
   end
   it "should capture root term info" do
     xml = @terminology.root_terms.first.to_xml
