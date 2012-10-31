@@ -1,13 +1,16 @@
 # Special options:
-# data_type, index_as, attributes,
+# type, index_as, attributes,
 # is_root_term, required
 #
 class OM::XML::Term
 
+
+
+
   # Term::Builder Class Definition
   #
   # @example
-  #   tb2 = OM::XML::Term::Builder.new("my_term_name").path("fooPath").attributes({:lang=>"foo"}).index_as([:searchable, :facetable]).required(true).data_type(:text)
+  #   tb2 = OM::XML::Term::Builder.new("my_term_name").path("fooPath").attributes({:lang=>"foo"}).index_as([:searchable, :facetable]).required(true).type(:text)
   #
   #
   #
@@ -15,12 +18,17 @@ class OM::XML::Term
   # so any time you call a method on the Builder that it doesn't explicitly recognize,
   # the Builder will add your method & arguments to the it's settings and return itself.
   class Builder
+
+    extend Deprecation
+    self.deprecation_behavior = :stderr
+    self.deprecation_horizon = 'release 2.0'
+
     attr_accessor :name, :settings, :children, :terminology_builder
 
     def initialize(name, terminology_builder=nil)
       @name = name.to_sym
       @terminology_builder = terminology_builder
-      @settings = {:required=>false, :data_type=>:string}
+      @settings = {:required=>false, :type=>:string}
       @children = {}
     end
 
@@ -116,6 +124,15 @@ class OM::XML::Term
       return term
     end
 
+    # :data_type accessor has been deprecated in favor of :type
+    # Any value set for :data_type will get set for :type instead
+    def data_type value
+      @settings[:type] = value
+      return self
+    end
+    deprecation_deprecate :data_type
+
+
     # Any unknown method calls will add an entry to the settings hash and return the current object
     def method_missing method, *args, &block
       if args.length == 1
@@ -132,11 +149,8 @@ class OM::XML::Term
 
   include OM::TreeNode
 
-  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :data_type, :variant_of, :path, :default_content_path, :is_root_term
+  attr_accessor :name, :xpath, :xpath_constrained, :xpath_relative, :path, :index_as, :required, :type, :variant_of, :path, :default_content_path, :is_root_term
   attr_accessor :children, :internal_xml, :terminology
-
-  # the data type for this node
-  attr_accessor :type
 
   # Any XML attributes that qualify the Term.
   #
@@ -378,7 +392,7 @@ class OM::XML::Term
           end
         }
         xml.required required
-        xml.data_type data_type
+        xml.type type
         unless variant_of.nil?
           xml.variant_of variant_of
         end
