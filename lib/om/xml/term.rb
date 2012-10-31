@@ -398,7 +398,7 @@ class OM::XML::Term
           end
         }
         xml.required required
-        xml.type type
+        xml.data_type type
         unless variant_of.nil?
           xml.variant_of variant_of
         end
