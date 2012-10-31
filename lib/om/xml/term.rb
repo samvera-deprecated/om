@@ -132,6 +132,12 @@ class OM::XML::Term
     end
     deprecation_deprecate :data_type
 
+    # We have to add this method so it will play nice with ruby 1.8.7
+    def type value
+      @settings[:type] = value
+      return self
+    end
+
 
     # Any unknown method calls will add an entry to the settings hash and return the current object
     def method_missing method, *args, &block
