@@ -31,6 +31,7 @@ describe "updating multiple nodes in a set" do
   end
 
   it "should set all the nodes to the values specified by the array" do
+    pending "See HYDRA-647"
     subject.language.should == ["tib","ger","chi"]
     subject.books.script.should == ["tib_script","ger_script","chi_script"]
     subject.update_values_from_array([:language] => ['ger'])
