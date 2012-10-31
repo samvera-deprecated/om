@@ -9,8 +9,6 @@ describe "OM::XML::Terminology.to_xml" do
     xml = @terminology.to_xml
     xml.xpath("/terminology/schema").to_xml.should == "<schema>http://www.loc.gov/standards/mods/v3/mods-3-2.xsd</schema>"    
     xml.xpath("/terminology/namespaces").to_xml.should be_equivalent_to expected_xml
-    # file = File.open(File.dirname(__FILE__)+"/../fixtures/mods_article_terminology.xml", "w")
-    # file.write(xml.to_xml)
   end
   it "should call .to_xml on all of the terms" do
     options = {}
