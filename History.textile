@@ -1,3 +1,13 @@
+h3 1.8.0
+  Removed unused mods_article_terminology.xml
+  Replacing :data_type with :type; deprecating :data_type
+  Making test related to HYDRA-647 pending
+  Adding .type method for ruby 1.8.7 compatibility
+  XML serialization should use the data_type node name and not type
+  Update homepage in gemspec
+  Remove .rvmrc
+  Remove debugger from gemfile
+
 h3. 1.7.0
   Add casting to dates and integers when you specify the :type attribute on a terminology node
 
