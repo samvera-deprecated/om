@@ -1,4 +1,4 @@
-h3 1.8.0
+h3. 1.8.0
   Removed unused mods_article_terminology.xml
   Replacing :data_type with :type; deprecating :data_type
   Making test related to HYDRA-647 pending
