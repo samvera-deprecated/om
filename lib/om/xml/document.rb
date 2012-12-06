@@ -81,23 +81,24 @@ module OM::XML::Document
     changed.include?('ng_xml')
   end
 
-  def method_missing(name, *args)
-    if matches = /([^=]*)=$/.match(name.to_s)
-      modified_name = matches[1].to_sym
-      term = self.class.terminology.retrieve_term(modified_name)
-      if (term)
-        node = OM::XML::DynamicNode.new(modified_name, nil, self, term)
-        node.val=args
-      else
-        super
-      end
-    else
+  def method_missing(method_name, *args)
+    if matches = /([^=]+)=$/.match(method_name.to_s)
+      name = matches[1].to_sym
+    end
+    
+    name ||= method_name
+    
+    begin
       term = self.class.terminology.retrieve_term(name)
-      if (term)
-        OM::XML::DynamicNode.new(name, args.first, self, term)
+      
+      if /=$/.match(method_name.to_s)
+        node = OM::XML::DynamicNode.new(name, nil, self, term)
+        return node.val=args
       else
-        super
+        return OM::XML::DynamicNode.new(name, args.first, self, term)
       end
+    rescue OM::XML::Terminology::BadPointerError
+      super
     end
   end
 

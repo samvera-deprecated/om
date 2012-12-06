@@ -25,7 +25,7 @@ describe "calling set_terminology more than once" do
     end
 
     it "cannot get bar" do
-      expect { subject.bar }.to raise_error OM::XML::Terminology::BadPointerError
+      expect { subject.bar }.to raise_error NoMethodError
     end
 
   end
@@ -47,7 +47,7 @@ describe "calling set_terminology more than once" do
     end
 
     it "cannot get foo" do
-      expect { subject.foo }.to raise_error OM::XML::Terminology::BadPointerError
+      expect { subject.foo }.to raise_error NoMethodError
     end
 
     it "can now get bar" do
@@ -118,7 +118,7 @@ describe "calling set_terminology more than once" do
       xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
       t = ReentrantTerminology.from_xml(xml)
 
-      expect { t.bar }.to raise_error OM::XML::Terminology::BadPointerError
+      expect { t.bar }.to raise_error NoMethodError
     end
 
     it "can get foo" do
