@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gemspec
 
+gem 'solrizer', :path=>'../solrizer'
 group :development, :test do
   gem 'rcov', :platform => :mri_18
   gem 'simplecov', :platform => :mri_19

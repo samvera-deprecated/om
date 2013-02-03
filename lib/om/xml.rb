@@ -2,6 +2,7 @@ require "om/xml/container"
 require "om/xml/validation"
 
 require "om/xml/terminology"
+require "om/xml/terminology_based_solrizer"
 require "om/xml/term"
 require "om/xml/term_xpath_generator"
 require "om/xml/node_generator"
