@@ -1,20 +1,19 @@
-require "om/xml/container"
-require "om/xml/validation"
-
-require "om/xml/terminology"
-require "om/xml/terminology_based_solrizer"
-require "om/xml/term"
-require "om/xml/term_xpath_generator"
-require "om/xml/node_generator"
-require "om/xml/term_value_operators"
-require "om/xml/named_term_proxy"
-require "om/xml/document"
-require "om/xml/dynamic_node"
-
-require "om/xml/template_registry"
-
+require 'active_support'
 module OM::XML
-  
+  extend ActiveSupport::Autoload 
+  autoload :Container
+  autoload :Validation
+  autoload :Terminology
+  autoload :Term
+  autoload :TerminologyBasedSolrizer
+  autoload :TermXpathGenerator
+  autoload :NodeGenerator
+  autoload :TermValueOperators
+  autoload :NamedTermProxy
+  autoload :Document
+  autoload :DynamicNode
+  autoload :TemplateRegistry
+
   # Raised when the XML document or XML template can't be found during an operation
   class TemplateMissingException < StandardError; end
   
