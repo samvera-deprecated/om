@@ -29,13 +29,13 @@ describe "OM::XML::Container" do
 
   describe "#from_xml" do
     it "should accept a String, parse it and store it in .ng_xml" do
-      Nokogiri::XML::Document.expects(:parse).returns("parsed xml")
+      Nokogiri::XML::Document.should_receive(:parse).and_return("parsed xml")
       container1 = ContainerTest.from_xml("<foo><bar>1</bar></foo>")
       container1.ng_xml.should == "parsed xml"
     end
     it "should accept a File, parse it and store it in .ng_xml" do
       file = fixture(File.join("mods_articles", "hydrangea_article1.xml"))
-      Nokogiri::XML::Document.expects(:parse).returns("parsed xml")
+      Nokogiri::XML::Document.should_receive(:parse).and_return("parsed xml")
       container1 = ContainerTest.from_xml(file)
       container1.ng_xml.should == "parsed xml"
     end
@@ -48,14 +48,14 @@ describe "OM::XML::Container" do
   
   describe ".to_xml" do
     it  "should call .ng_xml.to_xml" do
-      subject.ng_xml.expects(:to_xml).returns("ng xml")
+      subject.ng_xml.should_receive(:to_xml).and_return("ng xml")
       subject.to_xml.should == "ng xml"
     end
     
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (mocked test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
       mock_new_node = mock("new node")
-      doc.root.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
+      doc.root.should_receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
       result = subject.to_xml(doc)
     end
     
@@ -66,12 +66,12 @@ describe "OM::XML::Container" do
     
     it 'should add to root of Nokogiri::XML::Documents, but add directly to the elements if a Nokogiri::XML::Node is passed in' do
       mock_new_node = mock("new node")
-      mock_new_node.stubs(:to_xml).returns("foo")
+      mock_new_node.stub(:to_xml).and_return("foo")
       
       doc = Nokogiri::XML::Document.parse("<test_document/>")
       el = Nokogiri::XML::Node.new("test_element", Nokogiri::XML::Document.new)
-      doc.root.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
-      el.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
+      doc.root.should_receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
+      el.should_receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
       subject.to_xml(doc).should 
       subject.to_xml(el)
     end

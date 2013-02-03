@@ -34,13 +34,13 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   describe "generate_xpath" do
     it "should generate an xpath based on the given mapper and options" do
-      OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with(@test_term)
+      OM::XML::TermXpathGenerator.should_receive(:generate_absolute_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :absolute)
 
-      OM::XML::TermXpathGenerator.expects(:generate_relative_xpath).with(@test_term)
+      OM::XML::TermXpathGenerator.should_receive(:generate_relative_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :relative)
 
-      OM::XML::TermXpathGenerator.expects(:generate_constrained_xpath).with(@test_term)
+      OM::XML::TermXpathGenerator.should_receive(:generate_constrained_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :constrained)
     end
   end
@@ -69,7 +69,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     end
     it "should prepend the xpath for any parent nodes" do
       mock_parent_mapper = mock("Term", :xpath_absolute=>'//name[@type="conference"]/role')
-      @test_role_text.stubs(:parent).returns(mock_parent_mapper)
+      @test_role_text.stub(:parent => mock_parent_mapper)
       OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text).should == '//name[@type="conference"]/role/roleTerm[@type="text"]'
     end
   end
@@ -110,7 +110,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       @sample_terminology.xpath_with_indexes(:name, {:family_name=>1},{}).should == '//oxns:name/oxns:namePart[@type="family"][2]'
     end
     it "should warn about indexes on a proxy" do
-      Logger.any_instance.expects(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
+      Logger.any_instance.should_receive(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
       @sample_terminology.xpath_with_indexes({:family_name=>1}).should == "//oxns:name/oxns:namePart[@type=\"family\"]"
     end
   end

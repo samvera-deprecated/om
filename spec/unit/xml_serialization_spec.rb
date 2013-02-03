@@ -13,7 +13,7 @@ describe "OM::XML::Terminology.to_xml" do
   it "should call .to_xml on all of the terms" do
     options = {}
     doc = Nokogiri::XML::Document.new
-    @terminology.terms.values.each {|term| term.expects(:to_xml) }
+    @terminology.terms.values.each {|term| term.should_receive(:to_xml) }
     @terminology.to_xml(options,doc)
   end
 end

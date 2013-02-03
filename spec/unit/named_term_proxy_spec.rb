@@ -31,7 +31,7 @@ describe "OM::XML::NamedTermProxy" do
     
   it "should proxy all extra methods to the proxied object" do
     [:xpath, :xpath_relative, :xml_builder_template].each do |method|
-      @proxied_term.expects(method)
+      @proxied_term.should_receive(method)
       @test_proxy.send(method)
     end
   end

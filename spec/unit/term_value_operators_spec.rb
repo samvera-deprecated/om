@@ -46,7 +46,7 @@ describe "OM::XML::TermValueOperators" do
       person_1_roles[1].text.should == "otherrole2"
     end
     it "should call term_value_update if the corresponding node already exists" do
-      @article.expects(:term_value_update).with('//oxns:titleInfo/oxns:title', 0, "My New Title")
+      @article.should_receive(:term_value_update).with('//oxns:titleInfo/oxns:title', 0, "My New Title")
       @article.update_values( {[:title_info, :main_title] => "My New Title"} )
     end
     
@@ -58,7 +58,7 @@ describe "OM::XML::TermValueOperators" do
         :template => [:person, :role],
         :values => "My New Role"
       }
-      @article.expects(:term_values_append).with(expected_args).times(2)
+      @article.should_receive(:term_values_append).with(expected_args).twice
       @article.update_values( {[{:person=>0}, :role] => {"6"=>"My New Role"}} )
       @article.update_values( {[{:person=>0}, :role] => {"-1"=>"My New Role"}} )
     end
@@ -76,8 +76,8 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
-      OM::Samples::ModsArticle.terminology.expects(:xpath_with_indexes).with( *[{:person=>0}, :role]).times(10).returns("//oxns:name[@type=\"personal\"][1]/oxns:role")
-      OM::Samples::ModsArticle.terminology.stubs(:xpath_with_indexes).with( *[{:person=>0}]).returns("//oxns:name[@type=\"personal\"][1]")
+      OM::Samples::ModsArticle.terminology.should_receive(:xpath_with_indexes).with( *[{:person=>0}, :role]).exactly(10).times.and_return("//oxns:name[@type=\"personal\"][1]/oxns:role")
+      OM::Samples::ModsArticle.terminology.stub(:xpath_with_indexes).with( *[{:person=>0}]).and_return("//oxns:name[@type=\"personal\"][1]")
       @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
       @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" } )
       @article.update_values( { [{:person=>0}, :role]=>"the role" } )
@@ -229,7 +229,7 @@ describe "OM::XML::TermValueOperators" do
       end
 
       it "if delete_on_update? returns false, setting to empty string won't delete node" do
-        @article.stubs('delete_on_update?').returns(false)
+        @article.stub('delete_on_update?').and_return(false)
         @article.update_values({[:journal, :title_info]=>{"1"=>""}})
         @article.term_values(:journal, :title_info).should == ['york', '', 'mork']
       end

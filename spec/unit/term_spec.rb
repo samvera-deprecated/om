@@ -77,7 +77,7 @@ describe OM::XML::Term do
       it "should crawl down into mapper children to find the desired term" do
         mock_role = mock("mapper", :children =>{:text=>"the target"})
         mock_conference = mock("mapper", :children =>{:role=>mock_role})
-        @test_name_part.expects(:children).returns({:conference=>mock_conference})
+        @test_name_part.should_receive(:children).and_return({:conference=>mock_conference})
         @test_name_part.retrieve_term(:conference, :role, :text).should == "the target"
       end
       it "should return an empty hash if no term can be found" do
@@ -137,7 +137,6 @@ describe OM::XML::Term do
     end
     describe ".parent" do
       it "should retrieve the immediate parent of the given object from the ancestors array" do
-        # @test_name_part.expects(:ancestors).returns(["ancestor1","ancestor2","ancestor3"])
         @test_name_part.ancestors = ["ancestor1","ancestor2","ancestor3"]
         @test_name_part.parent.should == "ancestor3"
       end
@@ -186,8 +185,8 @@ describe OM::XML::Term do
       end
       it "should trigger update on any child objects" do
         mock_child = mock("child term")
-        mock_child.expects(:generate_xpath_queries!).times(3)
-        @test_name_part.expects(:children).returns({1=>mock_child, 2=>mock_child, 3=>mock_child})
+        mock_child.should_receive(:generate_xpath_queries!).exactly(3).times
+        @test_name_part.should_receive(:children).and_return({1=>mock_child, 2=>mock_child, 3=>mock_child})
         @test_name_part.generate_xpath_queries!
       end
     end
