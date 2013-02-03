@@ -69,10 +69,6 @@ module OM::XML::Document
   end
 
   def ng_xml_will_change!
-    if self.respond_to?(:dirty=)
-      self.dirty = true
-    end
-
     # throw away older version.
     changed_attributes['ng_xml'] = nil
   end
