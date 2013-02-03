@@ -95,8 +95,9 @@ describe OM::XML::Term do
     describe "getters/setters" do
       it "should set the corresponding .settings value and return the current value" do
         # :index_as is a special case
+
         [:path, :required, :type, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |method_name|
-          @test_name_part.send(method_name.to_s+"=", "#{method_name.to_s}foo").should == "#{method_name.to_s}foo"
+          @test_name_part.send((method_name.to_s+"=").to_sym, "#{method_name.to_s}foo")
           @test_name_part.send(method_name).should == "#{method_name.to_s}foo"
         end
       end
