@@ -11,7 +11,7 @@ module OM::XML::TerminologyBasedSolrizer
   
     # Build a solr document from +doc+ based on its terminology
     # @param [OM::XML::Document] doc  
-    # @param [Hash] (optional) solr_doc (values hash) to populate
+    # @param [Hash] solr_doc (optional) solr_doc (values hash) to populate
     def solrize(doc, solr_doc=Hash.new, field_mapper = nil)
       unless doc.class.terminology.nil?
         doc.class.terminology.terms.each_pair do |term_name,term|
@@ -29,7 +29,7 @@ module OM::XML::TerminologyBasedSolrizer
     # rendered to a string.
     # @param [OM::XML::Document] doc xml document to extract values from
     # @param [OM::XML::Term] term corresponding to desired xml values
-    # @param [Hash] (optional) solr_doc (values hash) to populate
+    # @param [Hash] solr_doc (optional) solr_doc (values hash) to populate
     def solrize_term(doc, term, solr_doc = Hash.new, field_mapper = nil, opts={})
       parents = opts.fetch(:parents, [])
       term_pointer = parents+[term.name]
@@ -53,7 +53,7 @@ module OM::XML::TerminologyBasedSolrizer
     # @param [OM::XML::Document] doc document the node came from
     # @param [Array] term_pointer Array pointing to the term that should be used for solrization settings
     # @param [Term] term the term to be solrized
-    # @param [Hash] (optional) solr_doc (values hash) to populate
+    # @param [Hash] solr_doc (optional) solr_doc (values hash) to populate
     # @return [Hash] the solr doc
     def solrize_node(node_value, doc, term_pointer, term, solr_doc = Hash.new, field_mapper = nil, opts = {})
       return solr_doc unless term.index_as && !term.index_as.empty?
