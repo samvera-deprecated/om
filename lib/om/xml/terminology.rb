@@ -249,8 +249,8 @@ class OM::XML::Terminology
   end
 
   # Return an XML representation of the Terminology and its terms
-  # @param [Hash] options, the term will be added to it. If :children=>false, skips rendering child Terms
-  # @param [Nokogiri::XML::Document] (optional) document to insert the term xml into
+  # @param [Hash] options the term will be added to it. If :children=>false, skips rendering child Terms
+  # @param [Nokogiri::XML::Document] document (optional) document to insert the term xml into
   # @return [Nokogiri::XML::Document]
   # @example If :children=>false, skips rendering child Terms
   #   terminology.to_xml(:children=>false)

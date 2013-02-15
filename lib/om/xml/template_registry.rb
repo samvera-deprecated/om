@@ -73,7 +73,7 @@ class OM::XML::TemplateRegistry
 
   # Instantiate a detached, standalone node
   # @param [Symbol] node_type the node_type to instantiate
-  # @param additional arguments to pass to the template
+  # @param [Hash] args additional arguments to pass to the template
   def instantiate(node_type, *args)
     result = create_detached_node(nil, node_type, *args)
     # Strip namespaces from text and CDATA nodes. Stupid Nokogiri.
