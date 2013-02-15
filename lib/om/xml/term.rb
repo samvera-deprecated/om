@@ -247,7 +247,7 @@ class OM::XML::Term
     end
   end
 
-  # @param string
+  # @param [String] val the value (from xml) to deserialize into the correct object type.
   # @return [String,Date,Integer]
   def deserialize(val)
     case type
@@ -321,7 +321,8 @@ class OM::XML::Term
   end
 
   # +term_pointers+ reference to the property you want to generate a builder template for
-  # @opts
+  # @param [Hash] extra_opts
+  # @option extra_opts [Hash] :attributes 
   def xml_builder_template(extra_opts = {})
     extra_attributes = extra_opts.fetch(:attributes, {})
 
@@ -366,8 +367,8 @@ class OM::XML::Term
   end
 
   # Return an XML representation of the Term
-  # @param [Hash] options, the term will be added to it. If :children=>false, skips rendering child Terms
-  # @param [Nokogiri::XML::Document] (optional) document to insert the term xml into
+  # @param [Hash] options the term will be added to it. If :children=>false, skips rendering child Terms
+  # @param [Nokogiri::XML::Document] document (optional) document to insert the term xml into
   # @return [Nokogiri::XML::Document]
   # @example If :children=>false, skips rendering child Terms
   #   term.to_xml(:children=>false)
