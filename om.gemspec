@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.summary     = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
 
+  s.required_ruby_version     = '>= 1.9.3'
+
   s.add_dependency 'activesupport'
   s.add_dependency 'activemodel'
   s.add_dependency 'solrizer', '~> 3.0.0.pre8'
@@ -23,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rdoc"
   s.add_development_dependency "awesome_print"
   s.add_development_dependency "equivalent-xml", ">= 0.2.4"
+
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
