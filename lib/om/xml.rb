@@ -30,9 +30,9 @@ module OM::XML
   
   module ClassMethods
     
-    # @pointer accessor or property info pointer
-    # 
-    # ex. [[:person,1],:role] will be converted to [{:person=>1},:role]
+    # @param pointer accessor or property info pointer
+    # @example
+    #   [[:person,1],:role] #=> [{:person=>1},:role]
     def sanitize_pointer(pointer) 
       if pointer.kind_of?(Array)        
         pointer.each do |x|

@@ -190,17 +190,14 @@ class OM::XML::Term
 
   # h2. Namespaces
   # By default, OM assumes you have no namespace defined unless it is explicitly defined at the root of your document.
-  # If you want to specify which namespace a term is using, use:
-  #   namspace_prefix => "bar"
-  # This value defaults to nil, in which case if a default namespace is set in the termnology, that namespace will be used.
   #
-  # @param name [Symbol] the name to refer to this term by
-  # @param opts [Hash]
-  # @options opts [Array]  :index_as a list of indexing hints provided to to_solr
-  # @options opts [String] :path partial xpath that points to the node.  
-  # @options opts [Hash]   :attributes xml attributes to match in the selector 
-  # @options opts [String] :namespace_prefix xml namespace for this node 
-  # @options opts [Symbol] :type one of :string, :date, :integer. Defaults to :string
+  # @param [Symbol] name the name to refer to this term by
+  # @param [Hash] opts
+  # @option opts [Array]  :index_as a list of indexing hints provided to to_solr
+  # @option opts [String] :path partial xpath that points to the node.  
+  # @option opts [Hash]   :attributes xml attributes to match in the selector 
+  # @option opts [String] :namespace_prefix xml namespace for this node. If not provided, the default namespace set in the terminology will be used. 
+  # @option opts [Symbol] :type one of :string, :date, :integer. Defaults to :string
   def initialize(name, opts={}, terminology=nil)
     opts = {:ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|

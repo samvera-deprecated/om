@@ -5,9 +5,10 @@ require 'deprecation'
 require 'nokogiri'
 
 module OM
-  # @params String, Array, or Hash
   # Recursively changes any strings beginning with : to symbols and any number strings to integers
-  # Converts [{":person"=>"0"}, ":last_name"] to [{:person=>0}, :last_name]
+  # @param [String, Array, Hash] params
+  # @example
+  #   [{":person"=>"0"}, ":last_name"] #=> [{:person=>0}, :last_name]
   def self.destringify(params)
     case params
     when String       
