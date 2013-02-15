@@ -32,7 +32,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.extra_rdoc_files = [
     "LICENSE",
-    "README.rdoc",
     "README.textile"
   ]
   s.require_paths = ["lib"]
