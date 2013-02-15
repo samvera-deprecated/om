@@ -3,7 +3,7 @@ module OM::XML::NodeGenerator
   # Module Methods -- These methods can be called directly on the Module itself
   # @param [OM::XML::Term] term The term to generate a node based on
   # @param [String] builder_new_value The new value to insert into the generated node
-  # @returns Nokogiri::XML::Document
+  # @return [Nokogiri::XML::Document]
   #
   # Ex.
   # term = t.retrieve_term(:person, :first_name)

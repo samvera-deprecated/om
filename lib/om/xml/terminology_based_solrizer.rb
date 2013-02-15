@@ -49,7 +49,7 @@ module OM::XML::TerminologyBasedSolrizer
     # Populate a solr document with solr fields corresponding to the given xml node
     # Field names are generated using settings from the term in the +doc+'s terminology corresponding to +term_pointer+
     # If the supplied term does not have an index_as attribute, no indexing will be performed.
-    # @param [Nokogiri::XML::Node] node to solrize
+    # @param [Nokogiri::XML::Node] node_value node to solrize
     # @param [OM::XML::Document] doc document the node came from
     # @param [Array] term_pointer Array pointing to the term that should be used for solrization settings
     # @param [Term] term the term to be solrized

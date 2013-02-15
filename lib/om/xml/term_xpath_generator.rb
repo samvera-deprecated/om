@@ -100,8 +100,8 @@ module OM::XML::TermXpathGenerator
   end
   
   # Generate an xpath of the chosen +type+ for the given Term.
-  # @param [OM::XML::Term] term that you want to generate relative xpath for
-  # @param [Symbol] the type of xpath to generate, :relative, :abolute, or :constrained
+  # @param [OM::XML::Term] term the term that you want to generate relative xpath for
+  # @param [Symbol] type the type of xpath to generate, :relative, :abolute, or :constrained
   def self.generate_xpath(term, type)
     case type
     when :relative
