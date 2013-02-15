@@ -37,8 +37,9 @@ class OM::XML::TemplateRegistry
   end
 
   # Define an XML template
-  # @param [Symbol] a node_type key to associate with this template
-  # @param [Block] a block that will receive a [Nokogiri::XML::Builder] object and any arbitrary parameters passed to +instantiate+
+  # @param [Symbol] node_type key to associate with this template
+  # @yield [builder] a block that will receive a [Nokogiri::XML::Builder] object and any arbitrary parameters passed to +instantiate+
+  # @yieldparam [Nokogiri::XML::Builder]
   # @return the +node_type+ Symbol
   def define(node_type, &block)
     unless node_type.is_a?(Symbol)
@@ -50,7 +51,7 @@ class OM::XML::TemplateRegistry
   end
 
   # Undefine an XML template
-  # @param [Symbol] the node_type key of the template to undefine
+  # @param [Symbol] node_type the node_type key of the template to undefine
   # @return the +node_type+ Symbol
   def undefine(node_type)
     @templates.delete(node_type)
@@ -58,7 +59,7 @@ class OM::XML::TemplateRegistry
   end
 
   # Check whether a particular node_type is defined
-  # @param [Symbol] the node_type key to check
+  # @param [Symbol] node_type the node_type key to check
   # @return [True] or [False]
   def has_node_type?(node_type)
     @templates.has_key?(node_type)
@@ -71,7 +72,7 @@ class OM::XML::TemplateRegistry
   end
 
   # Instantiate a detached, standalone node
-  # @param [Symbol] the node_type to instantiate
+  # @param [Symbol] node_type the node_type to instantiate
   # @param additional arguments to pass to the template
   def instantiate(node_type, *args)
     result = create_detached_node(nil, node_type, *args)
