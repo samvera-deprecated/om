@@ -9,6 +9,7 @@ end
 require 'om'
 require 'rspec'
 require 'equivalent-xml/rspec_matchers'
+require 'samples'
 
 RSpec.configure do |config|
 end

@@ -72,6 +72,5 @@ module OM::XML; end
 
 require "om/tree_node"
 require "om/xml"
-require "om/samples"
 require "om/version"
 

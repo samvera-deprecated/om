@@ -1,5 +1,4 @@
 require 'spec_helper'
-require "om/samples"
 
 describe "Rspec tests for QUERYING_DOCUMENTS.textile" do
 
