@@ -8,14 +8,14 @@ OM “terms” are ruby symbols you define (in the terminology) that map specifi
 
 h2. Tutorials
 
-* "Getting Started":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_STARTED.html
-* "Querying Documents":http://hudson.projecthydra.org/job/om/Documentation/file.QUERYING_DOCUMENTS.html
-* "Updating Documents":http://hudson.projecthydra.org/job/om/Documentation/file.UPDATING_DOCUMENTS.html
-* "Getting Fancy":http://hudson.projecthydra.org/job/om/Documentation/file.GETTING_FANCY.html
+* "Getting Started":https://github.com/projecthydra/om/blob/master/GETTING_STARTED.textile
+* "Querying Documents":https://github.com/projecthydra/om/blob/master/QUERYING_DOCUMENTS.textile
+* "Updating Documents":https://github.com/projecthydra/om/blob/master/UPDATING_DOCUMENTS.textile
+* "Getting Fancy":https://github.com/projecthydra/om/blob/master/GETTING_FANCY.textile
 
 h2. Common OM Patterns
 
-"Common OM Patterns":http://hudson.projecthydra.org/job/om/Documentation/file.COMMON_OM_PATTERNS.html
+"Common OM Patterns":https://github.com/projecthydra/om/blob/master/COMMON_OM_PATTERNS.textile
 
 h3. Solrizing Documents
 
