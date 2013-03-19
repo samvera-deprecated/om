@@ -1,3 +1,5 @@
+!https://travis-ci.org/projecthydra/om.png!:https://travis-ci.org/projecthydra/om
+
 h1. om (Optinionated Metadata)
 
 A library to help you tame sprawling XML schemas like MODS.
