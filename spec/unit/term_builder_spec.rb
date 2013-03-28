@@ -64,12 +64,6 @@ describe "OM::XML::Term::Builder" do
         @test_builder.settings[:default_content_path].should be_nil
       end
     end
-    describe ":data_type" do
-      it "is deprecated and should be assinged to the :type setting" do
-        deprecated_term = OM::XML::Term::Builder.new("depreated_term").data_type(:thing)
-        deprecated_term.settings[:type].should == :thing
-      end 
-    end
   end
   
   describe ".add_child" do

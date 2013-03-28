@@ -19,10 +19,6 @@ class OM::XML::Term
   # the Builder will add your method & arguments to the it's settings and return itself.
   class Builder
 
-    extend Deprecation
-    self.deprecation_behavior = :stderr
-    self.deprecation_horizon = 'release 2.0'
-
     attr_accessor :name, :settings, :children, :terminology_builder
 
     def initialize(name, terminology_builder=nil)
@@ -123,14 +119,6 @@ class OM::XML::Term
 
       return term
     end
-
-    # :data_type accessor has been deprecated in favor of :type
-    # Any value set for :data_type will get set for :type instead
-    def data_type value
-      @settings[:type] = value
-      return self
-    end
-    deprecation_deprecate :data_type
 
     # We have to add this method so it will play nice with ruby 1.8.7
     def type value
