@@ -8,13 +8,10 @@ OM allows you to define a “terminology” to ease translation between XML and 
 
 OM “terms” are ruby symbols you define (in the terminology) that map specific XML content into ruby object attributes.
 
-h2. Tutorials
+h2. Tutorials & Reference
 
 * "Tame Your XML with OM":https://github.com/projecthydra/om/wiki/Tame-your-XML-with-OM
-
-h2. Common OM Patterns
-
-"Common OM Patterns":https://github.com/projecthydra/om/blob/master/COMMON_OM_PATTERNS.textile
+* "Common OM Patterns":https://github.com/projecthydra/om/blob/master/COMMON_OM_PATTERNS.textile
 
 h3. Solrizing Documents
 
