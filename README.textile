@@ -10,10 +10,7 @@ OM “terms” are ruby symbols you define (in the terminology) that map specifi
 
 h2. Tutorials
 
-* "Getting Started":https://github.com/projecthydra/om/blob/master/GETTING_STARTED.textile
-* "Querying Documents":https://github.com/projecthydra/om/blob/master/QUERYING_DOCUMENTS.textile
-* "Updating Documents":https://github.com/projecthydra/om/blob/master/UPDATING_DOCUMENTS.textile
-* "Getting Fancy":https://github.com/projecthydra/om/blob/master/GETTING_FANCY.textile
+* "Tame Your XML with OM":https://github.com/projecthydra/om/wiki/Tame-your-XML-with-OM
 
 h2. Common OM Patterns
 
