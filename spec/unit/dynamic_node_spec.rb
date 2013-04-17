@@ -8,7 +8,9 @@ describe "OM::XML::DynamicNode" do
 
         set_terminology do |t|
           t.root(:path=>"dc", :xmlns=>"http://purl.org/dc/terms/")
-          t.creator(:xmlns=>"http://www.loc.gov/mods/v3", :namespace_prefix => "dcterms")
+          t.creator( :namespace_prefix => "dcterms")
+          t.foo(:namespace_prefix => "dcterms")
+          t.date_created(:path=>'date.created', :namespace_prefix => "dcterms")
         end
 
         def self.xml_template
@@ -28,6 +30,15 @@ describe "OM::XML::DynamicNode" do
     it "should create templates for dynamic nodes with multiple values" do
       @sample.creator = ["Foo", "Bar"]
       @sample.creator.should == ['Foo', 'Bar']
+    end
+    it "should create templates for plain nodes" do
+      @sample.foo = ['in a galaxy far far away']
+      @sample.foo.should == ['in a galaxy far far away']
+    end
+
+    it "should create templates for dynamic nodes with a period in the element name" do
+      @sample.date_created = ['A long time ago']
+      @sample.date_created.should == ['A long time ago']
     end
   end
         
