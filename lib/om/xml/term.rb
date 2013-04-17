@@ -327,20 +327,29 @@ class OM::XML::Term
         node_options << "\'#{k}\'=>\'#{v}\'" unless v == :none
       end
     end
-    builder_ref = "xml"
-    builder_method = self.path
-    if builder_method.include?(":")
-      builder_ref = "xml['#{self.path[0..path.index(":")-1]}']"
-      builder_method = self.path[path.index(":")+1..-1]
+
+    builder_ref = if self.path.include?(":")
+      "xml['#{self.path[0..path.index(":")-1]}']"
     elsif !self.namespace_prefix.nil? and self.namespace_prefix != 'oxns'
-      builder_ref = "xml['#{self.namespace_prefix}']"
+      "xml['#{self.namespace_prefix}']"
+    else
+      "xml"
+    end
+
+    attribute = OM::XML.delimited_list(node_options)
+
+    builder_method = if self.path.include?(":")
+      "#{self.path[path.index(":")+1..-1]}( #{attribute} )"
+    elsif self.path.include?(".")
+      "send(:\\\"#{self.path}\\\",  #{attribute} )"
     elsif self.path.kind_of?(Hash) && self.path[:attribute]
-      builder_method = "@#{self.path[:attribute]}"
+      "@#{self.path[:attribute]}( #{OM::XML.delimited_list(node_options)} )"
+    elsif Nokogiri::XML::Builder.method_defined? self.path.to_sym
+      "#{self.path}_( #{OM::XML.delimited_list(node_options)} )"
+    else
+      "#{self.path}( #{OM::XML.delimited_list(node_options)} )"
     end
-    if Nokogiri::XML::Builder.method_defined? builder_method.to_sym
-      builder_method += "_"
-    end
-    template = "#{builder_ref}.#{builder_method}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
+    template = "#{builder_ref}.#{builder_method}#{node_child_template}"
     return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
   end
 
