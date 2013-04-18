@@ -5,9 +5,6 @@ require 'om/xml/term_builder'
 # is_root_term, required
 #
 class OM::XML::Term
-  #
-  # Class Definition for Term
-  #
 
   include OM::TreeNode
   include OM::XML::TermBuilder
@@ -54,7 +51,7 @@ class OM::XML::Term
   # @option opts [String] :path partial xpath that points to the node.  
   # @option opts [Hash]   :attributes xml attributes to match in the selector 
   # @option opts [String] :namespace_prefix xml namespace for this node. If not provided, the default namespace set in the terminology will be used. 
-  # @option opts [Symbol] :type one of :string, :date, :integer. Defaults to :string
+  # @option opts [Symbol] :type one of :string, :date, :time :integer. Defaults to :string
   def initialize(name, opts={}, terminology=nil)
     opts = {:ancestors=>[], :children=>{}}.merge(opts)
     [:children, :ancestors,:path, :index_as, :required, :variant_of, :path, :attributes, :default_content_path, :namespace_prefix].each do |accessor_name|
@@ -97,6 +94,8 @@ class OM::XML::Term
     case type
     when :date, :integer
       val.to_s
+    when :time
+      val.to_time.utc.iso8601 
     when :boolean
       val.to_s
     else 
@@ -111,6 +110,9 @@ class OM::XML::Term
     when :date
       #TODO use present?
       val.map { |v| !v.empty? ? Date.parse(v) : nil}
+    when :time
+      #TODO use present?
+      val.map { |v| !v.empty? ? DateTime.parse(v) : nil}
     when :integer
       #TODO use blank?
       val.map { |v| v.empty? ? nil : v.to_i}

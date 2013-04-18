@@ -1,3 +1,11 @@
+h3. 2.1.0 (unreleased)
+  support for element names with periods in them
+  support for 'type: :time'
+  
+
+h3. 2.0.0
+  Support new solr schema
+
 h3. 1.8.0
   Removed unused mods_article_terminology.xml
   Replacing :data_type with :type; deprecating :data_type
