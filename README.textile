@@ -15,7 +15,7 @@ h2. Tutorials & Reference
 
 h3. Solrizing Documents
 
-The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  That process is documented in the "solrizer documentation":http://hudson.projecthydra.org/job/solrizer/Documentation/file.SOLRIZING_OM_DOCUMENTS.html
+The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  That process is documented in the "solrizer documentation":http://rdoc.info/github/projecthydra/solrizer
 
 h2. OM in the Wild
 
