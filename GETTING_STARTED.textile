@@ -4,7 +4,7 @@ OM allows you to define a "terminology" to ease translation between XML and ruby
 
 OM "terms" are ruby symbols you define (in the terminology) that map specific XML content into ruby object attributes.
 
-The API documentation at "http://hudson.projecthydra.org/job/om/Documentation/OM.html":http://hudson.projecthydra.org/job/om/Documentation/OM.html provides additional, more targeted information.  We will provide links to the API as appropriate.
+The API documentation at "http://ci.projectblacklight.org/jenkins/job/om/RB_VERSION=1.9.3/Documentation/OM.html":http://ci.projectblacklight.org/jenkins/job/om/RB_VERSION=1.9.3/Documentation/OM.html provides additional, more targeted information.  We will provide links to the API as appropriate.
 
 h4. What you will learn from this document
 
@@ -251,4 +251,4 @@ terminology.xpath_for(:organization)
 
 h2. Solrizing Documents
 
-The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  That process is documented in the "solrizer documentation":http://hudson.projecthydra.org/job/solrizer/Documentation/file.SOLRIZING_OM_DOCUMENTS.html
+The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  That process is documented in the "solrizer documentation":http://ci.projectblacklight.org/jenkins/job/solrizer/RB_VERSION=1.9.3/Documentation/file.SOLRIZING_OM_DOCUMENTS.html
