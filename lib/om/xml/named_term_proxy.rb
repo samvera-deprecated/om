@@ -28,7 +28,7 @@ class OM::XML::NamedTermProxy
       pt = self.parent.retrieve_term(*self.proxy_pointer)
     end
     if pt.nil?
-      raise OM::XML::Terminology::BadPointerError "The #{name} proxy term points to #{proxy_pointer.inspect} but that term doesn't exist."
+      raise OM::XML::Terminology::BadPointerError, "The #{name} proxy term points to #{proxy_pointer.inspect} but that term doesn't exist."
     else
       return pt
     end

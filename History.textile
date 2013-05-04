@@ -1,3 +1,6 @@
+h3. 2.1.2 (3 May 2013)
+  Fix missing comma after exception
+
 h3. 2.1.1 (2 May 2013)
   bump solrizer to 3.1.0
 
