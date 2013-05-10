@@ -8,13 +8,13 @@ describe "OM::XML::DynamicNode" do
 
         set_terminology do |t|
           t.root(:path=>"dc", :xmlns=>"http://purl.org/dc/terms/")
-          t.creator( :namespace_prefix => "dcterms")
-          t.foo(:namespace_prefix => "dcterms")
-          t.date_created(:path=>'date.created', :namespace_prefix => "dcterms")
+          t.creator()
+          t.foo()
+          t.date_created(:path=>'date.created')
         end
 
         def self.xml_template
-          Nokogiri::XML::Document.parse("<dc xmlns:dcterms='http://purl.org/dc/terms/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'/>")
+          Nokogiri::XML::Document.parse("<dc xmlns='http://purl.org/dc/terms/' />")
         end
 
       end
@@ -23,6 +23,7 @@ describe "OM::XML::DynamicNode" do
     after do
       Object.send(:remove_const, :Sample)
     end
+
     it "should create templates for dynamic nodes" do
       @sample.creator = "Foo"
       @sample.creator.should == ['Foo']
@@ -31,6 +32,12 @@ describe "OM::XML::DynamicNode" do
       @sample.creator = ["Foo", "Bar"]
       @sample.creator.should == ['Foo', 'Bar']
     end
+
+    it "should create templates for dynamic nodes with empty string values" do
+      @sample.creator = ['']
+      @sample.creator.should == ['']
+    end
+
     it "should create templates for plain nodes" do
       @sample.foo = ['in a galaxy far far away']
       @sample.foo.should == ['in a galaxy far far away']
