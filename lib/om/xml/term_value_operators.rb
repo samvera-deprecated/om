@@ -205,7 +205,6 @@ module OM::XML::TermValueOperators
   
   def term_value_update(node_select,node_index,new_value,opts={})
     ng_xml_will_change!
-    # template = opts.fetch(:template,nil)
     
     node = find_by_terms_and_value(*node_select)[node_index]
     if delete_on_update?(node, new_value)
@@ -216,7 +215,7 @@ module OM::XML::TermValueOperators
   end
 
   def delete_on_update?(node, new_value)
-    new_value == "" || new_value == :delete
+    new_value.nil? || new_value == :delete
   end
   
   # def term_value_set(term_ref, query_opts, node_index, new_value)
