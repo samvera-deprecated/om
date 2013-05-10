@@ -45,6 +45,11 @@ describe "OM::XML::TermValueOperators" do
       person_1_roles[0].text.should == "otherrole1"
       person_1_roles[1].text.should == "otherrole2"
     end
+
+    it "should allow setting a blank string " do
+      @article.update_values({[:title_info, :main_title]=>['']})
+      @article.term_values(:title_info, :main_title).should == ["", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]    end
+
     it "should call term_value_update if the corresponding node already exists" do
       @article.should_receive(:term_value_update).with('//oxns:titleInfo/oxns:title', 0, "My New Title")
       @article.update_values( {[:title_info, :main_title] => "My New Title"} )
@@ -208,7 +213,7 @@ describe "OM::XML::TermValueOperators" do
       @article.update_values(att)
       @article.term_values(:journal, :title_info).should == ['york', 'mangle', 'mork']
       
-      @article.update_values({[:journal, :title_info]=>{"1"=>""}})
+      @article.update_values({[:journal, :title_info]=>{"1"=>nil}})
       @article.term_values(:journal, :title_info).should == ['york', 'mork']
       
       @article.update_values({[:journal, :title_info]=>{"0"=>:delete}})
@@ -224,11 +229,11 @@ describe "OM::XML::TermValueOperators" do
       end
 
       it "by default, setting to empty string deletes the node" do
-        @article.update_values({[:journal, :title_info]=>{"1"=>""}})
+        @article.update_values({[:journal, :title_info]=>{"1"=>nil}})
         @article.term_values(:journal, :title_info).should == ['york', 'mork']
       end
 
-      it "if delete_on_update? returns false, setting to empty string won't delete node" do
+      it "if delete_on_update? returns false, setting to nil won't delete node" do
         @article.stub('delete_on_update?').and_return(false)
         @article.update_values({[:journal, :title_info]=>{"1"=>""}})
         @article.term_values(:journal, :title_info).should == ['york', '', 'mork']
@@ -389,18 +394,18 @@ describe "OM::XML::TermValueOperators" do
       )
       1.should == 2
     end
-    it "should delete nodes if value is :delete or empty string" do
+    it "should delete nodes if value is :delete or nil" do
       @article.update_values([:title_info]=>{"0"=>"york", "1"=>"mangle","2"=>"mork"})
       xpath = @article.class.terminology.xpath_for(:title_info)
       
-      @article.term_value_update([:title_info], 1, "")
+      @article.term_value_update([:title_info], 1, nil)
       @article.term_values(:title_info).should == ['york', 'mork']
       
       @article.term_value_update([:title_info], 1, :delete)
       @article.term_values(:title_info).should == ['york']
     end
-    it "should create empty nodes if value is nil" do
-      @article.update_values([:title_info]=>{"0"=>"york", "1"=>nil,"2"=>"mork"})
+    it "should create empty nodes if value is empty string" do
+      @article.update_values([:title_info]=>{"0"=>"york", "1"=>'',"2"=>"mork"})
       @article.term_values(:title_info).should == ['york', "", "mork"]
     end
   end

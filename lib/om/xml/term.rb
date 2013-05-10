@@ -91,6 +91,7 @@ class OM::XML::Term
   
   # @param val [String,Date,Integer]
   def serialize (val)
+    return if val.nil?
     case type
     when :date, :integer
       val.to_s
