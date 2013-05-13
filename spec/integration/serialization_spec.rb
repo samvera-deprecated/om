@@ -137,8 +137,7 @@ EOF
            <active>true</active>
          </outer>'
       end
-      it "should serialize nil values" do
-        # I'm not sure that this is the correct behavior for this. Should it remove nodes or just blank them.
+      it "should serialize empty string values" do
         subject.my_int = [nil]
         subject.my_date = [nil]
         subject.active = [nil]
