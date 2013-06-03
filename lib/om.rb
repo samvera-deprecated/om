@@ -1,6 +1,5 @@
 require 'rubygems'
-require 'active_support/concern'
-require 'active_model/dirty'
+require 'active_model'
 require 'deprecation'
 require 'nokogiri'
 
