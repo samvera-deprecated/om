@@ -47,8 +47,9 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should allow setting a blank string " do
-      @article.update_values({[:title_info, :main_title]=>['']})
-      @article.term_values(:title_info, :main_title).should == ["", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]    end
+      @article.update_values([:abstract]=>[''])
+      @article.term_values(:abstract).should == [""]
+    end
 
     it "should call term_value_update if the corresponding node already exists" do
       @article.should_receive(:term_value_update).with('//oxns:titleInfo/oxns:title', 0, "My New Title")
@@ -81,11 +82,10 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
-      OM::Samples::ModsArticle.terminology.should_receive(:xpath_with_indexes).with( *[{:person=>0}, :role]).exactly(10).times.and_return("//oxns:name[@type=\"personal\"][1]/oxns:role")
-      OM::Samples::ModsArticle.terminology.stub(:xpath_with_indexes).with( *[{:person=>0}]).and_return("//oxns:name[@type=\"personal\"][1]")
-      @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
-      @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" } )
-      @article.update_values( { [{:person=>0}, :role]=>"the role" } )
+      expected_result = {"person_0_role"=>{"0"=>"the role"}}
+      @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" }).should == expected_result
+      @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" }).should == expected_result
+      @article.update_values( { [{:person=>0}, :role]=>"the role" }).should == expected_result
     end
     
     it "should traverse named term proxies transparently" do
@@ -198,6 +198,12 @@ describe "OM::XML::TermValueOperators" do
       result = @article.update_values(att)
       result.should == {"journal_title_info"=>{"3"=>"glory"}}
       @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
+    end
+
+    it "should remove extra nodes if fewer are given than currently exist" do
+      @article.update_values([:journal, :title_info]=>%W(one two three four five))
+      result = @article.update_values({[:journal, :title_info]=>["six", "seven"]})
+      @article.term_values(:journal, :title_info).should == ["six", "seven"]
     end
     
     it "should append values to the end of the array if the specified index is higher than the length of the values array" do

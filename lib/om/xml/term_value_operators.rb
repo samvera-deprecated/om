@@ -50,15 +50,25 @@ module OM::XML::TermValueOperators
       
       term = self.class.terminology.retrieve_term( *OM.pointers_to_flat_array(pointer,false) )
 
+      xpath = self.class.terminology.xpath_with_indexes(*pointer)
+      current_values = term_values(*pointer)
+
+      if new_values.is_a?(Array) && current_values.length > new_values.length
+        starting_index = new_values.length + 1
+        starting_index.upto(current_values.size).each do |index|
+          term_value_delete select: xpath, child_index: index
+        end
+      end
+
       # Sanitize new_values to always be a hash with indexes
       new_values = term.sanitize_new_values(new_values)
-      
+
+
       # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
       result.delete(term_pointer)
       result[hn] = new_values.dup
       
       # Skip any submitted values if the new value matches the current values
-      current_values = term_values(*pointer)
       new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
         z = new_values[y]
         if current_values[y.to_i]==z and y.to_i > -1
@@ -72,7 +82,6 @@ module OM::XML::TermValueOperators
         pointer = pointer.concat(term.proxy_pointer)
       end
       
-      xpath = self.class.terminology.xpath_with_indexes(*pointer)
       parent_pointer = pointer.dup
       parent_pointer.pop
       parent_xpath = self.class.terminology.xpath_with_indexes(*parent_pointer)
