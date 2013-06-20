@@ -69,7 +69,6 @@ module OM
 
       def val=(args)
         @document.ng_xml_will_change!
-        raise ArgumentError, "The new_values passed to #{to_pointer} must be an array or a string. You provided #{args.first.inspect}" unless [Array, String, NilClass].include?(args.first.class)
         new_values = term.sanitize_new_values(args.first)
         existing_nodes = @document.find_by_xpath(xpath)
         if existing_nodes.length > new_values.length
@@ -78,10 +77,9 @@ module OM
             @document.term_value_delete select: xpath, child_index: index
           end
         end
-        new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
-          z = new_values[y]
+        new_values.each_with_index do |z, y|
 ## If we pass something that already has an index on it, we should be able to add it.
-          if existing_nodes[y.to_i].nil? || y.to_i == -1
+          if existing_nodes[y.to_i].nil?
             parent_pointer = parent ? parent.to_pointer : nil
             @document.term_values_append(:parent_select=> parent_pointer,:parent_index=>0,:template=>to_pointer,:values=>z)
           else
