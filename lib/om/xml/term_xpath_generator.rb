@@ -206,17 +206,24 @@ module OM::XML::TermXpathGenerator
     if query_constraints.kind_of?(Hash)
       contains_functions = []
       query_constraints.each_pair do |k,v|
-        if k.instance_of?(Symbol)
-          constraint_path = final_term.children[k].xpath_relative
+
+        if v.is_a?(Integer) || v == "0" || v.to_i != 0
+          # lookup sub element 
+          xpath = '(' + xpath +  '/' + final_term.children[query_constraints.keys.first].xpath_relative + ")[#{v.to_i + 1}]"
         else
-          constraint_path = k
+          if k.instance_of?(Symbol)
+            constraint_path = final_term.children[k].xpath_relative
+          else
+            constraint_path = k
+          end
+          # match for text
+          contains_functions << "#{constraint_path}[text()=\"#{v}\"]"
+          xpath = add_predicate(xpath, delimited_list(contains_functions, " and ") )
         end
-        contains_functions << "#{constraint_path}[text()=\"#{v}\"]"
       end
       
-      xpath = add_predicate(xpath, delimited_list(contains_functions, " and ") )
     end
-    
+    # 
     return xpath
   end
   

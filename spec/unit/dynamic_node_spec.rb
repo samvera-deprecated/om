@@ -126,7 +126,7 @@ describe "OM::XML::DynamicNode" do
       end
 
       it "Should be addressable to a specific node" do
-        @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>{"0"=>"434"} })
+        @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>"434"})
 
         @article.subject.topic(1).to_pointer == [:subject, {:topic => 1}]
         @article.journal(0).issue.length.should == 2
@@ -141,7 +141,7 @@ describe "OM::XML::DynamicNode" do
       
       describe ".nodeset" do
         it "should return a Nokogiri NodeSet" do
-          @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>{"0"=>"434"} })
+          @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>"434" })
           nodeset = @article.journal(0).issue(1).pages.start.nodeset
           nodeset.should be_kind_of Nokogiri::XML::NodeSet
           nodeset.length.should == @article.journal(0).issue(1).pages.start.length

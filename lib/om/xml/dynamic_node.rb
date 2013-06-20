@@ -69,6 +69,7 @@ module OM
 
       def val=(args)
         @document.ng_xml_will_change!
+        raise ArgumentError, "The new_values passed to #{to_pointer} must be an array or a string. You provided #{args.first.inspect}" unless [Array, String, NilClass].include?(args.first.class)
         new_values = term.sanitize_new_values(args.first)
         new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
           z = new_values[y]
