@@ -156,6 +156,11 @@ describe "OM::XML::DynamicNode" do
         @article.should be_changed
       end
     
+      it "should remove extra nodes if fewer are given than currently exist" do
+        @article.journal.title_info = %W(one two three four five)
+        @article.journal.title_info = %W(six seven)
+        @article.journal.title_info.should == ["six", "seven"]
+      end
     end
   end
 end
