@@ -29,7 +29,7 @@ module OM::XML::TermValueOperators
   # 
   # @param [Hash] params
   # @example
-  #   {[{":person"=>"0"}, "role", "text"]=>["role1", "role2", "role3"], [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
+  #   {[{":person"=>"0"}, "role", "text"]=>{'1'=>"role1", '2' => "role2", '3'=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
   def update_values(params={})
     # remove any terms from params that this datastream doesn't recognize    
     
@@ -41,20 +41,53 @@ module OM::XML::TermValueOperators
       end
     end
     
-    result = params.dup
-    
-    params.each_pair do |term_pointer,new_values|
-      raise ArgumentError, "The new_values passed to update_values must be an array or string. You provided #{new_values}." unless [Array, String, NilClass, Symbol].include?(new_values.class)
+    params.inject({}) do |result, (term_pointer,new_values)|
       pointer = OM.destringify(term_pointer)
-      template_pointer = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
+      result[hn] = assign_nested_attributes_for_collection_association(pointer, new_values)
+      result
+    end
+  end
+
+
+  # @see ActiveRecord::NestedAttributes#assign_nested_attributes_for_collection_association
+  # @example
+  #
+  #   assign_nested_attributes_for_collection_association(:people, {
+  #     '1' => { name: 'Peter' },
+  #     '2' => { name: 'John', role: 'Creator' },
+  #     '3' => { name: 'Bess' }
+  #   })
+  #
+  # Will update the name of the Person with ID 1, build a new associated
+  # person with the name 'John', and mark the associated Person with ID 2
+  # for destruction.
+  #
+  # Also accepts an Array of attribute hashes:
+  #
+  #   assign_nested_attributes_for_collection_association(:people, [
+  #     { name: 'Peter' },
+  #     { name: 'John', role: 'Creator' },
+  #     { name: 'Bess' }
+  #   ])
+  def assign_nested_attributes_for_collection_association(pointer, new_values)
       
       term = self.class.terminology.retrieve_term( *OM.pointers_to_flat_array(pointer,false) )
-
       xpath = self.class.terminology.xpath_with_indexes(*pointer)
       current_values = term_values(*pointer)
 
-      if new_values.is_a?(Array) && current_values.length > new_values.length
+      new_values = case new_values
+        when Hash
+          new_values.values
+        when Array
+          new_values
+        else
+          [new_values]
+      end
+
+      
+
+      if current_values.length > new_values.length
         starting_index = new_values.length + 1
         starting_index.upto(current_values.size).each do |index|
           term_value_delete select: xpath, child_index: index
@@ -66,8 +99,8 @@ module OM::XML::TermValueOperators
 
 
       # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
-      result.delete(term_pointer)
-      result[hn] = new_values.dup
+     # result.delete(term_pointer)
+      result = new_values.dup
       
       # Skip any submitted values if the new value matches the current values
       new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
@@ -86,22 +119,23 @@ module OM::XML::TermValueOperators
       parent_pointer = pointer.dup
       parent_pointer.pop
       parent_xpath = self.class.terminology.xpath_with_indexes(*parent_pointer)
+
+      template_pointer = OM.pointers_to_flat_array(pointer,false)
       
       # If the value doesn't exist yet, append it.  Otherwise, update the existing value.
       new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
         z = new_values[y]
         if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
-          result[hn].delete(y)
+          result.delete(y)
           term_values_append(:parent_select=>parent_pointer,:parent_index=>0,:template=>template_pointer,:values=>z)
-          # term_values_append(:parent_select=>parent_xpath,:parent_index=>0,:template=>template_pointer,:values=>z)
           new_array_index = find_by_terms(*pointer).length - 1
-          result[hn][new_array_index.to_s] = z
+          result[new_array_index.to_s] = z
         else
           term_value_update(xpath, y.to_i, z)
         end
       end
-    end
-    return result
+
+      return result
   end
   
   def term_values_append(opts={})

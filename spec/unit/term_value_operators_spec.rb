@@ -31,7 +31,7 @@ describe "OM::XML::TermValueOperators" do
   
   describe ".update_values" do
     it "should update the xml according to the find_by_terms_and_values in the given hash" do
-      terms_attributes = {[{":person"=>"0"}, "affiliation"]=>["affiliation1", "affiliation2".freeze, "affiliation3"], [{:person=>1}, :last_name]=>"Andronicus", [{"person"=>"1"},:first_name]=>["Titus"],[{:person=>1},:role]=>["otherrole1","otherrole2"] }
+      terms_attributes = {[{":person"=>"0"}, "affiliation"]=>{'1' => "affiliation1", '2'=> "affiliation2", '3' => "affiliation3"}, [{:person=>1}, :last_name]=>"Andronicus", [{"person"=>"1"},:first_name]=>["Titus"],[{:person=>1},:role]=>["otherrole1","otherrole2"] }
       result = @article.update_values(terms_attributes)
       result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}, "person_1_last_name"=>{"0"=>"Andronicus"},"person_1_first_name"=>{"0"=>"Titus"}, "person_1_role"=>{"0"=>"otherrole1","1"=>"otherrole2"}}
       person_0_affiliation = @article.find_by_terms({:person=>0}, :affiliation)
