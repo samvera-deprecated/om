@@ -33,7 +33,7 @@ describe "OM::XML::TermValueOperators" do
     it "should update the xml according to the find_by_terms_and_values in the given hash" do
       terms_attributes = {[{":person"=>"0"}, "affiliation"]=>{'1' => "affiliation1", '2'=> "affiliation2", '3' => "affiliation3"}, [{:person=>1}, :last_name]=>"Andronicus", [{"person"=>"1"},:first_name]=>["Titus"],[{:person=>1},:role]=>["otherrole1","otherrole2"] }
       result = @article.update_values(terms_attributes)
-      result.should == {"person_0_affiliation"=>{"0"=>"affiliation1", "1"=>"affiliation2", "2"=>"affiliation3"}, "person_1_last_name"=>{"0"=>"Andronicus"},"person_1_first_name"=>{"0"=>"Titus"}, "person_1_role"=>{"0"=>"otherrole1","1"=>"otherrole2"}}
+      result.should == {"person_0_affiliation"=>["affiliation1", "affiliation2", "affiliation3"], "person_1_last_name"=>["Andronicus"], "person_1_first_name"=>["Titus"], "person_1_role"=>["otherrole1","otherrole2"]}
       person_0_affiliation = @article.find_by_terms({:person=>0}, :affiliation)
       person_0_affiliation[0].text.should == "affiliation1"
       person_0_affiliation[1].text.should == "affiliation2"
@@ -87,7 +87,7 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
-      expected_result = {"person_0_role"=>{"0"=>"the role"}}
+      expected_result = {"person_0_role"=>["the role"]}
       @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" }).should == expected_result
       @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" }).should == expected_result
       @article.update_values( { [{:person=>0}, :role]=>"the role" }).should == expected_result
@@ -149,7 +149,7 @@ describe "OM::XML::TermValueOperators" do
     
     it "should apply submitted hash to corresponding datastream field values" do
       result = @article.update_values( {[{":person"=>"0"}, "first_name"]=>["Billy", "Bob", "Joe"] })
-      result.should == {"person_0_first_name"=>{"0"=>"Billy", "1"=>"Bob", "2"=>"Joe"}}
+      result.should == {"person_0_first_name"=>["Billy", "Bob", "Joe"]}
       # xpath = ds.class.xpath_with_indexes(*field_key)
       # result = ds.term_values(xpath)
       @article.term_values({:person=>0}, :first_name).should == ["Billy","Bob","Joe"]
@@ -158,7 +158,7 @@ describe "OM::XML::TermValueOperators" do
     it "should support single-value arguments (as opposed to a hash of values with array indexes as keys)" do
       # In other words, { [:journal, :title_info]=>"dork" } should have the same effect as { [:journal, :title_info]=>{"0"=>"dork"} }
       result = @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
-      result.should == {"person_0_role"=>{"0"=>"the role"}}
+      result.should == {"person_0_role"=>["the role"]}
       @article.term_values({:person=>0}, :role).first.should == "the role"     
       @article.term_values('//oxns:name[@type="personal"][1]/oxns:role').first.should == "the role"
     end
@@ -176,11 +176,11 @@ describe "OM::XML::TermValueOperators" do
     it "should work for text fields" do 
       att= {[{"person"=>"0"},"description"]=>["mork", "york"]}
       result = @article.update_values(att)
-      result.should == {"person_0_description"=>{"0"=>"mork","1"=>"york"}}
+      result.should == {"person_0_description"=>["mork", "york"]}
       @article.term_values({:person=>0},:description).should == ['mork', 'york']
       att= {[{"person"=>"0"},{"description" => 2}]=>"dork"}
       result2 = @article.update_values(att)
-      result2.should == {"person_0_description_2"=>{"0"=>"dork"}}
+      result2.should == {"person_0_description_2"=>["dork"]}
       @article.term_values({:person=>0},:description).should == ['mork', 'york', 'dork']
     end
     
@@ -188,7 +188,7 @@ describe "OM::XML::TermValueOperators" do
       @article.update_values([:journal, :title_info]=>["all", "for", "the"])
       att = {[:journal, {:title_info => 3}]=>'glory'}
       result = @article.update_values(att)
-      result.should == {"journal_title_info_3"=>{"0"=>"glory"}}
+      result.should == {"journal_title_info_3"=>["glory"]}
       @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
     end
 
@@ -202,7 +202,7 @@ describe "OM::XML::TermValueOperators" do
       att = {[:journal, :issue, :pages, {:end => 3}]=>'108'}
       @article.term_values(:journal, :issue, :pages, :end).should == []
       result = @article.update_values(att)
-      result.should == {"journal_issue_pages_end_3"=>{"-1"=>"108"}}
+      result.should == {"journal_issue_pages_end_3"=>["108"]}
       @article.term_values(:journal, :issue, :pages, :end).should == ["108"]
     end
     
