@@ -2,6 +2,7 @@ h3. 2.2.0 (20 June 2013)
   Deprecate passing Hash values into DynamicNode#val= or 
   Document#update_attributes. This behavior will be removed in 3.0.0
   Rails 4 support
+  Pass nil in order to remove a node (instead of blank string)
 
 h3. 2.1.2 (3 May 2013)
   Fix missing comma after exception
