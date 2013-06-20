@@ -69,6 +69,7 @@ module OM
 
       def val=(args)
         @document.ng_xml_will_change!
+        ActiveSupport::Deprecation.warn("Calling OM::XML::DynamicNode#val= with a hash of values to update (e.g. #{args.first}) is deprecated behavior. You ought to pass an array instead.  This behavior will be removed in OM 3.0.0", caller(3)) if args.first.kind_of? Hash
         new_values = term.sanitize_new_values(args.first)
         new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
           z = new_values[y]
