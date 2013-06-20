@@ -29,7 +29,7 @@ module OM::XML::TermValueOperators
   # 
   # @param [Hash] params
   # @example
-  #   {[{":person"=>"0"}, "role", "text"]=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
+  #   {[{":person"=>"0"}, "role", "text"]=>["role1", "role2", "role3"], [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
   def update_values(params={})
     # remove any terms from params that this datastream doesn't recognize    
     
@@ -44,6 +44,7 @@ module OM::XML::TermValueOperators
     result = params.dup
     
     params.each_pair do |term_pointer,new_values|
+      raise ArgumentError, "The new_values passed to update_values must be an array or string. You provided #{new_values}." unless [Array, String, NilClass, Symbol].include?(new_values.class)
       pointer = OM.destringify(term_pointer)
       template_pointer = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
@@ -71,11 +72,11 @@ module OM::XML::TermValueOperators
       # Skip any submitted values if the new value matches the current values
       new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
         z = new_values[y]
-        if current_values[y.to_i]==z and y.to_i > -1
+        if !z.nil? && current_values[y.to_i]==z and y.to_i > -1
           new_values.delete(y)
         end
       end 
-      
+
       # Fill out the pointer completely if the final term is a NamedTermProxy
       if term.kind_of? OM::XML::NamedTermProxy
         pointer.pop

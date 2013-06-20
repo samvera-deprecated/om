@@ -222,6 +222,8 @@ class OM::XML::Terminology
   # Use the current terminology to generate an xpath with (optional) node indexes for each of the term pointers.
   # Ex.  terminology.xpath_with_indexes({:conference=>0}, {:role=>1}, :text )
   #      will yield an xpath like this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+  # Ex.  terminology.xpath_with_indexes({:conference=>0}, {:role=>1}, {:text => 0} )
+  #      will yield an xpath like this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"][1]'
   def xpath_with_indexes(*pointers)
     OM::XML::TermXpathGenerator.generate_xpath_with_indexes(self, *pointers)
   end
