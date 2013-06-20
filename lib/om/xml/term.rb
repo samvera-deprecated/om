@@ -78,15 +78,12 @@ class OM::XML::Term
       # Sanitize new_values to always be a hash with indexes
       case new_values
       when Hash
-        new_values.each {|k, v|  v = serialize(v) }
+        sanitize_new_values(new_values.values)
       when Array
-        nv = new_values.dup
-        new_values = {}
-        nv.each {|v| new_values[nv.index(v).to_s] = serialize(v)}
+        new_values.map {|v| serialize(v)}
       else
-        new_values = {"0"=>serialize(new_values)}
+        [serialize(new_values)]
       end
-      new_values
   end
   
   # @param val [String,Date,Integer]

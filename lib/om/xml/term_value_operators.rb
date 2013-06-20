@@ -76,15 +76,7 @@ module OM::XML::TermValueOperators
       xpath = self.class.terminology.xpath_with_indexes(*pointer)
       current_values = term_values(*pointer)
 
-      new_values = case new_values
-        when Hash
-          new_values.values
-        when Array
-          new_values
-        else
-          [new_values]
-      end
-
+      new_values = term.sanitize_new_values(new_values)
       
 
       if current_values.length > new_values.length
@@ -94,19 +86,13 @@ module OM::XML::TermValueOperators
         end
       end
 
-      # Sanitize new_values to always be a hash with indexes
-      new_values = term.sanitize_new_values(new_values)
-
-
       # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
-     # result.delete(term_pointer)
       result = new_values.dup
       
       # Skip any submitted values if the new value matches the current values
-      new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
-        z = new_values[y]
-        if !z.nil? && current_values[y.to_i]==z and y.to_i > -1
-          new_values.delete(y)
+      new_values.each_with_index do |val, index|
+        if !val.nil? && current_values[index] == val
+          new_values.delete_at(index)
         end
       end 
 
@@ -123,13 +109,12 @@ module OM::XML::TermValueOperators
       template_pointer = OM.pointers_to_flat_array(pointer,false)
       
       # If the value doesn't exist yet, append it.  Otherwise, update the existing value.
-      new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
-        z = new_values[y]
-        if find_by_terms(*pointer)[y.to_i].nil? || y.to_i == -1
+      new_values.each_with_index do |z, y|
+        if find_by_terms(*pointer)[y.to_i].nil?
           result.delete(y)
           term_values_append(:parent_select=>parent_pointer,:parent_index=>0,:template=>template_pointer,:values=>z)
           new_array_index = find_by_terms(*pointer).length - 1
-          result[new_array_index.to_s] = z
+          result[new_array_index] = z
         else
           term_value_update(xpath, y.to_i, z)
         end
