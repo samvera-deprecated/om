@@ -89,11 +89,38 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   describe "generate_xpath_with_indexes" do
     it "should accept multiple constraints" do
-      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, :person, {:first_name=>"Tim", :family_name=>"Berners-Lee"} )
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
+                                                    :person, {:first_name=>"Tim", :family_name=>"Berners-Lee"} )
       # expect an xpath that looks like this: '//oxns:name[@type="personal" and contains(oxns:namePart[@type="family"], "Berners-Lee") and contains(oxns:namePart[@type="given"], "Tim")]'
-      # can't use string comparison because the contains functions can arrive in any order
-      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"given\"\], \"Tim\"\).*\]/ )
-      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"family\"\], \"Berners-Lee\"\).*\]/ )
+      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and oxns:namePart\[@type=\"given\"\]\[text\(\)=\"Tim\"\].*\]/ )
+      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and oxns:namePart\[@type=\"family\"\]\[text\(\)=\"Berners-Lee\"\].*\]/ )
+    end
+
+    it "should find matching nodes" do
+      ng = Nokogiri::XML(fixture( File.join("test_dummy_mods.xml")))
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
+                                                    :person, {:first_name=>"Tim", :family_name=>"Berners-Lee"} )
+      ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3").to_xml.should be_equivalent_to <<EOF
+      <ns3:name type="personal">
+          <ns3:namePart type="family">Berners-Lee</ns3:namePart>
+          <ns3:namePart type="given">Tim</ns3:namePart>
+          <ns3:role>
+              <ns3:roleTerm type="text" authority="marcrelator">creator</ns3:roleTerm>
+              <ns3:roleTerm type="code" authority="marcrelator">cre</ns3:roleTerm>
+          </ns3:role>
+      </ns3:name>
+EOF
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
+                                                    :person, {:first_name=>"Tim", :family_name=>"Berners"} )
+      ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3").should be_empty 
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
+                                                    :person, {:first_name=>"Frank", :family_name=>"Berners-Lee"} )
+      ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3").should be_empty 
+
+      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
+                                                     :person, {:first_name=>"Tim", :family_name=>"Howard"} )
+      ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3").should be_empty 
+
     end
     it "should support xpath queries as argument" do
       OM::XML::TermXpathGenerator.generate_xpath_with_indexes(@sample_terminology, '//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
