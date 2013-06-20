@@ -211,7 +211,7 @@ module OM::XML::TermXpathGenerator
         else
           constraint_path = k
         end
-        contains_functions << "contains(#{constraint_path}, \"#{v}\")"
+        contains_functions << "#{constraint_path}[text()=\"#{v}\"]"
       end
       
       xpath = add_predicate(xpath, delimited_list(contains_functions, " and ") )
