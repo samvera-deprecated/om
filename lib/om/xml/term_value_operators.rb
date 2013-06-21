@@ -47,7 +47,6 @@ module OM::XML::TermValueOperators
     result = params.dup
     
     params.each_pair do |term_pointer,new_values|
-      ActiveSupport::Deprecation.warn("Calling OM::Document#update_values with a hash of values to update (e.g. #{new_values}) is deprecated behavior. You ought to pass an array instead.  This behavior will be removed in OM 3.0.0", caller(3)) if new_values.kind_of? Hash
       pointer = OM.destringify(term_pointer)
       template_pointer = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
