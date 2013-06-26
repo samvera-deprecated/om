@@ -1,3 +1,7 @@
+h3. 3.0.1 (25 Jun 2013)
+  Fix bug where values that were the same as the existing values were 
+    removed from the update list
+
 h3. 3.0.0 (20 Jun 2013)
   Return an array instead of a hash Term#update_values
   When passing an array to Term#update_values, it will overwrite all of
