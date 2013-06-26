@@ -89,13 +89,6 @@ module OM::XML::TermValueOperators
       # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
       result = new_values.dup
       
-      # Skip any submitted values if the new value matches the current values
-      new_values.each_with_index do |val, index|
-        if !val.nil? && current_values[index] == val
-          new_values.delete_at(index)
-        end
-      end 
-
       # Fill out the pointer completely if the final term is a NamedTermProxy
       if term.kind_of? OM::XML::NamedTermProxy
         pointer.pop

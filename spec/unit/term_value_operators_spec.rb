@@ -92,6 +92,12 @@ describe "OM::XML::TermValueOperators" do
       @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" }).should == expected_result
       @article.update_values( { [{:person=>0}, :role]=>"the role" }).should == expected_result
     end
+
+    it "should replace stuff with the same value (in this case 'one')" do
+      @article.update_values( { [{:person=>0}, :role]=>["one"] })
+      @article.update_values( { [{:person=>0}, :role]=>["one", "two"] })
+      @article.term_values( {:person=>0}, :role).should == ["one", "two"]
+    end
     
     it "should traverse named term proxies transparently" do
       @article.term_values( :journal, :issue, :start_page).should_not == ["108"]      
