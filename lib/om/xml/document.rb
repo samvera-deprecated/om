@@ -1,6 +1,13 @@
 module OM::XML::Document
   extend ActiveSupport::Concern
 
+  included do
+    include OM::XML::Container
+    include OM::XML::TermValueOperators
+    include OM::XML::Validation
+    include ActiveModel::Dirty
+  end
+
   # Class Methods -- These methods will be available on classes that include this Module
 
   module ClassMethods
@@ -8,7 +15,12 @@ module OM::XML::Document
     attr_accessor :terminology, :terminology_builder, :template_registry
 
     def terminology
-      @terminology ||= terminology_builder.build
+      return @terminology if @terminology
+      @terminology = if superclass.respond_to? :terminology
+        superclass.terminology.dup
+      else
+        terminology_builder.build
+      end
     end
 
     def terminology_builder
@@ -24,6 +36,8 @@ module OM::XML::Document
     end
 
     # Sets the OM::XML::Terminology for the Document
+    # If there already is a termnology for this class, it will be replaced.
+    # @see extend_termniology If you want to add terms to an existing terminology
     # Expects +&block+ that will be passed into OM::XML::Terminology::Builder.new
     def set_terminology &block
       @terminology_builder = OM::XML::Terminology::Builder.new(&block)
@@ -59,14 +73,6 @@ module OM::XML::Document
   # Instance Methods -- These methods will be available on instances of classes that include this module
 
   attr_accessor :ox_namespaces
-
-  included do
-    include OM::XML::Container
-    include OM::XML::TermValueOperators
-    include OM::XML::Validation
-    include ActiveModel::Dirty
-
-  end
 
   def ng_xml_will_change!
     # throw away older version.
