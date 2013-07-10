@@ -28,7 +28,12 @@ module OM::XML::Document
     end
 
     def template_registry
-      @template_registry ||= OM::XML::TemplateRegistry.new
+      return @template_registry if @template_registry
+      @template_registry = if superclass.respond_to? :template_registry
+        superclass.template_registry.dup
+      else
+        OM::XML::TemplateRegistry.new
+      end
     end
 
     def rebuild_terminology!
