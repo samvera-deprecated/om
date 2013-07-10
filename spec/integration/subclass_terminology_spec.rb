@@ -1,46 +1,85 @@
 require 'spec_helper'
 
 describe "Inherited terminology" do
+  describe "with basic terms" do
+    before(:all) do
+      class AbstractTerminology
+        include OM::XML::Document
+        set_terminology do |t|
+          t.root :path => 'root', :xmlns => "asdf"
+          t.foo
+        end
+      end
 
-  before(:all) do
-    class AbstractTerminology
-      include OM::XML::Document
-      set_terminology do |t|
-        t.root :path => 'root', :xmlns => "asdf"
-        t.foo
+      class ConcreteTerminology < AbstractTerminology
       end
     end
 
-    class ConcreteTerminology < AbstractTerminology
+    after(:all) do
+      Object.send(:remove_const, :ConcreteTerminology)
+      Object.send(:remove_const, :AbstractTerminology)
+    end
+
+    describe "on the subclass" do
+      subject do
+        xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
+        ConcreteTerminology.from_xml(xml)
+      end
+
+      it "should inherit terminology" do
+        subject.foo = "Test value"
+        subject.foo.should == ["Test value"]
+      end
+    end
+
+    describe "on the superclass" do
+      subject do
+        xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
+        AbstractTerminology.from_xml(xml)
+      end
+
+      it "should have terminology" do
+        subject.foo = "Test value"
+        subject.foo.should == ["Test value"]
+      end
     end
   end
 
-  after(:all) do
-    Object.send(:remove_const, :ConcreteTerminology)
-    Object.send(:remove_const, :AbstractTerminology)
-  end
+  describe "with template terms" do
+    before(:all) do
+      class AbstractTerminology
+        include OM::XML::Document
+        set_terminology do |t|
+          t.root :path => 'root', :xmlns => "asdf"
+        end
 
-  describe "on the subclass" do
-    subject do
-      xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
-      ConcreteTerminology.from_xml(xml)
+        define_template :creator do |xml, author, role|
+          xml.pbcoreCreator {
+            xml.creator(author)
+            xml.creatorRole(role, :source=>"PBCore creatorRole") 
+          }
+        end
+      end
+
+      class ConcreteTerminology < AbstractTerminology
+      end
     end
 
-    it "should inherit terminology" do
-      subject.foo = "Test value"
-      subject.foo.should == ["Test value"]
-    end
-  end
-
-  describe "on the superclass" do
-    subject do
-      xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
-      AbstractTerminology.from_xml(xml)
+    after(:all) do
+      Object.send(:remove_const, :ConcreteTerminology)
+      Object.send(:remove_const, :AbstractTerminology)
     end
 
-    it "should have terminology" do
-      subject.foo = "Test value"
-      subject.foo.should == ["Test value"]
+    describe "on the subclass" do
+      subject do
+        xml = '<root></root>'
+        ConcreteTerminology.from_xml(xml)
+      end
+
+      it "should inherit templates" do
+        subject.add_child_node subject.ng_xml.root, :creator, 'Test author', 'Primary' 
+        subject.ng_xml.xpath('//pbcoreCreator/creatorRole[@source="PBCore creatorRole"]').text.should == "Primary"
+      end
     end
   end
 end
