@@ -29,6 +29,7 @@ describe OM::XML::TerminologyBasedSolrizer do
       solr_doc = Hash.new
       @mods_article.field_mapper = Solrizer::FieldMapper.new
       Samples::ModsArticle.terminology.terms.each_pair do |k,v|
+        next if k == :mods # we don't index the root node
         @mods_article.should_receive(:solrize_term).with(v, solr_doc, @mods_article.field_mapper)
       end
       @mods_article.to_solr(solr_doc)
