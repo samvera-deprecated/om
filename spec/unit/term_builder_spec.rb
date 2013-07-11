@@ -33,7 +33,7 @@ describe "OM::XML::Term::Builder" do
   
   describe '#new' do
    it "should set terminology_builder attribute if provided" do
-     mock_terminology_builder = mock("TerminologyBuilder")
+     mock_terminology_builder = double("TerminologyBuilder")
      OM::XML::Term::Builder.new("term1", mock_terminology_builder).terminology_builder.should == mock_terminology_builder
    end
   end
@@ -113,8 +113,8 @@ describe "OM::XML::Term::Builder" do
       built_child1 = OM::XML::Term.new("child1")
       built_child2 = OM::XML::Term.new("child2")
 
-      mock1 = mock("Builder1", :build => built_child1 )
-      mock2 = mock("Builder2", :build => built_child2 )
+      mock1 = double("Builder1", :build => built_child1 )
+      mock2 = double("Builder2", :build => built_child2 )
       mock1.stub(:name).and_return("child1")
       mock2.stub(:name).and_return("child2")
 

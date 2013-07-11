@@ -68,7 +68,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//namePart[@type="termsOfAddress"]'
     end
     it "should prepend the xpath for any parent nodes" do
-      mock_parent_mapper = mock("Term", :xpath_absolute=>'//name[@type="conference"]/role')
+      mock_parent_mapper = double("Term", :xpath_absolute=>'//name[@type="conference"]/role')
       @test_role_text.stub(:parent => mock_parent_mapper)
       OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text).should == '//name[@type="conference"]/role/roleTerm[@type="text"]'
     end
