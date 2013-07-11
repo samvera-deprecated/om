@@ -15,7 +15,7 @@ module OM::XML::TerminologyBasedSolrizer
     def solrize(doc, solr_doc=Hash.new, field_mapper = nil)
       unless doc.class.terminology.nil?
         doc.class.terminology.terms.each_pair do |term_name,term|
-          doc.solrize_term(term, solr_doc, field_mapper)
+          doc.solrize_term(term, solr_doc, field_mapper) unless term.is_root_term?
         end
       end
 
