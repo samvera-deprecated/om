@@ -54,7 +54,7 @@ describe "OM::XML::Container" do
     
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (mocked test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
-      mock_new_node = mock("new node")
+      mock_new_node = double("new node")
       doc.root.should_receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
       result = subject.to_xml(doc)
     end
@@ -65,7 +65,7 @@ describe "OM::XML::Container" do
     end
     
     it 'should add to root of Nokogiri::XML::Documents, but add directly to the elements if a Nokogiri::XML::Node is passed in' do
-      mock_new_node = mock("new node")
+      mock_new_node = double("new node")
       mock_new_node.stub(:to_xml).and_return("foo")
       
       doc = Nokogiri::XML::Document.parse("<test_document/>")
