@@ -75,8 +75,8 @@ describe OM::XML::Term do
 
     describe ".retrieve_term" do
       it "should crawl down into mapper children to find the desired term" do
-        mock_role = mock("mapper", :children =>{:text=>"the target"})
-        mock_conference = mock("mapper", :children =>{:role=>mock_role})
+        mock_role = double("mapper", :children =>{:text=>"the target"})
+        mock_conference = double("mapper", :children =>{:role=>mock_role})
         @test_name_part.should_receive(:children).and_return({:conference=>mock_conference})
         @test_name_part.retrieve_term(:conference, :role, :text).should == "the target"
       end
@@ -185,7 +185,7 @@ describe OM::XML::Term do
         @test_volume.xpath_constrained.should == '//detail[@type="volume" and contains(number, "#{constraint_value}")]'.gsub('"', '\"')
       end
       it "should trigger update on any child objects" do
-        mock_child = mock("child term")
+        mock_child = double("child term")
         mock_child.should_receive(:generate_xpath_queries!).exactly(3).times
         @test_name_part.should_receive(:children).and_return({1=>mock_child, 2=>mock_child, 3=>mock_child})
         @test_name_part.generate_xpath_queries!
