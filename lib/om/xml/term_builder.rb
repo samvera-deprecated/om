@@ -93,7 +93,7 @@ module OM::XML::TermBuilder
     # @param [OM::XML::Terminology] terminology that this Term is being built for
     def build(terminology=nil)
       self.resolve_refs!
-      if term.self.settings.has_key?(:proxy)
+      if settings.has_key?(:proxy)
         term = OM::XML::NamedTermProxy.new(self.name, self.settings[:proxy], terminology, self.settings)
       else
         term = OM::XML::Term.new(self.name, {}, terminology)
@@ -118,14 +118,45 @@ module OM::XML::TermBuilder
       return self
     end
 
-
-    # Any unknown method calls will add an entry to the settings hash and return the current object
-    def method_missing method, *args, &block
-      if args.length == 1
-        args = args.first
-      end
-      @settings[method] = args
-      return self
+    def root_term= val
+      @settings[:is_root_term] = val
     end
+
+    def index_as= val
+      @settings[:index_as] = val
+    end
+
+    def required= val
+      @settings[:required] = val
+    end
+
+    def ref= val
+      @settings[:ref] = val
+    end
+
+    def attributes= val
+      @settings[:attributes] = val
+    end
+
+    def proxy= val
+      @settings[:proxy] = val
+    end
+
+    def type= val
+      @settings[:type] = val
+    end
+
+    def path= val
+      @settings[:path] = val
+    end
+
+    def variant_of= val
+      @settings[:variant_of] = val
+    end
+
+    def default_content_path= val
+      @settings[:default_content_path] = val
+    end
+
   end
 end
