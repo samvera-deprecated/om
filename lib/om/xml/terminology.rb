@@ -51,7 +51,10 @@ class OM::XML::Terminology
           @namespaces["oxns"] = ns_pair.last
         end
       end
-      root_term_builder = OM::XML::Term::Builder.new(opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')).is_root_term(true)
+      path = opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')
+      root_term_builder = OM::XML::Term::Builder.new(path).tap do |t|
+        t.root_term= true
+      end
       term_opts = opts.dup
       term_opts.delete(:schema)
       root_term_builder.settings.merge!(term_opts)
