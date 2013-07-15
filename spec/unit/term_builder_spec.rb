@@ -41,17 +41,19 @@ describe "OM::XML::Term::Builder" do
   describe "configuration methods" do
     it "should set the corresponding .settings value return the mapping object" do
       [:path, :index_as, :required, :type, :variant_of, :path, :attributes, :default_content_path].each do |method_name|
-        @test_builder.send(method_name, "#{method_name.to_s}foo").should == @test_builder
+        @test_builder.send("#{method_name}=".to_sym, "#{method_name.to_s}foo")
         @test_builder.settings[method_name].should == "#{method_name.to_s}foo"
       end
     end
-    it "should be chainable" do
-      test_builder = OM::XML::Term::Builder.new("chainableTerm").index_as(:facetable, :searchable, :sortable, :displayable).required(true).type(:text)  
-      resulting_settings = test_builder.settings
-      resulting_settings[:index_as].should == [:facetable, :searchable, :sortable, :displayable]
-      resulting_settings[:required].should == true 
-      resulting_settings[:type].should == :text
-    end
+    # it "should be chainable" do
+    #   test_builder = OM::XML::Term::Builder.new("chainableTerm").tap do |t|
+    #     t.index_as = [:facetable, :searchable, :sortable, :displayable).required(true).type(:text)  
+    #   end
+    #   resulting_settings = test_builder.settings
+    #   resulting_settings[:index_as].should == [:facetable, :searchable, :sortable, :displayable]
+    #   resulting_settings[:required].should == true 
+    #   resulting_settings[:type].should == :text
+    # end
   end
 
   describe "settings" do
@@ -70,7 +72,6 @@ describe "OM::XML::Term::Builder" do
     it "should insert the given Term Builder into the current Term Builder's children" do
       @test_builder.add_child(@test_builder_2)
       @test_builder.children[@test_builder_2.name].should == @test_builder_2
-      @test_builder.ancestors.should include(@test_builder_2)
     end
   end
   describe ".retrieve_child" do
@@ -88,7 +89,11 @@ describe "OM::XML::Term::Builder" do
   
   describe ".build" do
     it "should build a Term with the given settings and generate its xpath values" do
-      test_builder = OM::XML::Term::Builder.new("requiredTextFacet").index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
+      test_builder = OM::XML::Term::Builder.new("requiredTextFacet").tap do |t|
+        t.index_as = [:facetable, :searchable, :sortable, :displayable]
+        t.required = true
+        t.type = :text
+      end
       result = test_builder.build
       result.should be_instance_of OM::XML::Term
       result.index_as.should == [:facetable, :searchable, :sortable, :displayable]
@@ -100,7 +105,9 @@ describe "OM::XML::Term::Builder" do
       result.xpath_relative.should == OM::XML::TermXpathGenerator.generate_relative_xpath(result)
     end
     it "should create proxy terms if :proxy is set" do
-      test_builder = OM::XML::Term::Builder.new("my_proxy").proxy([:foo, :bar])
+      test_builder = OM::XML::Term::Builder.new("my_proxy").tap do |t|
+        t.proxy = [:foo, :bar]
+      end
       result = test_builder.build
       result.should be_kind_of OM::XML::NamedTermProxy
     end
@@ -137,10 +144,17 @@ describe "OM::XML::Term::Builder" do
 	    @almond.lookup_refs.should == [@peach, @stone_fruit]
 	  end
   	it "should raise an error if the TermBuilder does not have a reference to a terminology builder" do
-  	  lambda { OM::XML::Term::Builder.new("referrer").ref("bongos").lookup_refs }.should raise_error(StandardError,"Cannot perform lookup_ref for the referrer builder.  It doesn't have a reference to any terminology builder")
+  	  lambda { 
+        OM::XML::Term::Builder.new("referrer").tap do |t|
+          t.ref="bongos"
+          t.lookup_refs 
+        end
+      }.should raise_error(StandardError,"Cannot perform lookup_ref for the referrer builder.  It doesn't have a reference to any terminology builder")
 	  end
     it "should raise an error if the referece points to a nonexistent term builder" do
-      tb = OM::XML::Term::Builder.new("mork",@test_terminology_builder).ref(:characters, :aliens)
+      tb = OM::XML::Term::Builder.new("mork",@test_terminology_builder).tap do |t|
+        t.ref = [:characters, :aliens]
+      end
       lambda { tb.lookup_refs }.should raise_error(OM::XML::Terminology::BadPointerError,"This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \":characters\"")
     end
     it "should raise an error with informative error when given circular references" do
@@ -158,7 +172,9 @@ describe "OM::XML::Term::Builder" do
       @test_builder.children.should == children_pre
     end
     it "should should look up the referenced TermBuilder, use its settings and duplicate its children without changing the name" do
-      term_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus)
+      term_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).tap do |b|
+        b.ref = [:fruit_trees, :citrus]
+      end
       term_builder.resolve_refs!
       # Make sure children and settings were copied
       term_builder.settings.should == @citrus.settings.merge(:path=>"citrus")
@@ -174,7 +190,9 @@ describe "OM::XML::Term::Builder" do
       @almond.settings[:path].should == "prunus"
     end
     it "should set path based on the first ref's name if no path is set" do
-      orange_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus)
+      orange_builder = OM::XML::Term::Builder.new("orange",@test_terminology_builder).tap do |b|
+        b.ref= [:fruit_trees, :citrus]
+      end
       orange_builder.resolve_refs!
       orange_builder.settings[:path].should == "citrus"
     end
@@ -182,7 +200,11 @@ describe "OM::XML::Term::Builder" do
     it "should result in clean trees of Terms after building" 
     
   	it "should preserve any extra settings specific to this builder (for variant terms)" do
-  	  tb = OM::XML::Term::Builder.new("orange",@test_terminology_builder).ref(:fruit_trees, :citrus).attributes(:color=>"orange").required(true)
+  	  tb = OM::XML::Term::Builder.new("orange",@test_terminology_builder).tap do |b|
+        b.ref= [:fruit_trees, :citrus]
+        b.attributes = {color: "orange"}
+        b.required =true
+      end
   	  tb.resolve_refs!
   	  tb.settings.should == {:path=>"citrus", :attributes=>{"citric_acid"=>"true", :color=>"orange"}, :required=>true, :type=>:string, :index_as=>[:facetable]}
 	  end
