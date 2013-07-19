@@ -1,3 +1,9 @@
+h3. 3.0.3 (19 Jul 2013)
+  Fix overly-aggressive template inheritance bug introduced in 3.0.2
+
+h3. 3.0.2 (15 Jul 2013)
+  Add terminology and template inheritance
+
 h3. 3.0.1 (25 Jun 2013)
   Fix bug where values that were the same as the existing values were 
     removed from the update list
