@@ -63,9 +63,18 @@ describe "Inherited terminology" do
 
       class ConcreteTerminology < AbstractTerminology
       end
+
+      class OtherConcreteTerminology < AbstractTerminology
+        define_template :foo do |xml, *args|
+          args.each { |arg|
+            xml.foo(arg)
+          }
+        end
+      end
     end
 
     after(:all) do
+      Object.send(:remove_const, :OtherConcreteTerminology)
       Object.send(:remove_const, :ConcreteTerminology)
       Object.send(:remove_const, :AbstractTerminology)
     end
@@ -79,6 +88,13 @@ describe "Inherited terminology" do
       it "should inherit templates" do
         subject.add_child_node subject.ng_xml.root, :creator, 'Test author', 'Primary' 
         subject.ng_xml.xpath('//pbcoreCreator/creatorRole[@source="PBCore creatorRole"]').text.should == "Primary"
+      end
+
+      it "should inherit but not extend its parent's templates" do
+        OtherConcreteTerminology.template_registry.should have_node_type(:creator)
+        OtherConcreteTerminology.template_registry.should have_node_type(:foo)
+        AbstractTerminology.template_registry.should_not have_node_type(:foo)
+        ConcreteTerminology.template_registry.should_not have_node_type(:foo)
       end
     end
   end

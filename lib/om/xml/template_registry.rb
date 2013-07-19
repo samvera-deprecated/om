@@ -32,8 +32,8 @@
 
 class OM::XML::TemplateRegistry
 
-  def initialize
-    @templates = {}
+  def initialize(templates={})
+    @templates = templates.dup
   end
 
   # Define an XML template
@@ -127,6 +127,11 @@ class OM::XML::TemplateRegistry
     attach_node(:swap, target_node, :parent, node_type, *args, &block)
   end
   
+  def dup
+    result = self.class.new(@templates)
+    result
+  end
+
   def methods
     super + @templates.keys.collect { |k| k.to_s }
   end
