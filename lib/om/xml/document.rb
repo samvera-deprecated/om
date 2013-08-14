@@ -24,7 +24,12 @@ module OM::XML::Document
     end
 
     def terminology_builder
-      @terminology_builder ||= OM::XML::Terminology::Builder.new
+      return @terminology_builder if @terminology_builder
+      @terminology_builder = if superclass.respond_to? :terminology_builder
+        superclass.terminology_builder.dup
+      else
+        OM::XML::Terminology::Builder.new
+      end
     end
 
     def template_registry

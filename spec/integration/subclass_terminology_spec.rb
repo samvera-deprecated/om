@@ -12,6 +12,9 @@ describe "Inherited terminology" do
       end
 
       class ConcreteTerminology < AbstractTerminology
+        extend_terminology do |t|
+          t.bar
+        end
       end
     end
 
@@ -20,7 +23,7 @@ describe "Inherited terminology" do
       Object.send(:remove_const, :AbstractTerminology)
     end
 
-    describe "on the subclass" do
+    describe "the subclass" do
       subject do
         xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
         ConcreteTerminology.from_xml(xml)
@@ -30,9 +33,14 @@ describe "Inherited terminology" do
         subject.foo = "Test value"
         subject.foo.should == ["Test value"]
       end
+
+      it "should have extended terminology" do
+        subject.bar = "Test value"
+        subject.bar.should == ["Test value"]
+      end
     end
 
-    describe "on the superclass" do
+    describe "the superclass" do
       subject do
         xml = '<root xmlns="asdf"><foo>fooval</foo><bar>barval</bar></root>'
         AbstractTerminology.from_xml(xml)
@@ -41,6 +49,10 @@ describe "Inherited terminology" do
       it "should have terminology" do
         subject.foo = "Test value"
         subject.foo.should == ["Test value"]
+      end
+
+      it "should not have extended terminology" do
+        expect { subject.bar }.to raise_error NoMethodError
       end
     end
   end
