@@ -119,7 +119,7 @@ module OM
       end
 
       def ==(other)
-        val == other
+        other == val
       end
 
       def eql?(other)
