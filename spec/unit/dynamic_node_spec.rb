@@ -161,6 +161,20 @@ describe "OM::XML::DynamicNode" do
         @article.journal.title_info = %W(six seven)
         @article.journal.title_info.should == ["six", "seven"]
       end
+
+      describe '==' do
+        it "returns true when values of dynamic nodes are equal." do
+          @article.name(0).last_name = "Steven"
+          @article.name(0).first_name = "Steven"
+          (@article.name(0).last_name == @article.name(0).first_name).should == true
+        end
+
+        it 'returns false when values of dynamic nodes are not equal.' do
+          @article.name(0).first_name = "Horatio"
+          @article.name(0).last_name = "Hogginobble"
+          (@article.name(0).last_name == @article.name(0).first_name).should == false
+        end
+      end 
     end
   end
 end
