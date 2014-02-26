@@ -161,7 +161,7 @@ module OM::XML::TermValueOperators
     template.gsub!(/text\(\)/, 'text')
 
     #if the template doesn't specify a namespace prefix, use the parent node's prefix
-    if parent_node.namespace.present? and parent_node.namespace.prefix.present?
+    if parent_node.namespace and parent_node.namespace.prefix.present?
       template.gsub!(/xml\./,"xml[:#{parent_node.namespace.prefix}].")
     end
 
