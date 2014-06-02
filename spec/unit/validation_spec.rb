@@ -69,8 +69,8 @@ describe "OM::XML::Validation" do
       ValidationTest.send(:file_from_url, "http://google.com")
     end
     it "should raise an error if the url is invalid" do
-      lambda {ValidationTest.send(:file_from_url, "")}.should raise_error(RuntimeError, "Could not retrieve file from . Error: No such file or directory - ")
-      lambda {ValidationTest.send(:file_from_url, "foo")}.should raise_error(RuntimeError, "Could not retrieve file from foo. Error: No such file or directory - foo")
+      lambda {ValidationTest.send(:file_from_url, "")}.should raise_error(RuntimeError, /Could not retrieve file from /)
+      lambda {ValidationTest.send(:file_from_url, "foo")}.should raise_error(RuntimeError, /Could not retrieve file from foo/)
     end
     it "should raise an error if file retrieval fails" do
       pending "no internet connection"
