@@ -44,13 +44,17 @@ module OM
         elsif args.length > 1
           new_update_node_with_index(name, args)
         else
-          child =  term_child_by_name(term.nil? ? parent.term : term, name)
+          child = term_child_by_name(term.nil? ? parent.term : term, name)
           if child
             OM::XML::DynamicNode.new(name, args.first, @document, child, self)
           else 
             val.send(name, *args, &block)
           end
         end
+      end
+
+      def respond_to?(method)
+        super || val.respond_to?(method)
       end
 
       def new_update_node(name, args)
@@ -97,6 +101,8 @@ module OM
         end
       end
 
+      # This resolves the target of this dynamic node into a reified Array
+      # @return [Array]
       def val 
         query = xpath
         trim_text = !query.index("text()").nil?
