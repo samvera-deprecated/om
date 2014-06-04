@@ -65,6 +65,8 @@ module OM
   def self.version
     Om::VERSION
   end
+
+  class TypeMismatch < StandardError; end
 end
 
 module OM::XML; end
