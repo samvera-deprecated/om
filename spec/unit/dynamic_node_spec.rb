@@ -80,6 +80,10 @@ describe "OM::XML::DynamicNode" do
         @article.person.last_name.first.should == "FAMILY NAME"
       end
 
+      it "should respond_to? things an array can do" do
+        expect(@article.person.last_name).to respond_to(:map)
+      end
+
       it "should delegate with blocks to the found array" do
         arr = []
         @article.person.last_name.each{|x| arr << x}
