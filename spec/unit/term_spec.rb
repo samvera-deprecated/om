@@ -2,12 +2,14 @@ require 'spec_helper'
 
 describe OM::XML::Term do
   describe "without a type" do
-    subject { OM::XML::Term.new(:test_term) }
-    its (:type) { should == :string }
+    it "should default to string" do
+      OM::XML::Term.new(:test_term).type.should == :string
+    end
   end
   describe "when type is specified" do
-    subject { OM::XML::Term.new(:test_term, :type=>:date)}
-    its (:type) { should == :date }
+    it "should accept date" do
+      OM::XML::Term.new(:test_term, :type=>:date).type.should == :date
+    end
   end
 
   describe "a big test" do

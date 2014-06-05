@@ -149,13 +149,13 @@ describe "OM::XML::Document" do
   
   describe "node_exists?" do
     it "should return true if any nodes are found" do
-      @mods_article.node_exists?( {:person=>1}, :first_name).should be_true
+      @mods_article.node_exists?( {:person=>1}, :first_name).should be true
     end
     it "should return false if no nodes are found" do
-      @mods_article.node_exists?( {:person=>8}, :first_name ).should be_false
+      @mods_article.node_exists?( {:person=>8}, :first_name ).should be false
     end
     it "should support xpath queries" do
-      @mods_article.node_exists?('//oxns:name[@type="personal"][1]/oxns:namePart[1]').should be_true
+      @mods_article.node_exists?('//oxns:name[@type="personal"][1]/oxns:namePart[1]').should be true
     end
   end
    

@@ -195,14 +195,14 @@ describe "OM::XML::Terminology" do
 
   describe ".has_term?" do
     it "should return true if the specified term does exist in the terminology" do
-      @test_full_terminology.has_term?(:journal,:issue,:end_page).should be_true
+      @test_full_terminology.has_term?(:journal,:issue,:end_page).should be true
     end
     it "should support term_pointers with array indexes in them (ignoring the indexes)" do
-      @test_full_terminology.has_term?(:title_info, :main_title).should be_true
-      @test_full_terminology.has_term?({:title_info=>"0"}, :main_title).should be_true
+      @test_full_terminology.has_term?(:title_info, :main_title).should be true
+      @test_full_terminology.has_term?({:title_info=>"0"}, :main_title).should be true
     end
     it "should return false if the specified term does not exist in the terminology" do
-      @test_full_terminology.has_term?(:name, :date, :nonexistentTerm, :anotherTermName).should be_false
+      @test_full_terminology.has_term?(:name, :date, :nonexistentTerm, :anotherTermName).should be_falsey
     end
   end
 
