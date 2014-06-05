@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'active_support/core_ext/string/conversions' # for String#to_time conversion
+require 'active_support/core_ext/date_time/conversions' # for String#to_time conversion (only needed for Rails 3)
 
 describe "element values" do
   before(:all) do
@@ -63,6 +64,9 @@ EOF
         context "setting an invalid time" do
           it "raises a type mismatch error" do
             expect { datastream.my_time = '' }.to raise_error OM::TypeMismatch
+          end
+          it "raises a type mismatch error" do
+            expect { datastream.my_time = 'Foo' }.to raise_error OM::TypeMismatch
           end
         end
       end
