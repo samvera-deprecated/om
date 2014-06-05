@@ -94,7 +94,12 @@ module OM
       when :date, :integer
         val.to_s
       when :time
-        time = val.to_time
+        begin
+          time = val.to_time
+        rescue ArgumentError
+          # In Rails 3, an invalid time raises ArgumentError, in Rails 4 it just returns nil
+          raise TypeMismatch, "Can't convert `#{val}` to time"
+        end
         raise TypeMismatch, "Can't convert `#{val}` to time" if time.nil?
         time.utc.iso8601
       when :boolean
