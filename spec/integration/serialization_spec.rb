@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'active_support/core_ext/string/conversions' # for String#to_time conversion
 
 describe "element values" do
   before(:all) do
@@ -20,7 +21,7 @@ describe "element values" do
 
 
   describe "when the xml template has existing values" do
-    subject do
+    let(:datastream) do
       ElementValueTerminology.from_xml <<-EOF
 <outer outerId="hypatia:outer" type="outer type">
   <my_date>2012-10-30</my_date>
@@ -30,6 +31,7 @@ describe "element values" do
 </outer>
 EOF
     end
+    subject { datastream } 
     describe "reading  values" do
       it "should deserialize date" do
         subject.my_date.should == [Date.parse('2012-10-30')]
@@ -45,26 +47,42 @@ EOF
       end
     end
     describe "Writing to xml" do
-      it "should serialize time" do
-        subject.my_time = [DateTime.parse('2011-01-30T03:45:15Z')]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
-         <outer outerId="hypatia:outer" type="outer type">
-           <my_date>2012-10-30</my_date>
-           <my_time>2011-01-30T03:45:15Z</my_time>
-           <my_int>7</my_int>
-           <active>true</active>
-         </outer>'
+      context "serializing time" do
+        context "with a valid time" do
+          subject { datastream.to_xml }
+          before { datastream.my_time = [DateTime.parse('2011-01-30T03:45:15Z')] }
+          it { should be_equivalent_to '<?xml version="1.0"?>
+           <outer outerId="hypatia:outer" type="outer type">
+             <my_date>2012-10-30</my_date>
+             <my_time>2011-01-30T03:45:15Z</my_time>
+             <my_int>7</my_int>
+             <active>true</active>
+           </outer>' }
+        end
+
+        context "setting an invalid time" do
+          it "raises a type mismatch error" do
+            expect { datastream.my_time = '' }.to raise_error OM::TypeMismatch
+          end
+        end
       end
-      it "should serialize date" do
-        subject.my_date = [Date.parse('2012-09-22')]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
-         <outer outerId="hypatia:outer" type="outer type">
-           <my_date>2012-09-22</my_date>
-           <my_time>2012-10-30T12:22:33Z</my_time>
-           <my_int>7</my_int>
-           <active>true</active>
-         </outer>'
+
+      context "serializing dates" do
+
+        subject { datastream.to_xml }
+        context "with a valid date" do
+
+          before { datastream.my_date = [Date.parse('2012-09-22')] }
+          it { should be_equivalent_to '<?xml version="1.0"?>
+           <outer outerId="hypatia:outer" type="outer type">
+             <my_date>2012-09-22</my_date>
+             <my_time>2012-10-30T12:22:33Z</my_time>
+             <my_int>7</my_int>
+             <active>true</active>
+           </outer>' }
+        end
       end
+
       it "should serialize ints" do
         subject.my_int = [9]
         subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
