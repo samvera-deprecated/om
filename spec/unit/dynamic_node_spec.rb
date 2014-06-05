@@ -47,6 +47,11 @@ describe "OM::XML::DynamicNode" do
       @sample.date_created = ['A long time ago']
       @sample.date_created.should == ['A long time ago']
     end
+
+    it "checks inequality" do
+      @sample.foo = ['in a galaxy far far away']
+      expect(@sample.foo != ['nearby']).to be true
+    end
   end
         
   

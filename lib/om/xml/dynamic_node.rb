@@ -128,6 +128,10 @@ module OM
         other == val
       end
 
+      def !=(other)
+        val != other
+      end
+
       def eql?(other)
         self == other
       end
