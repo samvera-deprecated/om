@@ -138,13 +138,13 @@ describe "OM::XML::TermValueOperators" do
     end
 
     it "should support inserting attributes" do
-      pending "HYDRA-415"
+      skip "HYDRA-415"
       @sample.update_values({['title_info', 'language']=>'Le Titre'})
       @sample.term_values('title_info', 'french_title').should == ['Le Titre']
     end
     
     it "should support inserting namespaced attributes" do
-      pending "HYDRA-415"
+      skip "HYDRA-415"
       @sample.update_values({['title_info', 'main_title', 'main_title_lang']=>'eng'})
       @sample.term_values('title_info', 'main_title', 'main_title_lang').should == ['eng']
       ## After a proxy
@@ -329,7 +329,7 @@ describe "OM::XML::TermValueOperators" do
     end
 	  
 	  it "should support more complex mixing & matching" do
-	    pending "not working because builder_template is not returning the correct template (returns builder for role instead of roleTerm)"
+	    skip "not working because builder_template is not returning the correct template (returns builder for role instead of roleTerm)"
       @sample.ng_xml.xpath('//oxns:name[@type="personal"][2]/oxns:role[1]/oxns:roleTerm', @sample.ox_namespaces).length.should == 2
 	    @sample.term_values_append(
         :parent_select =>'//oxns:name[@type="personal"][2]/oxns:role',
@@ -389,7 +389,7 @@ describe "OM::XML::TermValueOperators" do
     end
     
     it "should replace the existing node if you pass a template and values" do
-      pending
+      skip
       @sample.term_value_update(
         :parent_select =>'//oxns:name[@type="personal"]',
         :parent_index => 1,

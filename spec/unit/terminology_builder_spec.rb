@@ -115,7 +115,7 @@ describe "OM::XML::Terminology::Builder" do
     
     describe '#from_xml' do
       it "should let you load mappings from an xml file" do
-        pending
+        skip
         vocab = OM::XML::Terminology.from_xml( fixture("sample_mappings.xml") )
         vocab.should be_instance_of OM::XML::Terminology
         vocab.mappers.should == {}
@@ -159,7 +159,7 @@ describe "OM::XML::Terminology::Builder" do
     
     describe '.insert_term' do
       it "should create a new OM::XML::Term::Builder and insert it into the class mappings hash" do
-        pending
+        skip
         
         result = @test_builder.insert_mapper(:name_, :namePart).index_as([:facetable, :searchable, :sortable, :displayable]).required(true).type(:text)  
         @test_builder.mapper_builders(:name_, :namePart).should == result

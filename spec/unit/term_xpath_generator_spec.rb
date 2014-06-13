@@ -143,7 +143,7 @@ EOF
   end
 
   it "should support mappers with default_content_path" do
-    pending "need to implement mapper_set first"
+    skip "need to implement mapper_set first"
     #@test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
 
     OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term_with_default_path).should == 'oxns:detail[@type="volume"]'

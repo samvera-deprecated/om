@@ -65,7 +65,7 @@ describe "OM::XML::Accessors" do
   
   describe "update_properties" do
     it "should update the declared properties" do
-      pending "nesting is too deep..."
+      skip "nesting is too deep..."
       @sample.retrieve(*[:edit_access, :machine, :person]).length.should == 0
       @sample.update_properties([:edit_access, :machine, :person]=>"user id").should == {"edit_access_machine_person"=>{"-1"=>"user id"}}
       @sample.retrieve(*[:edit_access, :machine, :person]).length.should == 1

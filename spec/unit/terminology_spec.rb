@@ -179,7 +179,7 @@ describe "OM::XML::Terminology" do
 
   describe '#from_xml' do
     it "should let you load mappings from an xml file" do
-      pending
+      skip
       vocab = OM::XML::Terminology.from_xml( fixture("sample_mappings.xml") )
       vocab.should be_instance_of OM::XML::Terminology
       vocab.mappers.should == {}
@@ -188,7 +188,7 @@ describe "OM::XML::Terminology" do
 
   describe '#to_xml' do
     it "should let you serialize mappings to an xml document" do
-      pending
+      skip
       TerminologyTest.to_xml.should == ""
     end
   end
@@ -240,7 +240,7 @@ describe "OM::XML::Terminology" do
 
   describe ".term_xpath" do
     it "should insert calls to xpath array lookup into parent xpaths if parents argument is provided" do
-      pending
+      skip
       # conference_mapper = TerminologyTest.retrieve_mapper(:conference)
       # role_mapper =  TerminologyTest.retrieve_mapper(:conference, :role)
       # text_mapper = TerminologyTest.retrieve_mapper(:conference, :role, :text)
@@ -270,12 +270,12 @@ describe "OM::XML::Terminology" do
     end
 
     it "should support queries with complex constraints" do
-      pending
+      skip
       @test_full_terminology.xpath_for(:person, {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
     end
 
     it "should support queries with multiple complex constraints" do
-      pending
+      skip
       @test_full_terminology.xpath_for(:person, {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
     end
 

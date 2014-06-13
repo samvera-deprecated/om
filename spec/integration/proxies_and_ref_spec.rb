@@ -33,49 +33,57 @@ describe "an example with :proxy and :ref" do
         t.image_size(:proxy=>[:image, :file, :size])
         t.image_md5(:proxy=>[:image, :file, :md5])
         t.image_sha1(:proxy=>[:image, :file, :sha1])
-        end
+      end
     end
   end
 
-  subject do
-    ExampleProxyAndRefTerminology.from_xml <<-EOF
-<outer outerId="hypatia:outer" type="outer type">
-  <resource type="ead" id="coll.ead" objectId="hypatia:ead_file_asset_fixture">
-    <file id="my_ead.xml" format="XML" mimetype="text/xml" size="47570">
-      <checksum type="md5">123</checksum>
-      <checksum type="sha1">456</checksum>
-    </file>
-  </resource>
-  <resource type="image" id="image" objectId="hypatia:coll_img_file_asset_fixture">
-    <file id="my_image.jpg" format="JPG" mimetype="image/jpeg" size="302080">
-      <checksum type="md5">789</checksum>
-      <checksum type="sha1">666</checksum>
-    </file>
-  </resource>
-</outer>
-
-EOF
-end
-
-  describe "image" do
-    it "should have the right proxy terms" do
-      subject.ead_fedora_pid.should include "hypatia:ead_file_asset_fixture"
-      subject.ead_ds_label.should include "my_ead.xml"
-      subject.ead_size.should include "47570"
-      subject.ead_md5.should include "123"
-      subject.ead_sha1.should include "456"
+  context 'with empty content' do
+    subject { ExampleProxyAndRefTerminology.from_xml "<outer/>" }
+    it "should build the parent nodes when setting a proxy term" do
+      subject.image_sha1 = '123'
+      expect(subject.ng_xml).to be_equivalent_to "<outer><resource type=\"image\"><file><checksum type=\"sha1\">123</checksum></file></resource></outer>"
     end
   end
 
-  describe "ead" do
-    it "should have the right proxy terms" do
-      subject.image_fedora_pid.should include "hypatia:coll_img_file_asset_fixture"
-      subject.image_ds_label.should include "my_image.jpg"
-      subject.image_size.should include "302080"
-      subject.image_md5.should include "789"
-      subject.image_sha1.should include "666"
-    end
+  context "with existing content" do
+    subject do
+      ExampleProxyAndRefTerminology.from_xml <<-EOF
+  <outer outerId="hypatia:outer" type="outer type">
+    <resource type="ead" id="coll.ead" objectId="hypatia:ead_file_asset_fixture">
+      <file id="my_ead.xml" format="XML" mimetype="text/xml" size="47570">
+        <checksum type="md5">123</checksum>
+        <checksum type="sha1">456</checksum>
+      </file>
+    </resource>
+    <resource type="image" id="image" objectId="hypatia:coll_img_file_asset_fixture">
+      <file id="my_image.jpg" format="JPG" mimetype="image/jpeg" size="302080">
+        <checksum type="md5">789</checksum>
+        <checksum type="sha1">666</checksum>
+      </file>
+    </resource>
+  </outer>
 
+  EOF
   end
 
+    describe "image" do
+      it "should have the right proxy terms" do
+        subject.ead_fedora_pid.should include "hypatia:ead_file_asset_fixture"
+        subject.ead_ds_label.should include "my_ead.xml"
+        subject.ead_size.should include "47570"
+        subject.ead_md5.should include "123"
+        subject.ead_sha1.should include "456"
+      end
+    end
+
+    describe "ead" do
+      it "should have the right proxy terms" do
+        subject.image_fedora_pid.should include "hypatia:coll_img_file_asset_fixture"
+        subject.image_ds_label.should include "my_image.jpg"
+        subject.image_size.should include "302080"
+        subject.image_md5.should include "789"
+        subject.image_sha1.should include "666"
+      end
+    end
+  end
 end
