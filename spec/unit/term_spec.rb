@@ -37,14 +37,14 @@ describe OM::XML::Term do
 
     describe 'inner_xml' do
       it "should be a kind of Nokogiri::XML::Node" do
-        pending
+        skip
         @test_mapping.inner_xml.should be_kind_of(Nokogiri::XML::Node)
       end
     end
 
     describe '#from_node' do
       it "should create a mapper from a nokogiri node" do
-        pending "probably should do this in the Builder"
+        skip "probably should do this in the Builder"
         ng_builder = Nokogiri::XML::Builder.new do |xml|
           xml.mapper(:name=>"person", :path=>"name") {
             xml.attribute(:name=>"type", :value=>"personal")
@@ -89,7 +89,7 @@ describe OM::XML::Term do
 
     describe 'inner_xml' do
       it "should be a kind of Nokogiri::XML::Node" do
-        pending
+        skip
         @test_name_part.inner_xml.should be_kind_of(Nokogiri::XML::Node)
       end
     end

@@ -89,7 +89,7 @@ describe "OM::XML::Document" do
   
   describe ".find_by_terms_and_value" do
     it "should fail gracefully if you try to look up nodes for an undefined property" do
-      pending "better to get an informative error?"
+      skip "better to get an informative error?"
       @fixturemods.find_by_terms_and_value(:nobody_home).should == []
     end
     it "should use Nokogiri to retrieve a NodeSet corresponding to the term pointers" do
@@ -123,7 +123,7 @@ describe "OM::XML::Document" do
       @mods_article.find_by_terms( {:person=>1}, :person_id).first.text.should == "123987"
     end
     it "should support accessors whose relative_xpath is a lookup array instead of an xpath string" do
-      # pending "this only impacts scenarios where we want to display & edit"
+      # skip "this only impacts scenarios where we want to display & edit"
       DocumentTest.terminology.retrieve_term(:title_info, :language).path.should == {:attribute=>"lang"}
       # @sample.retrieve( :title, 1 ).first.text.should == "Artikkelin otsikko Hydrangea artiklan 1"
       @mods_article.find_by_terms( {:title_info=>1}, :language ).first.text.should == "finnish"
@@ -134,7 +134,7 @@ describe "OM::XML::Document" do
     end
     
     it "should return nil if the xpath fails to generate" do
-      pending "Can't decide if it's better to return nil or raise an error.  Choosing informative errors for now."
+      skip "Can't decide if it's better to return nil or raise an error.  Choosing informative errors for now."
       @mods_article.find_by_terms( {:foo=>20}, :bar ).should == nil
     end
     
