@@ -25,14 +25,14 @@ describe "OM::XML::Validation" do
   
   describe "#schema" do
     it "should return an instance of Nokogiri::XML::Schema loaded from the schema url -- fails if no internet connection" do
-      pending "no internet connection"
+      skip "no internet connection"
       ValidationTest.schema.should be_kind_of Nokogiri::XML::Schema
     end
   end
 
   describe "#validate" do
     it "should validate the provided document against the schema provided in class definition  -- fails if no internet connection" do
-      pending "no internet connection"
+      skip "no internet connection"
       ValidationTest.schema.should_receive(:validate).with(@sample).and_return([])
       ValidationTest.validate(@sample)
     end
@@ -73,7 +73,7 @@ describe "OM::XML::Validation" do
       lambda {ValidationTest.send(:file_from_url, "foo")}.should raise_error(RuntimeError, "Could not retrieve file from foo. Error: No such file or directory - foo")
     end
     it "should raise an error if file retrieval fails" do
-      pending "no internet connection"
+      skip "no internet connection"
       lambda {ValidationTest.send(:file_from_url, "http://fedora-commons.org/nonexistent_file")}.should raise_error(RuntimeError, "Could not retrieve file from http://fedora-commons.org/nonexistent_file. Error: 404 Not Found")  
     end
   end

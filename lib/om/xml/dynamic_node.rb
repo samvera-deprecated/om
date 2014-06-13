@@ -84,7 +84,11 @@ module OM
         new_values.each_with_index do |z, y|
 ## If we pass something that already has an index on it, we should be able to add it.
           if existing_nodes[y.to_i].nil?
-            parent_pointer = parent ? parent.to_pointer : nil
+            parent_pointer = if parent
+              parent.to_pointer
+            elsif term.is_a? NamedTermProxy
+              term.proxy_pointer[0..-2]
+            end
             @document.term_values_append(:parent_select=> parent_pointer,:parent_index=>0,:template=>to_pointer,:values=>z)
           else
             @document.term_value_update(xpath, y.to_i, z)

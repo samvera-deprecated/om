@@ -120,13 +120,13 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
     end
 
     it "should have the terms :author_given and :author_family to get the author name" do
-      pending "This doesn't seem to work?"
+      skip "This doesn't seem to work?"
       subject.author_given.should include("Mary")
       subject.author_family.should include("Pickral")
     end
 
     it "should have the terms :advisor_given and :advisor_family to get the advisor name" do
-      pending "This doesn't seem to work?"
+      skip "This doesn't seem to work?"
       subject.advisor_given.should include("David")
       subject.advisor_family.should include("Small")
     end
