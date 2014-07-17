@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activesupport'
   s.add_dependency 'activemodel'
-  s.add_dependency 'solrizer', '~> 3.2.0'
+  s.add_dependency 'solrizer', '~> 3.3'
   s.add_dependency('nokogiri', ">= 1.4.2")
   s.add_dependency('mediashelf-loggable')
   s.add_dependency('deprecation')
