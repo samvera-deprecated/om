@@ -1,5 +1,4 @@
 require "open-uri"
-require "logger"
 
 class OM::XML::ParentNodeNotFoundError < RuntimeError; end
 module OM::XML::TermValueOperators
@@ -13,7 +12,7 @@ module OM::XML::TermValueOperators
     find_by_terms(*term_pointer).each {|node| result << (trim_text ? node.text.strip : node.text) }
 
     if term_pointer.length == 1 && term_pointer.first.kind_of?(String)
-      logger.warn "Passing a xpath to term_values means that OM can not properly find the associated term. Pass a term pointer instead."
+      OM.logger.warn "Passing a xpath to term_values means that OM can not properly find the associated term. Pass a term pointer instead." if OM.logger
       result
     else
       term = self.class.terminology.retrieve_term(*OM.pointers_to_flat_array(OM.destringify(term_pointer), false))
