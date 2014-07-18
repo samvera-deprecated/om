@@ -1,3 +1,17 @@
+h3. 3.1.0 (17 Jul 2014)
+  2014-07-17: Bump solrizer version to ~> 3.3 [Justin Coyne]
+
+  2014-07-17: Use the system libxml2 on travis [Justin Coyne]
+
+  2014-07-17: Remove dependency on mediashelf-loggable [Justin Coyne]
+
+  2014-06-13: Setting values on a proxy term should build the parent terms if they
+  don't exist [Justin Coyne]
+
+  2014-06-05: Handle invalid time for Rails 3 [Justin Coyne]
+
+  2014-06-02: Updating solrizer, correcting rspec deprecations [Adam Wead]
+
 h3. 3.0.1 (25 Jun 2013)
   Fix bug where values that were the same as the existing values were 
     removed from the update list
