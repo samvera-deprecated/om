@@ -10,6 +10,9 @@ require 'om'
 require 'rspec'
 require 'equivalent-xml/rspec_matchers'
 require 'samples'
+require 'logger'
+
+OM.logger = Logger.new(STDERR)
 
 RSpec.configure do |config|
 end
