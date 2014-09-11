@@ -30,7 +30,7 @@ cd omtest
 Using whichever editor you prefer, create a file (in omtest directory) called Gemfile with the following contents:
 
 <pre>
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 gem 'om'
 </pre>
 
