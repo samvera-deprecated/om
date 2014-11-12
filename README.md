@@ -28,7 +28,7 @@ We have a page on the Hydra wiki with a list of OM Terminologies in active use:
 
 ### Creator
 
-Matt Zumwalt ([MediaShelf](http://yourmediashelf.com)
+Matt Zumwalt ([MediaShelf](http://yourmediashelf.com))
 
 ### Thanks To
 
