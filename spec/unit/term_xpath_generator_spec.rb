@@ -27,64 +27,64 @@ describe "OM::XML::TermXpathGeneratorSpec" do
   end
 
   it "should support terms that are pointers to attribute values" do
-    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :absolute).should == "//@lang"
-    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :relative).should == "@lang"
-    OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained).should == '//@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"')
+    expect(OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :absolute)).to eq("//@lang")
+    expect(OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :relative)).to eq("@lang")
+    expect(OM::XML::TermXpathGenerator.generate_xpath(@test_lang_attribute, :constrained)).to eq('//@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"'))
   end
 
   describe "generate_xpath" do
     it "should generate an xpath based on the given mapper and options" do
-      OM::XML::TermXpathGenerator.should_receive(:generate_absolute_xpath).with(@test_term)
+      expect(OM::XML::TermXpathGenerator).to receive(:generate_absolute_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :absolute)
 
-      OM::XML::TermXpathGenerator.should_receive(:generate_relative_xpath).with(@test_term)
+      expect(OM::XML::TermXpathGenerator).to receive(:generate_relative_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :relative)
 
-      OM::XML::TermXpathGenerator.should_receive(:generate_constrained_xpath).with(@test_term)
+      expect(OM::XML::TermXpathGenerator).to receive(:generate_constrained_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :constrained)
     end
   end
 
   describe "generate_relative_xpath" do
     it "should generate a relative xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
+      expect(OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term)).to eq('namePart[@type="termsOfAddress"]')
     end
     it "should support mappers without namespaces" do
       @test_term.namespace_prefix = nil
-      OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
+      expect(OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term)).to eq('namePart[@type="termsOfAddress"]')
     end
     it "should not use a namespace for a path set to text() and should include normalize-space to ignore white space" do
       text_term = OM::XML::Term.new(:title_content, :path=>"text()")
-      OM::XML::TermXpathGenerator.generate_relative_xpath(text_term).should == 'text()[normalize-space(.)]'
+      expect(OM::XML::TermXpathGenerator.generate_relative_xpath(text_term)).to eq('text()[normalize-space(.)]')
     end
     it "should set a 'not' predicate if the attribute value is :none" do
-       OM::XML::TermXpathGenerator.generate_relative_xpath(@test_none_attribute_value).should == 'namePart[not(@type)]'
+       expect(OM::XML::TermXpathGenerator.generate_relative_xpath(@test_none_attribute_value)).to eq('namePart[not(@type)]')
     end
 
   end
 
   describe "generate_absolute_xpath" do
     it "should generate an absolute xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//namePart[@type="termsOfAddress"]'
+      expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term)).to eq('//namePart[@type="termsOfAddress"]')
     end
     it "should prepend the xpath for any parent nodes" do
-      mock_parent_mapper = mock("Term", :xpath_absolute=>'//name[@type="conference"]/role')
+      mock_parent_mapper = double("Term", :xpath_absolute=>'//name[@type="conference"]/role')
       @test_role_text.stub(:parent => mock_parent_mapper)
-      OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text).should == '//name[@type="conference"]/role/roleTerm[@type="text"]'
+      expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text)).to eq('//name[@type="conference"]/role/roleTerm[@type="text"]')
     end
   end
 
   describe "generate_constrained_xpath" do
     it "should generate a constrained xpath based on the given mapper" do
-      OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains(., "#{constraint_value}")]'.gsub('"', '\"')
+      expect(OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term)).to eq('//namePart[@type="termsOfAddress" and contains(., "#{constraint_value}")]'.gsub('"', '\"'))
     end
   end
 
   it "should support mappers without namespaces" do
     @test_term.namespace_prefix = nil
-    OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term).should == 'namePart[@type="termsOfAddress"]'
-    OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term).should == '//namePart[@type="termsOfAddress"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term).should == '//namePart[@type="termsOfAddress" and contains(., "#{constraint_value}")]'.gsub('"', '\"')
+    expect(OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term)).to eq('namePart[@type="termsOfAddress"]')
+    expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term)).to eq('//namePart[@type="termsOfAddress"]')
+    expect(OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term)).to eq('//namePart[@type="termsOfAddress" and contains(., "#{constraint_value}")]'.gsub('"', '\"'))
   end
 
   describe "generate_xpath_with_indexes" do
@@ -92,42 +92,42 @@ describe "OM::XML::TermXpathGeneratorSpec" do
       generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, :person, {:first_name=>"Tim", :family_name=>"Berners-Lee"} )
       # expect an xpath that looks like this: '//oxns:name[@type="personal" and contains(oxns:namePart[@type="family"], "Berners-Lee") and contains(oxns:namePart[@type="given"], "Tim")]'
       # can't use string comparison because the contains functions can arrive in any order
-      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"given\"\], \"Tim\"\).*\]/ )
-      generated_xpath.should match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"family\"\], \"Berners-Lee\"\).*\]/ )
+      expect(generated_xpath).to match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"given\"\], \"Tim\"\).*\]/ )
+      expect(generated_xpath).to match( /\/\/oxns:name\[@type=\"personal\".*and contains\(oxns:namePart\[@type=\"family\"\], \"Berners-Lee\"\).*\]/ )
     end
     it "should support xpath queries as argument" do
-      OM::XML::TermXpathGenerator.generate_xpath_with_indexes(@sample_terminology, '//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
+      expect(OM::XML::TermXpathGenerator.generate_xpath_with_indexes(@sample_terminology, '//oxns:name[@type="personal"][1]/oxns:namePart')).to eq('//oxns:name[@type="personal"][1]/oxns:namePart')
     end
     it "should return the xpath of the terminology's root node if term pointer is nil" do
-      OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, nil ).should == @sample_terminology.root_terms.first.xpath
+      expect(OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, nil )).to eq(@sample_terminology.root_terms.first.xpath)
     end
     it "should return / if term pointer is nil and the terminology does not have a root term defined" do
-      OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @rootless_terminology, nil ).should == "/"
+      expect(OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @rootless_terminology, nil )).to eq("/")
     end
     it "should destringify term pointers before using them" do
-      generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, {"person"=>"1"}, "first_name" ).should == '//oxns:name[@type="personal"][2]/oxns:namePart[@type="given"]'
+      generated_xpath = expect(OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology, {"person"=>"1"}, "first_name" )).to eq('//oxns:name[@type="personal"][2]/oxns:namePart[@type="given"]')
       ### Last argument is a filter, we are passing no filters
-      @sample_terminology.xpath_with_indexes(:name, {:family_name=>1},{}).should == '//oxns:name/oxns:namePart[@type="family"][2]'
+      expect(@sample_terminology.xpath_with_indexes(:name, {:family_name=>1},{})).to eq('//oxns:name/oxns:namePart[@type="family"][2]')
     end
     it "should warn about indexes on a proxy" do
-      Logger.any_instance.should_receive(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
-      @sample_terminology.xpath_with_indexes({:family_name=>1}).should == "//oxns:name/oxns:namePart[@type=\"family\"]"
+      expect_any_instance_of(Logger).to receive(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
+      expect(@sample_terminology.xpath_with_indexes({:family_name=>1})).to eq("//oxns:name/oxns:namePart[@type=\"family\"]")
     end
   end
 
   it "should support mappers with default_content_path" do
-    pending "need to implement mapper_set first"
+    skip "need to implement mapper_set first"
     #@test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
 
-    OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term_with_default_path).should == 'oxns:detail[@type="volume"]'
-    OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term_with_default_path).should == '//oxns:detail[@type="volume"]'
-    OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term_with_default_path).should == '//oxns:detail[contains(oxns:number[@type="volume"], "#{constraint_value}")]'.gsub('"', '\"')
+    expect(OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term_with_default_path)).to eq('oxns:detail[@type="volume"]')
+    expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term_with_default_path)).to eq('//oxns:detail[@type="volume"]')
+    expect(OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term_with_default_path)).to eq('//oxns:detail[contains(oxns:number[@type="volume"], "#{constraint_value}")]'.gsub('"', '\"'))
   end
 
   it "should default to using an inherited namspace prefix" do
 
     term = @sample_terminology.retrieve_term(:person, :first_name)
-    OM::XML::TermXpathGenerator.generate_absolute_xpath(term).should == "//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"given\"]"
+    expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(term)).to eq("//oxns:name[@type=\"personal\"]/oxns:namePart[@type=\"given\"]")
 
 
   end

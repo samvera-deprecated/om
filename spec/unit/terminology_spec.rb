@@ -89,162 +89,162 @@ describe "OM::XML::Terminology" do
 
   describe "namespaceless terminologies" do
     it "should generate xpath queries without namespaces" do
-      @namespaceless_terminology.xpath_for(:to).should == "//to"
-      @namespaceless_terminology.xpath_for(:note, :from).should == "//note/from"
+      expect(@namespaceless_terminology.xpath_for(:to)).to eq("//to")
+      expect(@namespaceless_terminology.xpath_for(:note, :from)).to eq("//note/from")
     end
 
     it "should work with xml documents that have no namespaces" do
-      @namespaceless_doc.from.first.should == "Jani"
-      @namespaceless_doc.to.should == ["Tove"]
+      expect(@namespaceless_doc.from.first).to eq("Jani")
+      expect(@namespaceless_doc.to).to eq(["Tove"])
     end
   end
 
   describe "basics" do
 
     it "constructs xpath queries for finding properties" do
-      @test_full_terminology.retrieve_term(:name).xpath.should == '//oxns:name'
-      @test_full_terminology.retrieve_term(:name).xpath_relative.should == 'oxns:name'
+      expect(@test_full_terminology.retrieve_term(:name).xpath).to eq('//oxns:name')
+      expect(@test_full_terminology.retrieve_term(:name).xpath_relative).to eq('oxns:name')
 
-      @test_full_terminology.retrieve_term(:person).xpath.should == '//oxns:name[@type="personal"]'
-      @test_full_terminology.retrieve_term(:person).xpath_relative.should == 'oxns:name[@type="personal"]'
-      @test_full_terminology.retrieve_term(:person, :person_id).xpath_relative.should == 'oxns:namePart[not(@type)]'
+      expect(@test_full_terminology.retrieve_term(:person).xpath).to eq('//oxns:name[@type="personal"]')
+      expect(@test_full_terminology.retrieve_term(:person).xpath_relative).to eq('oxns:name[@type="personal"]')
+      expect(@test_full_terminology.retrieve_term(:person, :person_id).xpath_relative).to eq('oxns:namePart[not(@type)]')
     end
 
     it "should expand proxy and get sub terms" do
-      @test_full_terminology.retrieve_node(:title, :main_title_lang).xpath.should == '//oxns:titleInfo/oxns:title/@xml:lang'
+      expect(@test_full_terminology.retrieve_node(:title, :main_title_lang).xpath).to eq('//oxns:titleInfo/oxns:title/@xml:lang')
       ### retrieve_term() will not cross proxies
-      @test_full_terminology.retrieve_term(:title_info, :main_title, :main_title_lang).xpath.should == '//oxns:titleInfo/oxns:title/@xml:lang'
+      expect(@test_full_terminology.retrieve_term(:title_info, :main_title, :main_title_lang).xpath).to eq('//oxns:titleInfo/oxns:title/@xml:lang')
     end
 
     it "constructs templates for value-driven searches" do
-      @test_full_terminology.retrieve_term(:name).xpath_constrained.should == '//oxns:name[contains(., "#{constraint_value}")]'.gsub('"', '\"')
-      @test_full_terminology.retrieve_term(:person).xpath_constrained.should == '//oxns:name[@type="personal" and contains(., "#{constraint_value}")]'.gsub('"', '\"')
+      expect(@test_full_terminology.retrieve_term(:name).xpath_constrained).to eq('//oxns:name[contains(., "#{constraint_value}")]'.gsub('"', '\"'))
+      expect(@test_full_terminology.retrieve_term(:person).xpath_constrained).to eq('//oxns:name[@type="personal" and contains(., "#{constraint_value}")]'.gsub('"', '\"'))
 
       # Example of how you could use these templates:
       constraint_value = "SAMPLE CONSTRAINT VALUE"
       constrained_query = eval( '"' + @test_full_terminology.retrieve_term(:person).xpath_constrained + '"' )
-      constrained_query.should == '//oxns:name[@type="personal" and contains(., "SAMPLE CONSTRAINT VALUE")]'
+      expect(constrained_query).to eq('//oxns:name[@type="personal" and contains(., "SAMPLE CONSTRAINT VALUE")]')
     end
 
     it "constructs xpath queries & templates for nested terms" do
       name_date_term = @test_full_terminology.retrieve_term(:name, :date)
-      name_date_term.xpath.should == '//oxns:name/oxns:namePart[@type="date"]'
-      name_date_term.xpath_relative.should == 'oxns:namePart[@type="date"]'
-      name_date_term.xpath_constrained.should == '//oxns:name/oxns:namePart[@type="date" and contains(., "#{constraint_value}")]'.gsub('"', '\"')
+      expect(name_date_term.xpath).to eq('//oxns:name/oxns:namePart[@type="date"]')
+      expect(name_date_term.xpath_relative).to eq('oxns:namePart[@type="date"]')
+      expect(name_date_term.xpath_constrained).to eq('//oxns:name/oxns:namePart[@type="date" and contains(., "#{constraint_value}")]'.gsub('"', '\"'))
       # name_date_term.xpath_constrained.should == '//oxns:name[contains(oxns:namePart[@type="date"], "#{constraint_value}")]'.gsub('"', '\"')
 
       person_date_term = @test_full_terminology.retrieve_term(:person, :date)
-      person_date_term.xpath.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
-      person_date_term.xpath_relative.should == 'oxns:namePart[@type="date"]'
-      person_date_term.xpath_constrained.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains(., "#{constraint_value}")]'.gsub('"', '\"')
+      expect(person_date_term.xpath).to eq('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]')
+      expect(person_date_term.xpath_relative).to eq('oxns:namePart[@type="date"]')
+      expect(person_date_term.xpath_constrained).to eq('//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains(., "#{constraint_value}")]'.gsub('"', '\"'))
       # person_date_term.xpath_constrained.should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "#{constraint_value}")]'.gsub('"', '\"')
     end
 
     it "supports subelements that are specified using a :ref" do
       role_term = @test_full_terminology.retrieve_term(:name, :role)
-      role_term.xpath.should == '//oxns:name/oxns:role'
-      role_term.xpath_relative.should == 'oxns:role'
-      role_term.xpath_constrained.should == '//oxns:name/oxns:role[contains(., "#{constraint_value}")]'.gsub('"', '\"')
+      expect(role_term.xpath).to eq('//oxns:name/oxns:role')
+      expect(role_term.xpath_relative).to eq('oxns:role')
+      expect(role_term.xpath_constrained).to eq('//oxns:name/oxns:role[contains(., "#{constraint_value}")]'.gsub('"', '\"'))
       # role_term.xpath_constrained.should == '//oxns:name[contains(oxns:role/oxns:roleTerm, "#{constraint_value}")]'.gsub('"', '\"')
     end
 
     describe "treating attributes as properties" do
       it "should build correct xpath" do    
         language_term = @test_full_terminology.retrieve_term(:title_info, :language)
-        language_term.xpath.should == '//oxns:titleInfo/@lang'
-        language_term.xpath_relative.should == '@lang'
-        language_term.xpath_constrained.should == '//oxns:titleInfo/@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"')
+        expect(language_term.xpath).to eq('//oxns:titleInfo/@lang')
+        expect(language_term.xpath_relative).to eq('@lang')
+        expect(language_term.xpath_constrained).to eq('//oxns:titleInfo/@lang[contains(., "#{constraint_value}")]'.gsub('"', '\"'))
       end
     end
 
     it "should support deep nesting of properties" do
       volume_term = @test_full_terminology.retrieve_term(:journal, :issue, :volume)
-      volume_term.xpath.should == "//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\"]"
-      volume_term.xpath_relative.should == "oxns:detail[@type=\"volume\"]"
+      expect(volume_term.xpath).to eq("//oxns:relatedItem[@type=\"host\"]/oxns:part/oxns:detail[@type=\"volume\"]")
+      expect(volume_term.xpath_relative).to eq("oxns:detail[@type=\"volume\"]")
       # volume_term.xpath_constrained.should == "//oxns:part[contains(oxns:detail[@type=\\\"volume\\\"], \\\"\#{constraint_value}\\\")]"
-      volume_term.xpath_constrained.should == '//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"')
+      expect(volume_term.xpath_constrained).to eq('//oxns:relatedItem[@type="host"]/oxns:part/oxns:detail[@type="volume" and contains(oxns:number, "#{constraint_value}")]'.gsub('"', '\"'))
     end
 
     it "should not overwrite default property info when adding a variant property" do
       name_term = @test_full_terminology.retrieve_term(:name)
       person_term = @test_full_terminology.retrieve_term(:person)
 
-      name_term.should_not equal(person_term)
-      name_term.xpath.should_not equal(person_term.xpath)
-      name_term.children.should_not equal(person_term.children)
-      name_term.children[:date].xpath_constrained.should_not equal(person_term.children[:date].xpath_constrained)
+      expect(name_term).not_to equal(person_term)
+      expect(name_term.xpath).not_to equal(person_term.xpath)
+      expect(name_term.children).not_to equal(person_term.children)
+      expect(name_term.children[:date].xpath_constrained).not_to equal(person_term.children[:date].xpath_constrained)
     end
 
   end
 
   describe '#from_xml' do
     it "should let you load mappings from an xml file" do
-      pending
+      skip
       vocab = OM::XML::Terminology.from_xml( fixture("sample_mappings.xml") )
-      vocab.should be_instance_of OM::XML::Terminology
-      vocab.mappers.should == {}
+      expect(vocab).to be_instance_of OM::XML::Terminology
+      expect(vocab.mappers).to eq({})
     end
   end
 
   describe '#to_xml' do
     it "should let you serialize mappings to an xml document" do
-      pending
-      TerminologyTest.to_xml.should == ""
+      skip
+      expect(TerminologyTest.to_xml).to eq("")
     end
   end
 
   describe ".has_term?" do
     it "should return true if the specified term does exist in the terminology" do
-      @test_full_terminology.has_term?(:journal,:issue,:end_page).should be_true
+      expect(@test_full_terminology.has_term?(:journal,:issue,:end_page)).to be_truthy
     end
     it "should support term_pointers with array indexes in them (ignoring the indexes)" do
-      @test_full_terminology.has_term?(:title_info, :main_title).should be_true
-      @test_full_terminology.has_term?({:title_info=>"0"}, :main_title).should be_true
+      expect(@test_full_terminology.has_term?(:title_info, :main_title)).to be_truthy
+      expect(@test_full_terminology.has_term?({:title_info=>"0"}, :main_title)).to be_truthy
     end
     it "should return false if the specified term does not exist in the terminology" do
-      @test_full_terminology.has_term?(:name, :date, :nonexistentTerm, :anotherTermName).should be_false
+      expect(@test_full_terminology.has_term?(:name, :date, :nonexistentTerm, :anotherTermName)).to be_falsey
     end
   end
 
   describe ".retrieve_term" do
     it "should return the mapper identified by the given pointer" do
       term = @test_terminology.retrieve_term(:name, :namePart)
-      term.should == @test_terminology.terms[:name].children[:namePart]
-      term.should == @test_child_term
+      expect(term).to eq(@test_terminology.terms[:name].children[:namePart])
+      expect(term).to eq(@test_child_term)
     end
     it "should build complete terminologies" do
-      @test_full_terminology.retrieve_term(:name, :date).should be_instance_of OM::XML::Term
-      @test_full_terminology.retrieve_term(:name, :date).path.should == 'namePart'
-      @test_full_terminology.retrieve_term(:name, :date).attributes.should == {:type=>"date"}
-      @test_full_terminology.retrieve_term(:name, :affiliation).path.should == 'affiliation'
-      @test_full_terminology.retrieve_term(:name, :date).xpath.should == '//oxns:name/oxns:namePart[@type="date"]'
+      expect(@test_full_terminology.retrieve_term(:name, :date)).to be_instance_of OM::XML::Term
+      expect(@test_full_terminology.retrieve_term(:name, :date).path).to eq('namePart')
+      expect(@test_full_terminology.retrieve_term(:name, :date).attributes).to eq({:type=>"date"})
+      expect(@test_full_terminology.retrieve_term(:name, :affiliation).path).to eq('affiliation')
+      expect(@test_full_terminology.retrieve_term(:name, :date).xpath).to eq('//oxns:name/oxns:namePart[@type="date"]')
     end
     it "should support looking up variant Terms" do
-      @test_full_terminology.retrieve_term(:person).path.should == 'name'
-      @test_full_terminology.retrieve_term(:person).attributes.should == {:type=>"personal"}
-      @test_full_terminology.retrieve_term(:person, :affiliation).path.should == 'affiliation'
-      @test_full_terminology.retrieve_term(:person, :date).xpath.should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      expect(@test_full_terminology.retrieve_term(:person).path).to eq('name')
+      expect(@test_full_terminology.retrieve_term(:person).attributes).to eq({:type=>"personal"})
+      expect(@test_full_terminology.retrieve_term(:person, :affiliation).path).to eq('affiliation')
+      expect(@test_full_terminology.retrieve_term(:person, :date).xpath).to eq('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]')
     end
     it "should support including root terms in pointer" do
-      @test_full_terminology.retrieve_term(:mods).should be_instance_of OM::XML::Term
-      @test_full_terminology.retrieve_term(:mods, :name, :date).should be_instance_of OM::XML::Term
-      @test_full_terminology.retrieve_term(:mods, :name, :date).path.should == 'namePart'
-      @test_full_terminology.retrieve_term(:mods, :name, :date).attributes.should == {:type=>"date"}
-      @test_full_terminology.retrieve_term(:mods, :name, :date).xpath.should == '//oxns:mods/oxns:name/oxns:namePart[@type="date"]'
+      expect(@test_full_terminology.retrieve_term(:mods)).to be_instance_of OM::XML::Term
+      expect(@test_full_terminology.retrieve_term(:mods, :name, :date)).to be_instance_of OM::XML::Term
+      expect(@test_full_terminology.retrieve_term(:mods, :name, :date).path).to eq('namePart')
+      expect(@test_full_terminology.retrieve_term(:mods, :name, :date).attributes).to eq({:type=>"date"})
+      expect(@test_full_terminology.retrieve_term(:mods, :name, :date).xpath).to eq('//oxns:mods/oxns:name/oxns:namePart[@type="date"]')
     end
 
     it "should raise an informative error if the desired Term doesn't exist" do
-      lambda { @test_full_terminology.retrieve_term(:name, :date, :nonexistentTerm, :anotherTermName) }.should raise_error(OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: [:name, :date, :nonexistentTerm, :anotherTermName] but no Term exists at that location. Everything is fine until \":nonexistentTerm\", which doesn't exist.")
+      expect { @test_full_terminology.retrieve_term(:name, :date, :nonexistentTerm, :anotherTermName) }.to raise_error(OM::XML::Terminology::BadPointerError, "You attempted to retrieve a Term using this pointer: [:name, :date, :nonexistentTerm, :anotherTermName] but no Term exists at that location. Everything is fine until \":nonexistentTerm\", which doesn't exist.")
     end
   end
 
   describe ".term_xpath" do
     it "should insert calls to xpath array lookup into parent xpaths if parents argument is provided" do
-      pending
+      skip
       # conference_mapper = TerminologyTest.retrieve_mapper(:conference)
       # role_mapper =  TerminologyTest.retrieve_mapper(:conference, :role)
       # text_mapper = TerminologyTest.retrieve_mapper(:conference, :role, :text)
-      TerminologyTest.term_xpath({:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+      expect(TerminologyTest.term_xpath({:conference=>0}, {:role=>1}, :text )).to eq('//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]')
       # OM::XML::TermXpathGenerator.expects(:generate_absolute_xpath).with({conference_mapper=>0}, {role_mapper=>1}, text_mapper)
     end
   end
@@ -252,72 +252,72 @@ describe "OM::XML::Terminology" do
   describe ".xpath_for" do
 
     it "should retrieve the generated xpath query to match your desires" do
-      @test_full_terminology.xpath_for(:person).should == '//oxns:name[@type="personal"]'
+      expect(@test_full_terminology.xpath_for(:person)).to eq('//oxns:name[@type="personal"]')
 
-      @test_full_terminology.xpath_for(:person, "Beethoven, Ludwig van").should == '//oxns:name[@type="personal" and contains(., "Beethoven, Ludwig van")]'
+      expect(@test_full_terminology.xpath_for(:person, "Beethoven, Ludwig van")).to eq('//oxns:name[@type="personal" and contains(., "Beethoven, Ludwig van")]')
 
-      @test_full_terminology.xpath_for(:person, :date).should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      expect(@test_full_terminology.xpath_for(:person, :date)).to eq('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]')
 
-      @test_full_terminology.xpath_for(:person, :date, "2010").should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains(., "2010")]'
+      expect(@test_full_terminology.xpath_for(:person, :date, "2010")).to eq('//oxns:name[@type="personal"]/oxns:namePart[@type="date" and contains(., "2010")]')
 
-      @test_full_terminology.xpath_for(:person, :person_id).should == '//oxns:name[@type="personal"]/oxns:namePart[not(@type)]'
+      expect(@test_full_terminology.xpath_for(:person, :person_id)).to eq('//oxns:name[@type="personal"]/oxns:namePart[not(@type)]')
 
     end
 
     it "should support including root terms in term pointer" do
-      @test_full_terminology.xpath_for(:mods, :person).should == '//oxns:mods/oxns:name[@type="personal"]'
-      @test_full_terminology.xpath_for(:mods, :person, "Beethoven, Ludwig van").should == '//oxns:mods/oxns:name[@type="personal" and contains(., "Beethoven, Ludwig van")]'
+      expect(@test_full_terminology.xpath_for(:mods, :person)).to eq('//oxns:mods/oxns:name[@type="personal"]')
+      expect(@test_full_terminology.xpath_for(:mods, :person, "Beethoven, Ludwig van")).to eq('//oxns:mods/oxns:name[@type="personal" and contains(., "Beethoven, Ludwig van")]')
     end
 
     it "should support queries with complex constraints" do
-      pending
-      @test_full_terminology.xpath_for(:person, {:date=>"2010"}).should == '//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]'
+      skip
+      expect(@test_full_terminology.xpath_for(:person, {:date=>"2010"})).to eq('//oxns:name[@type="personal" and contains(oxns:namePart[@type="date"], "2010")]')
     end
 
     it "should support queries with multiple complex constraints" do
-      pending
-      @test_full_terminology.xpath_for(:person, {:role=>"donor", :last_name=>"Rockefeller"}).should == '//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]'
+      skip
+      expect(@test_full_terminology.xpath_for(:person, {:role=>"donor", :last_name=>"Rockefeller"})).to eq('//oxns:name[@type="personal" and contains(oxns:role/oxns:roleTerm, "donor") and contains(oxns:namePart[@type="family"], "Rockefeller")]')
     end
 
     it "should parrot any strings back to you (in case you already have an xpath query)" do
-      @test_full_terminology.xpath_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]').should == '//oxns:name[@type="personal"]/oxns:namePart[@type="date"]'
+      expect(@test_full_terminology.xpath_for('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]')).to eq('//oxns:name[@type="personal"]/oxns:namePart[@type="date"]')
     end
 
     it "should traverse named term proxies transparently" do
       proxied_xpath = @test_full_terminology.xpath_for(:journal, :issue, :pages, :start)
-      @test_full_terminology.xpath_for( :journal, :issue, :start_page ).should == proxied_xpath
+      expect(@test_full_terminology.xpath_for( :journal, :issue, :start_page )).to eq(proxied_xpath)
     end
 
   end
 
   describe ".xpath_with_indexes" do
     it "should return the xpath given in the call to #accessor" do
-      @test_full_terminology.xpath_with_indexes( :title_info ).should == '//oxns:titleInfo'
+      expect(@test_full_terminology.xpath_with_indexes( :title_info )).to eq('//oxns:titleInfo')
     end
     it "should support xpath queries as argument" do
-      @test_full_terminology.xpath_with_indexes('//oxns:name[@type="personal"][1]/oxns:namePart').should == '//oxns:name[@type="personal"][1]/oxns:namePart'
+      expect(@test_full_terminology.xpath_with_indexes('//oxns:name[@type="personal"][1]/oxns:namePart')).to eq('//oxns:name[@type="personal"][1]/oxns:namePart')
     end
     # Note: Ruby array indexes begin from 0.  In xpath queries (which start from 1 instead of 0), this will be translated accordingly.
     it "should prepend the xpath for any parent nodes, inserting calls to xpath array lookup where necessary" do
-      @test_full_terminology.xpath_with_indexes( {:conference=>0}, {:role=>1}, :text ).should == '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
+      expect(@test_full_terminology.xpath_with_indexes( {:conference=>0}, {:role=>1}, :text )).to eq('//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]')
     end
     it "should be idempotent" do
-      @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
-      @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
-      @test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] ).should == "//oxns:titleInfo[3]/oxns:title"
+      expect(@test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] )).to eq("//oxns:titleInfo[3]/oxns:title")
+      expect(@test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] )).to eq("//oxns:titleInfo[3]/oxns:title")
+      expect(@test_full_terminology.xpath_with_indexes( *[{:title_info=>2}, :main_title] )).to eq("//oxns:titleInfo[3]/oxns:title")
     end
     it "should traverse named term proxies transparently" do
       proxied_xpath = @test_full_terminology.xpath_with_indexes(:journal, :issue, :pages, :start)
-      @test_full_terminology.xpath_with_indexes( :journal, :issue, :start_page ).should == proxied_xpath
+      expect(@test_full_terminology.xpath_with_indexes( :journal, :issue, :start_page )).to eq(proxied_xpath)
     end
   end
 
   describe "#xml_builder_template" do
 
     it "should generate a template call for passing into the builder block (assumes 'xml' as the argument for the block)" do
-      @test_full_terminology.xml_builder_template(:person,:date).should == 'xml.namePart( \'#{builder_new_value}\', \'type\'=>\'date\' )'
-      @test_full_terminology.xml_builder_template(:person,:person_id).should == 'xml.namePart( \'#{builder_new_value}\' )'
-      @test_full_terminology.xml_builder_template(:name,:affiliation).should == 'xml.affiliation( \'#{builder_new_value}\' )'
+      expect(@test_full_terminology.xml_builder_template(:person,:date)).to eq('xml.namePart( \'#{builder_new_value}\', \'type\'=>\'date\' )')
+      expect(@test_full_terminology.xml_builder_template(:person,:person_id)).to eq('xml.namePart( \'#{builder_new_value}\' )')
+      expect(@test_full_terminology.xml_builder_template(:name,:affiliation)).to eq('xml.affiliation( \'#{builder_new_value}\' )')
     end
 
     it "should accept extra options" do
@@ -326,44 +326,44 @@ describe "OM::XML::Terminology" do
       e1 = %q{xml.roleTerm( '#{builder_new_value}', 'type'=>'code', 'authority'=>'marcrelator' )}
       e2 = %q{xml.roleTerm( '#{builder_new_value}', 'authority'=>'marcrelator', 'type'=>'code' )}
       got = @test_full_terminology.xml_builder_template(:role, :code, {:attributes=>{"authority"=>"marcrelator"}} )
-      [e1, e2].should include(got)
+      expect([e1, e2]).to include(got)
       got = @test_full_terminology.xml_builder_template(:person, :role, :code, {:attributes=>{"authority"=>"marcrelator"}} )
-      [e1, e2].should include(got)
+      expect([e1, e2]).to include(got)
     end
 
     it "should work with deeply nested properties" do
-      @test_full_terminology.xml_builder_template(:issue, :volume).should == "xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
-      @test_full_terminology.xml_builder_template(:journal, :issue, :level).should == "xml.detail( \'type\'=>'number' ) { xml.number( '\#{builder_new_value}' ) }"
-      @test_full_terminology.xml_builder_template(:journal, :issue, :volume).should == "xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }"
-      @test_full_terminology.xml_builder_template(:journal, :issue, :pages, :start).should == "xml.start( '\#{builder_new_value}' )"
+      expect(@test_full_terminology.xml_builder_template(:issue, :volume)).to eq("xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }")
+      expect(@test_full_terminology.xml_builder_template(:journal, :issue, :level)).to eq("xml.detail( \'type\'=>'number' ) { xml.number( '\#{builder_new_value}' ) }")
+      expect(@test_full_terminology.xml_builder_template(:journal, :issue, :volume)).to eq("xml.detail( \'type\'=>'volume' ) { xml.number( '\#{builder_new_value}' ) }")
+      expect(@test_full_terminology.xml_builder_template(:journal, :issue, :pages, :start)).to eq("xml.start( '\#{builder_new_value}' )")
     end
 
   end
 
   describe "#term_generic_name" do
     it "should generate a generic accessor name based on an array of pointers" do
-      OM::XML::Terminology.term_generic_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_role_text"
-      OM::XML::Terminology.term_generic_name( *[{:conference=>0}, {:role=>1}, :text] ).should == "conference_role_text"
+      expect(OM::XML::Terminology.term_generic_name( {:conference=>0}, {:role=>1}, :text )).to eq("conference_role_text")
+      expect(OM::XML::Terminology.term_generic_name( *[{:conference=>0}, {:role=>1}, :text] )).to eq("conference_role_text")
     end
   end
 
   describe "#term_hierarchical_name" do
     it "should generate a specific accessor name based on an array of pointers and indexes" do
-      OM::XML::Terminology.term_hierarchical_name( {:conference=>0}, {:role=>1}, :text ).should == "conference_0_role_1_text"
-      OM::XML::Terminology.term_hierarchical_name( *[{:conference=>0}, {:role=>1}, :text] ).should == "conference_0_role_1_text"
+      expect(OM::XML::Terminology.term_hierarchical_name( {:conference=>0}, {:role=>1}, :text )).to eq("conference_0_role_1_text")
+      expect(OM::XML::Terminology.term_hierarchical_name( *[{:conference=>0}, {:role=>1}, :text] )).to eq("conference_0_role_1_text")
     end
   end
 
   describe ".term_builders" do
     it "should return a hash terms that have been added to the root of the terminology, indexed by term name" do
-      @test_terminology.terms[:name].should == @test_name
+      expect(@test_terminology.terms[:name]).to eq(@test_name)
     end
   end
 
   describe ".root_terms" do
     it "should return the terms that have been marked root" do
-      @test_full_terminology.root_terms.length.should == 1
-      @test_full_terminology.root_terms.first.should == @test_full_terminology.terms[:mods]
+      expect(@test_full_terminology.root_terms.length).to eq(1)
+      expect(@test_full_terminology.root_terms.first).to eq(@test_full_terminology.terms[:mods])
     end
   end
 

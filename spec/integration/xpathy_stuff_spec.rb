@@ -51,11 +51,11 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
     end
 
     it "should have a content term" do
-      subject.content.first.should =~ /content/
+      expect(subject.content.first).to match(/content/)
     end
 
     it "should have an html term" do
-      subject.html.first.should =~ /html/
+      expect(subject.html.first).to match(/html/)
     end
 
 
@@ -120,15 +120,15 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
     end
 
     it "should have the terms :author_given and :author_family to get the author name" do
-      pending "This doesn't seem to work?"
-      subject.author_given.should include("Mary")
-      subject.author_family.should include("Pickral")
+      skip "This doesn't seem to work?"
+      expect(subject.author_given).to include("Mary")
+      expect(subject.author_family).to include("Pickral")
     end
 
     it "should have the terms :advisor_given and :advisor_family to get the advisor name" do
-      pending "This doesn't seem to work?"
-      subject.advisor_given.should include("David")
-      subject.advisor_family.should include("Small")
+      skip "This doesn't seem to work?"
+      expect(subject.advisor_given).to include("David")
+      expect(subject.advisor_family).to include("Small")
     end
 
   end
@@ -185,19 +185,19 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
     end
 
     it "should give a creator value" do
-      subject.creator.should include "David Small"
+      expect(subject.creator).to include "David Small"
     end
 
     it "should give a repository value" do
-      subject.repository.should include "Graphic Novel Repository"
+      expect(subject.repository).to include "Graphic Novel Repository"
     end
 
     it "should have a person term 'for more generic xml'" do
-      subject.person.should include "David Small"
+      expect(subject.person).to include "David Small"
     end
 
     it "should have a corporate term 'for more generic xml'" do
-      subject.corporate.should include "Graphic Novel Repository"
+      expect(subject.corporate).to include "Graphic Novel Repository"
     end
   end
 end

@@ -10,16 +10,16 @@ describe "OM::XML::NodeGenerator" do
   
   describe '#generate' do
     it "should use the corresponding builder template(s) to generate the node" do
-      OM::XML::NodeGenerator.generate(@test_mods_term, "foo").root.to_xml.should == "<mods>foo</mods>"
+      expect(OM::XML::NodeGenerator.generate(@test_mods_term, "foo").root.to_xml).to eq("<mods>foo</mods>")
       generated_node = OM::XML::NodeGenerator.generate(@test_volume_term, "108", {:attributes=>{"extraAttr"=>"my value"}})
-      generated_node.xpath('./detail[@type="volume"][@extraAttr="my value"]').xpath("./number").text.should == "108"
+      expect(generated_node.xpath('./detail[@type="volume"][@extraAttr="my value"]').xpath("./number").text).to eq("108")
       # Would be great if we wrote a have_node custom rspec matcher...
       # generated_node.should have_node 'role[@authority="marcrelator"][@type="code"]' do
       #   with_node "roleTerm", "creator"
       # end
     end
     it "should return Nokogiri Documents" do
-      OM::XML::NodeGenerator.generate(@test_mods_term, "foo").class.should == Nokogiri::XML::Document
+      expect(OM::XML::NodeGenerator.generate(@test_mods_term, "foo").class).to eq(Nokogiri::XML::Document)
     end
   end
   
