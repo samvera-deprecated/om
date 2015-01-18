@@ -66,10 +66,10 @@ describe "OM::XML::Accessors" do
   describe "update_properties" do
     it "should update the declared properties" do
       skip "nesting is too deep..."
-      @sample.retrieve(*[:edit_access, :machine, :person]).length.should == 0
-      @sample.update_properties([:edit_access, :machine, :person]=>"user id").should == {"edit_access_machine_person"=>{"-1"=>"user id"}}
-      @sample.retrieve(*[:edit_access, :machine, :person]).length.should == 1
-      @sample.retrieve(*[:edit_access, :machine, :person]).first.text.should == "user id"
+      expect(@sample.retrieve(*[:edit_access, :machine, :person]).length).to eq 0
+      expect(@sample.update_properties([:edit_access, :machine, :person]=>"user id")).to eq({"edit_access_machine_person"=>{"-1"=>"user id"}})
+      expect(@sample.retrieve(*[:edit_access, :machine, :person]).length).to eq  1
+      expect(@sample.retrieve(*[:edit_access, :machine, :person]).first.text).to eq "user id"
     end
   end
   

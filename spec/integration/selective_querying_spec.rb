@@ -83,7 +83,7 @@ describe "Selecting nodes based on (a) position in hierarchy and (b) attributes"
       [ 'inner_note_a',     %w(                    i3a i4a) ],
       [ 'inner_note_not_a', %w(              i1 i2        ) ],
     ]
-    tests.each { |meth, exp| @doc.send(meth).should == exp }
+    tests.each { |meth, exp| expect(@doc.send(meth)).to eq exp }
   end
 
 end

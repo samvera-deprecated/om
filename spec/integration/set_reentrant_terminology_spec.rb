@@ -21,7 +21,7 @@ describe "calling set_terminology more than once" do
     end
 
     it "can get foo" do
-      subject.foo.should == ['fooval']
+      expect(subject.foo).to eq ['fooval']
     end
 
     it "cannot get bar" do
@@ -51,7 +51,7 @@ describe "calling set_terminology more than once" do
     end
 
     it "can now get bar" do
-      subject.bar.should == ['barval']
+      expect(subject.bar).to eq ['barval']
     end
 
   end
@@ -80,11 +80,11 @@ describe "calling set_terminology more than once" do
     end
 
     it "can get foo" do
-      subject.foo.should == ['fooval']
+      expect(subject.foo).to eq ['fooval']
     end
 
     it "can get bar" do
-      subject.bar.should == ['barval']
+      expect(subject.bar).to eq ['barval']
     end
 
   end
@@ -122,11 +122,11 @@ describe "calling set_terminology more than once" do
     end
 
     it "can get foo" do
-      subject.foo.should == ['fooval']
+      expect(subject.foo).to eq ['fooval']
     end
 
     it "can get bar" do
-      subject.bar.should == ['barval']
+      expect(subject.bar).to eq ['barval']
     end
 
   end
