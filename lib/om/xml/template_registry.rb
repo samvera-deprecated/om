@@ -77,12 +77,7 @@ class OM::XML::TemplateRegistry
   def instantiate(node_type, *args)
     result = create_detached_node(nil, node_type, *args)
     # Strip namespaces from text and CDATA nodes. Stupid Nokogiri.
-    result.traverse { |node|
-      if node.is_a?(Nokogiri::XML::CharacterData)
-        node.namespace = nil
-      end
-    }
-    return result
+    remove_namespaces_from_cdata(result)
   end
 
   # +instantiate+ a node and add it as a child of the [Nokogiri::XML::Node] specified by +target_node+
@@ -181,12 +176,7 @@ class OM::XML::TemplateRegistry
     builder_node = builder_node_offset == :parent ? target_node.parent : target_node
     new_node = create_detached_node(builder_node, node_type, *args)
     result = target_node.send(method, new_node)
-    # Strip namespaces from text and CDATA nodes. Stupid Nokogiri.
-    new_node.traverse { |node|
-      if node.is_a?(Nokogiri::XML::CharacterData)
-        node.namespace = nil
-      end
-    }
+    remove_namespaces_from_cdata(new_node)
     if block_given?
       yield result
     else
@@ -198,4 +188,15 @@ class OM::XML::TemplateRegistry
     Nokogiri::XML('<root/>').root
   end
   
+  # Strip namespaces from text and CDATA nodes. Stupid Nokogiri.
+  def remove_namespaces_from_cdata(node)
+    node.traverse { |n|
+      unless Nokogiri.jruby?
+        if n.is_a?(Nokogiri::XML::CharacterData)
+          n.namespace = nil
+        end
+      end
+    }
+    node
+  end
 end

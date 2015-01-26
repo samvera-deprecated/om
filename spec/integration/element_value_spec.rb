@@ -34,8 +34,8 @@ describe "element values" do
   <elementB>valB1</elementB>
   <elementB animal="vole">valB2</elementB>
   <elementC type="c type" animal="seagull">valC</elementC>
-  <elementD >valD1</elementC>
-  <elementD animal="seagull">valD2</elementC>
+  <elementD>valD1</elementD>
+  <elementD animal="seagull">valD2</elementD>
   <resource type="ead" id="coll.ead" objectId="hypatia:ead_file_asset_fixture">
     <file id="my_ead.xml" format="XML" mimetype="text/xml" size="47570">
       <checksum type="md5">123</checksum>

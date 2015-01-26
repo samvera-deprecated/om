@@ -42,7 +42,7 @@ describe "OM::XML::Container" do
     it "should accept Nokogiri nodes as input and leave them as-is" do
       parsed_xml = Nokogiri::XML::Document.parse("<foo><bar>1</bar></foo>")
       container1 = ContainerTest.from_xml(parsed_xml)
-      container1.ng_xml.should == parsed_xml
+      container1.ng_xml.should be_equivalent_to(parsed_xml)
     end
   end
   
@@ -61,7 +61,7 @@ describe "OM::XML::Container" do
     
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (functional test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
-      subject.to_xml(doc).should == "<?xml version=\"1.0\"?>\n<test_xml>\n  <foo>\n    <bar>1</bar>\n  </foo>\n</test_xml>\n"
+      subject.to_xml(doc).should be_equivalent_to("<?xml version=\"1.0\"?>\n<test_xml>\n  <foo>\n    <bar>1</bar>\n  </foo>\n</test_xml>\n")
     end
     
     it 'should add to root of Nokogiri::XML::Documents, but add directly to the elements if a Nokogiri::XML::Node is passed in' do

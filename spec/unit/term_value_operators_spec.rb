@@ -171,12 +171,12 @@ describe "OM::XML::TermValueOperators" do
     it "should do nothing if field key is a string (must be an array or symbol).  Will not accept xpath queries!" do
       xml_before = @article.to_xml
       @article.update_values( { "fubar"=>"the role" } ).should == {}
-      @article.to_xml.should == xml_before
+      @article.to_xml.should be_equivalent_to(xml_before)
     end
     it "should do nothing if there is no term corresponding to the given field key" do
       xml_before = @article.to_xml
       @article.update_values( { [{"fubar"=>"0"}]=>"the role" } ).should == {}
-      @article.to_xml.should == xml_before
+      @article.to_xml.should be_equivalent_to(xml_before)
     end
     
     it "should work for text fields" do 
@@ -281,9 +281,9 @@ describe "OM::XML::TermValueOperators" do
         :parent_index => :first,
         :template => [:person, :affiliation],
         :values => ["my new value", "another new value"] 
-      ).to_xml.should == expected_result
+      ).to_xml.should be_equivalent_to(expected_result)
       
-      @sample.find_by_terms(:person, {:first_name=>"Tim", :last_name=>"Berners-Lee"}).first.to_xml.should == expected_result
+      @sample.find_by_terms(:person, {:first_name=>"Tim", :last_name=>"Berners-Lee"}).first.to_xml.should be_equivalent_to(expected_result)
     end
     
     it "should support adding attribute values" do
@@ -325,7 +325,7 @@ describe "OM::XML::TermValueOperators" do
       @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=1]/oxns:role', @sample.ox_namespaces).length.should == 2
       @sample.ng_xml.xpath('//oxns:name[@type="personal" and position()=1]/oxns:role[last()]/oxns:roleTerm', @sample.ox_namespaces).first.text.should == "founder"
 
-      # @sample.find_by_terms_and_value(:person).first.to_xml.should == expected_result
+      # @sample.find_by_terms_and_value(:person).first.to_xml.should be_equivalent_to(expected_result)
     end
 	  
 	  it "should support more complex mixing & matching" do

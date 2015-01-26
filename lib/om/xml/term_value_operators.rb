@@ -158,7 +158,12 @@ module OM::XML::TermValueOperators
 
     #if there is an xpath element pointing to text() need to change to just 'text' so it references the text method for the parent node
     template.gsub!(/text\(\)/, 'text')
-    
+
+    #if the template doesn't specify a namespace prefix, use the parent node's prefix
+    if parent_node.namespace and parent_node.namespace.prefix.present?
+      template.gsub!(/xml\./,"xml[:#{parent_node.namespace.prefix}].")
+    end
+
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|
         builder_new_value = builder_new_value.gsub(/'/, "\\\\'") # escape any apostrophes in the new value
