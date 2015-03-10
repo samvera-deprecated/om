@@ -31,12 +31,12 @@ describe "Inherited terminology" do
 
       it "should inherit terminology" do
         subject.foo = "Test value"
-        subject.foo.should == ["Test value"]
+        expect(subject.foo).to eq ["Test value"]
       end
 
       it "should have extended terminology" do
         subject.bar = "Test value"
-        subject.bar.should == ["Test value"]
+        expect(subject.bar).to eq ["Test value"]
       end
     end
 
@@ -48,7 +48,7 @@ describe "Inherited terminology" do
 
       it "should have terminology" do
         subject.foo = "Test value"
-        subject.foo.should == ["Test value"]
+        expect(subject.foo).to eq ["Test value"]
       end
 
       it "should not have extended terminology" do
@@ -99,14 +99,14 @@ describe "Inherited terminology" do
 
       it "should inherit templates" do
         subject.add_child_node subject.ng_xml.root, :creator, 'Test author', 'Primary' 
-        subject.ng_xml.xpath('//pbcoreCreator/creatorRole[@source="PBCore creatorRole"]').text.should == "Primary"
+        expect(subject.ng_xml.xpath('//pbcoreCreator/creatorRole[@source="PBCore creatorRole"]').text).to eq "Primary"
       end
 
       it "should inherit but not extend its parent's templates" do
-        OtherConcreteTerminology.template_registry.should have_node_type(:creator)
-        OtherConcreteTerminology.template_registry.should have_node_type(:foo)
-        AbstractTerminology.template_registry.should_not have_node_type(:foo)
-        ConcreteTerminology.template_registry.should_not have_node_type(:foo)
+        expect(OtherConcreteTerminology.template_registry).to have_node_type(:creator)
+        expect(OtherConcreteTerminology.template_registry).to have_node_type(:foo)
+        expect(AbstractTerminology.template_registry).not_to have_node_type(:foo)
+        expect(ConcreteTerminology.template_registry).not_to have_node_type(:foo)
       end
     end
   end

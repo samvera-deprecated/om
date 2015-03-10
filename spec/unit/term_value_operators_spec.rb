@@ -13,17 +13,17 @@ describe "OM::XML::TermValueOperators" do
     it "should return build an array of values from the nodeset corresponding to the given term" do
       expected_values = ["Berners-Lee", "Jobs", "Wozniak", "Klimt"]
       result = @sample.term_values(:person, :last_name)
-      result.length.should == expected_values.length
-      expected_values.each {|v| result.should include(v)}
+      expect(result.length).to eq expected_values.length
+      expected_values.each {|v| expect(result).to include(v)}
     end
 
     it "should look at the index" do
       result = @sample.term_values(:role, {:text => 3})
-      result.should == ['visionary']
+      expect(result).to eq ['visionary']
     end
 
     it "should ignore whitespace elements for a term pointing to a text() node for an element that contains children" do
-      @article.term_values(:name, :name_content).should == ["Describes a person"]
+      expect(@article.term_values(:name, :name_content)).to eq ["Describes a person"]
     end
   
   end
@@ -33,27 +33,27 @@ describe "OM::XML::TermValueOperators" do
     it "should update the xml according to the find_by_terms_and_values in the given hash" do
       terms_attributes = {[{":person"=>"0"}, "affiliation"]=>{'1' => "affiliation1", '2'=> "affiliation2", '3' => "affiliation3"}, [{:person=>1}, :last_name]=>"Andronicus", [{"person"=>"1"},:first_name]=>["Titus"],[{:person=>1},:role]=>["otherrole1","otherrole2"] }
       result = @article.update_values(terms_attributes)
-      result.should == {"person_0_affiliation"=>["affiliation1", "affiliation2", "affiliation3"], "person_1_last_name"=>["Andronicus"], "person_1_first_name"=>["Titus"], "person_1_role"=>["otherrole1","otherrole2"]}
+      expect(result).to eq({"person_0_affiliation"=>["affiliation1", "affiliation2", "affiliation3"], "person_1_last_name"=>["Andronicus"], "person_1_first_name"=>["Titus"], "person_1_role"=>["otherrole1","otherrole2"]})
       person_0_affiliation = @article.find_by_terms({:person=>0}, :affiliation)
-      person_0_affiliation[0].text.should == "affiliation1"
-      person_0_affiliation[1].text.should == "affiliation2"
-      person_0_affiliation[2].text.should == "affiliation3"
+      expect(person_0_affiliation[0].text).to eq "affiliation1"
+      expect(person_0_affiliation[1].text).to eq "affiliation2"
+      expect(person_0_affiliation[2].text).to eq "affiliation3"
       
       person_1_last_names = @article.find_by_terms({:person=>1}, :last_name)
-      person_1_last_names.length.should == 1
-      person_1_last_names.first.text.should == "Andronicus"
+      expect(person_1_last_names.length).to eq 1
+      expect(person_1_last_names.first.text).to eq "Andronicus"
       
       person_1_first_names = @article.find_by_terms({:person=>1}, :first_name)
-      person_1_first_names.first.text.should == "Titus"
+      expect(person_1_first_names.first.text).to eq "Titus"
       
       person_1_roles = @article.find_by_terms({:person=>1}, :role)
-      person_1_roles[0].text.should == "otherrole1"
-      person_1_roles[1].text.should == "otherrole2"
+      expect(person_1_roles[0].text).to eq "otherrole1"
+      expect(person_1_roles[1].text).to eq "otherrole2"
     end
 
     it "should allow setting a blank string " do
       @article.update_values([:abstract]=>[''])
-      @article.term_values(:abstract).should == [""]
+      expect(@article.term_values(:abstract)).to eq [""]
     end
 
     it "should call term_value_update if the corresponding node already exists" do
@@ -78,150 +78,150 @@ describe "OM::XML::TermValueOperators" do
       pointer = [:title_info, :language]
       test_val = "language value"
       @article.update_values( {pointer=>test_val} )
-      @article.term_values(*pointer).first.should == test_val
+      expect(@article.term_values(*pointer).first).to eq test_val
     end
     
     it "should not get tripped up on root nodes" do
       @article.update_values([:title_info]=>["york", "mangle","mork"])
-      @article.term_values(*[:title_info]).should == ["york", "mangle", "mork"]
+      expect(@article.term_values(*[:title_info])).to eq ["york", "mangle", "mork"]
     end
 
     it "should destringify the field key/find_by_terms_and_value pointer" do
       expected_result = {"person_0_role"=>["the role"]}
-      @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" }).should == expected_result
-      @article.update_values( { [{"person"=>"0"}, "role"]=>"the role" }).should == expected_result
-      @article.update_values( { [{:person=>0}, :role]=>"the role" }).should == expected_result
+      expect(@article.update_values( { [{":person"=>"0"}, "role"]=>"the role" })).to eq expected_result
+      expect(@article.update_values( { [{"person"=>"0"}, "role"]=>"the role" })).to eq expected_result
+      expect(@article.update_values( { [{:person=>0}, :role]=>"the role" })).to eq expected_result
     end
 
     it "should replace stuff with the same value (in this case 'one')" do
       @article.update_values( { [{:person=>0}, :role]=>["one"] })
       @article.update_values( { [{:person=>0}, :role]=>["one", "two"] })
-      @article.term_values( {:person=>0}, :role).should == ["one", "two"]
+      expect(@article.term_values( {:person=>0}, :role)).to eq ["one", "two"]
     end
     
     it "should traverse named term proxies transparently" do
-      @article.term_values( :journal, :issue, :start_page).should_not == ["108"]      
+      expect(@article.term_values( :journal, :issue, :start_page)).not_to eq ["108"]      
       @article.update_values( { ["journal", "issue", "start_page"]=>"108" } )
-      @article.term_values( :journal, :issue, :start_page).should == ["108"]      
-      @article.term_values( :journal, :issue, :pages, :start).should == ["108"]
+      expect(@article.term_values( :journal, :issue, :start_page)).to eq ["108"]      
+      expect(@article.term_values( :journal, :issue, :pages, :start)).to eq ["108"]
     end
     
     it "should create the necessary ancestor nodes when necessary" do
   	  @sample.find_by_terms(:person).length.should == 4
   	  @sample.update_values([{:person=>8}, :role, :text]=>"my role")
       person_entries = @sample.find_by_terms(:person)
-      person_entries.length.should == 5
-      person_entries[4].search("./ns3:role").first.text.should == "my role" 
+      expect(person_entries.length).to eq 5
+      expect(person_entries[4].search("./ns3:role").first.text).to eq "my role" 
 	  end
 	  
     it "should create deep trees of ancestor nodes" do
       result = @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>"434" })
-      @article.find_by_terms({:journal=>0}, :issue).length.should == 2
-      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length.should == 1
-      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length.should == 1
-      @article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text.should == "434"
+      expect(@article.find_by_terms({:journal=>0}, :issue).length).to eq 2
+      expect(@article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length).to eq 1
+      expect(@article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length).to eq 1
+      expect(@article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text).to eq "434"
       #Last argument is a filter, we must explicitly pass no filter
-      @article.class.terminology.xpath_with_indexes(:subject, {:topic=>1}, {}).should == '//oxns:subject/oxns:topic[2]'
-      @article.find_by_terms(:subject, {:topic => 1}, {}).text.should == "TOPIC 2"
+      expect(@article.class.terminology.xpath_with_indexes(:subject, {:topic=>1}, {})).to eq '//oxns:subject/oxns:topic[2]'
+      expect(@article.find_by_terms(:subject, {:topic => 1}, {}).text).to eq "TOPIC 2"
 	  end
 	  
 	  it "should accommodate appending term values with apostrophes in them"  do
-	    @article.find_by_terms(:person, :description).should be_empty  # making sure that there's no description node -- forces a value_append
+	    expect(@article.find_by_terms(:person, :description)).to be_empty  # making sure that there's no description node -- forces a value_append
       terms_update_hash =  {[:person, :description]=>" 'phrul gyi lde mig"}
       result = @article.update_values(terms_update_hash)
-      @article.term_values(:person, :description).should include(" 'phrul gyi lde mig")
+      expect(@article.term_values(:person, :description)).to include(" 'phrul gyi lde mig")
     end
     
     it "should support inserting nodes with namespaced attributes" do
       @sample.update_values({['title_info', 'french_title']=>'Le Titre'})
-      @sample.term_values('title_info', 'french_title').should == ['Le Titre']
+      expect(@sample.term_values('title_info', 'french_title')).to eq ['Le Titre']
     end
 
     it "should support inserting attributes" do
       skip "HYDRA-415"
       @sample.update_values({['title_info', 'language']=>'Le Titre'})
-      @sample.term_values('title_info', 'french_title').should == ['Le Titre']
+      expect(@sample.term_values('title_info', 'french_title')).to eq ['Le Titre']
     end
     
     it "should support inserting namespaced attributes" do
       skip "HYDRA-415"
       @sample.update_values({['title_info', 'main_title', 'main_title_lang']=>'eng'})
-      @sample.term_values('title_info', 'main_title', 'main_title_lang').should == ['eng']
+      expect(@sample.term_values('title_info', 'main_title', 'main_title_lang')).to eq ['eng']
       ## After a proxy
-      @article.term_values(:title,:main_title_lang).should == ['eng']
+      expect(@article.term_values(:title,:main_title_lang)).to eq ['eng']
     end
     
     ### Examples copied over form nokogiri_datastream_spec
     
     it "should apply submitted hash to corresponding datastream field values" do
       result = @article.update_values( {[{":person"=>"0"}, "first_name"]=>["Billy", "Bob", "Joe"] })
-      result.should == {"person_0_first_name"=>["Billy", "Bob", "Joe"]}
+      expect(result).to eq({"person_0_first_name"=>["Billy", "Bob", "Joe"]})
       # xpath = ds.class.xpath_with_indexes(*field_key)
       # result = ds.term_values(xpath)
-      @article.term_values({:person=>0}, :first_name).should == ["Billy","Bob","Joe"]
-      @article.term_values('//oxns:name[@type="personal"][1]/oxns:namePart[@type="given"]').should == ["Billy","Bob","Joe"]
+      expect(@article.term_values({:person=>0}, :first_name)).to eq ["Billy","Bob","Joe"]
+      expect(@article.term_values('//oxns:name[@type="personal"][1]/oxns:namePart[@type="given"]')).to eq ["Billy","Bob","Joe"]
     end
     it "should support single-value arguments (as opposed to a hash of values with array indexes as keys)" do
       # In other words, { [:journal, :title_info]=>"dork" } should have the same effect as { [:journal, :title_info]=>{"0"=>"dork"} }
       result = @article.update_values( { [{":person"=>"0"}, "role"]=>"the role" } )
-      result.should == {"person_0_role"=>["the role"]}
-      @article.term_values({:person=>0}, :role).first.should == "the role"     
-      @article.term_values('//oxns:name[@type="personal"][1]/oxns:role').first.should == "the role"
+      expect(result).to eq({"person_0_role"=>["the role"]})
+      expect(@article.term_values({:person=>0}, :role).first).to eq "the role"     
+      expect(@article.term_values('//oxns:name[@type="personal"][1]/oxns:role').first).to eq "the role"
     end
     it "should do nothing if field key is a string (must be an array or symbol).  Will not accept xpath queries!" do
       xml_before = @article.to_xml
-      @article.update_values( { "fubar"=>"the role" } ).should == {}
-      @article.to_xml.should == xml_before
+      expect(@article.update_values( { "fubar"=>"the role" } )).to eq({})
+      expect(@article.to_xml).to eq xml_before
     end
     it "should do nothing if there is no term corresponding to the given field key" do
       xml_before = @article.to_xml
-      @article.update_values( { [{"fubar"=>"0"}]=>"the role" } ).should == {}
-      @article.to_xml.should == xml_before
+      expect(@article.update_values( { [{"fubar"=>"0"}]=>"the role" } )).to eq({})
+      expect(@article.to_xml).to eq xml_before
     end
     
     it "should work for text fields" do 
       att= {[{"person"=>"0"},"description"]=>["mork", "york"]}
       result = @article.update_values(att)
-      result.should == {"person_0_description"=>["mork", "york"]}
-      @article.term_values({:person=>0},:description).should == ['mork', 'york']
+      expect(result).to eq({"person_0_description"=>["mork", "york"]})
+      expect(@article.term_values({:person=>0},:description)).to eq ['mork', 'york']
       att= {[{"person"=>"0"},{"description" => 2}]=>"dork"}
       result2 = @article.update_values(att)
-      result2.should == {"person_0_description_2"=>["dork"]}
-      @article.term_values({:person=>0},:description).should == ['mork', 'york', 'dork']
+      expect(result2).to eq({"person_0_description_2"=>["dork"]})
+      expect(@article.term_values({:person=>0},:description)).to eq ['mork', 'york', 'dork']
     end
     
     it "should append nodes at the specified index if possible" do
       @article.update_values([:journal, :title_info]=>["all", "for", "the"])
       att = {[:journal, {:title_info => 3}]=>'glory'}
       result = @article.update_values(att)
-      result.should == {"journal_title_info_3"=>["glory"]}
-      @article.term_values(:journal, :title_info).should == ["all", "for", "the", "glory"]
+      expect(result).to eq({"journal_title_info_3"=>["glory"]})
+      expect(@article.term_values(:journal, :title_info)).to eq ["all", "for", "the", "glory"]
     end
 
     it "should remove extra nodes if fewer are given than currently exist" do
       @article.update_values([:journal, :title_info]=>%W(one two three four five))
       result = @article.update_values({[:journal, :title_info]=>["six", "seven"]})
-      @article.term_values(:journal, :title_info).should == ["six", "seven"]
+      expect((@article.term_values(:journal, :title_info))).to eq ["six", "seven"]
     end
     
     it "should append values to the end of the array if the specified index is higher than the length of the values array" do
       att = {[:journal, :issue, :pages, {:end => 3}]=>'108'}
-      @article.term_values(:journal, :issue, :pages, :end).should == []
+      expect(@article.term_values(:journal, :issue, :pages, :end)).to eq []
       result = @article.update_values(att)
-      result.should == {"journal_issue_pages_end_3"=>["108"]}
-      @article.term_values(:journal, :issue, :pages, :end).should == ["108"]
+      expect(result).to eq({"journal_issue_pages_end_3"=>["108"]})
+      expect(@article.term_values(:journal, :issue, :pages, :end)).to eq ["108"]
     end
     
     it "should allow deleting of values and should delete values so that to_xml does not return emtpy nodes" do
       att= {[:journal, :title_info]=>["york", "mangle","mork"]}
       @article.update_values(att)
-      @article.term_values(:journal, :title_info).should == ['york', 'mangle', 'mork']
+      expect(@article.term_values(:journal, :title_info)).to eq ['york', 'mangle', 'mork']
       
       @article.update_values({[:journal, {:title_info => 1}]=>nil})
-      @article.term_values(:journal, :title_info).should == ['york', 'mork']
+      expect(@article.term_values(:journal, :title_info)).to eq ['york', 'mork']
       
       @article.update_values({[:journal, {:title_info => 0}]=>:delete})
-      @article.term_values(:journal, :title_info).should == ['mork']
+      expect(@article.term_values(:journal, :title_info)).to eq ['mork']
     end
 
     describe "delete_on_update?" do
@@ -229,27 +229,27 @@ describe "OM::XML::TermValueOperators" do
       before(:each) do
         att= {[:journal, :title_info]=>["york", "mangle","mork"]}
         @article.update_values(att)
-        @article.term_values(:journal, :title_info).should == ['york', 'mangle', 'mork']
+        expect(@article.term_values(:journal, :title_info)).to eq ['york', 'mangle', 'mork']
       end
 
       it "by default, setting to nil deletes the node" do
         @article.update_values({[:journal, {:title_info => 1}]=>nil})
-        @article.term_values(:journal, :title_info).should == ['york', 'mork']
+        expect(@article.term_values(:journal, :title_info)).to eq ['york', 'mork']
       end
 
       it "if delete_on_update? returns false, setting to nil won't delete node" do
         @article.stub('delete_on_update?').and_return(false)
         @article.update_values({[:journal, {:title_info => 1}]=>""})
-        @article.term_values(:journal, :title_info).should == ['york', '', 'mork']
+        expect(@article.term_values(:journal, :title_info)).to eq ['york', '', 'mork']
       end
 
     end
 
     it "should retain other child nodes when updating a text content term and shoud not append an additional text node but update text in place" do
-      @article.term_values(:name,:name_content).should == ["Describes a person"]
+      expect(@article.term_values(:name,:name_content)).to eq ["Describes a person"]
       @article.update_values({[:name, :name_content]=>"Test text"})
-      @article.term_values(:name,:name_content).should == ["Test text"]
-      @article.find_by_terms(:name).children.length().should == 35
+      expect(@article.term_values(:name,:name_content)).to eq ["Test text"]
+      expect(@article.find_by_terms(:name).children.length()).to eq 35
     end
     
   end

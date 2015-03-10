@@ -30,10 +30,10 @@ describe "use the root element as a member of the proxy address" do
   end
 
   it "should pull out all occurences of the_thing_we_want in the relevant_container" do
-    subject.relevant_container.the_thing_we_want.should == ["1", "2"]
+    expect(subject.relevant_container.the_thing_we_want).to eq ["1", "2"]
   end
 
   it "should only pull out the_thing_we_want at the root level" do
-    subject.the_thing_we_want.should == ["2"]
+    expect(subject.the_thing_we_want).to eq ["2"]
   end
 end

@@ -35,21 +35,26 @@ describe "OM::XML::NamedTermProxy" do
       @test_proxy.send(method)
     end
   end
+
   it "should proxy the term specified by the builder" do
     @test_proxy.proxied_term.should == @test_terminology.retrieve_term(:parent, :foo, :bar)
-    @test_proxy.xpath.should == "//oxns:parent/oxns:foo/oxns:bar"
+    expect(@test_proxy.xpath).to eq "//oxns:parent/oxns:foo/oxns:bar"
   end
+
   it "should search relative to the parent term when finding the term to proxy" do
     proxy2 = @test_terminology.retrieve_term(:adoptive_parent, :my_proxy)    
-    proxy2.proxied_term.should == @test_terminology.retrieve_term(:adoptive_parent, :foo, :bar)
-    proxy2.xpath.should == '//oxns:parent[@type="adoptive"]/oxns:foo/oxns:bar'
+    expect(proxy2.proxied_term).to eq @test_terminology.retrieve_term(:adoptive_parent, :foo, :bar)
+    expect(proxy2.xpath).to eq '//oxns:parent[@type="adoptive"]/oxns:foo/oxns:bar'
   end
+
   it "should support NamedTermProxies that point to root terms" do
     @test_terminology.xpath_for(:parentfoobarproxy).should == "//oxns:parent/oxns:foo/oxns:bar"
   end
+
   it "should be usable in update_values" do
     document = NamedProxyTestDocument.from_xml(NamedProxyTestDocument.xml_template)
     document.update_values([:parentfoobarproxy] => "FOObar!")
-    document.term_values(:parentfoobarproxy).should == ["FOObar!"]
+    expect(document.term_values(:parentfoobarproxy)).to eq ["FOObar!"]
   end
+  
 end
