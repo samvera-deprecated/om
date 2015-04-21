@@ -125,7 +125,7 @@ describe "OM::XML::DynamicNode" do
       end
 
       it "Should work with proxies" do
-        @article.title.should == ["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"]
+        expect(@article.title).to eq(["ARTICLE TITLE HYDRANGEA ARTICLE 1", "Artikkelin otsikko Hydrangea artiklan 1", "TITLE OF HOST JOURNAL"])
         expect(@article.title.main_title_lang).to eq ['eng']
 
         expect(@article.title(1).to_pointer).to eq [{:title => 1}]
@@ -152,7 +152,7 @@ describe "OM::XML::DynamicNode" do
         it "should return a Nokogiri NodeSet" do
           @article.update_values( {[{:journal=>0}, {:issue=>3}, :pages, :start]=>"434" })
           nodeset = @article.journal(0).issue(1).pages.start.nodeset
-          nodeset.should be_kind_of Nokogiri::XML::NodeSet
+          expect(nodeset).to be_kind_of Nokogiri::XML::NodeSet
           expect(nodeset.length).to eq @article.journal(0).issue(1).pages.start.length
           expect(nodeset.first.text).to eq @article.journal(0).issue(1).pages.start.first
         end

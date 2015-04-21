@@ -3,7 +3,7 @@ require 'spec_helper'
 describe OM::XML::Term do
   describe "without a type" do
     it "should default to string" do
-      OM::XML::Term.new(:test_term).type.should == :string
+      expect(OM::XML::Term.new(:test_term).type).to eq(:string)
     end
   end
   describe "when type is specified" do
@@ -79,7 +79,7 @@ describe OM::XML::Term do
       it "should crawl down into mapper children to find the desired term" do
         mock_role = double("mapper", :children =>{:text=>"the target"})
         mock_conference = double("mapper", :children =>{:role=>mock_role})
-        @test_name_part.should_receive(:children).and_return({:conference=>mock_conference})
+        expect(@test_name_part).to receive(:children).and_return({:conference=>mock_conference})
         expect(@test_name_part.retrieve_term(:conference, :role, :text)).to eq "the target"
       end
       it "should return an empty hash if no term can be found" do
@@ -188,8 +188,8 @@ describe OM::XML::Term do
       end
       it "should trigger update on any child objects" do
         mock_child = double("child term")
-        mock_child.should_receive(:generate_xpath_queries!).exactly(3).times
-        @test_name_part.should_receive(:children).and_return({1=>mock_child, 2=>mock_child, 3=>mock_child})
+        expect(mock_child).to receive(:generate_xpath_queries!).exactly(3).times
+        expect(@test_name_part).to receive(:children).and_return({1=>mock_child, 2=>mock_child, 3=>mock_child})
         @test_name_part.generate_xpath_queries!
       end
     end

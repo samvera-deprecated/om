@@ -189,7 +189,7 @@ describe "OM::XML::Terminology" do
   describe '#to_xml' do
     it "should let you serialize mappings to an xml document" do
       skip
-      TerminologyTest.to_xml.should == ""
+      expect(TerminologyTest.to_xml).to eq("")
     end
   end
 
@@ -209,8 +209,8 @@ describe "OM::XML::Terminology" do
   describe ".retrieve_term" do
     it "should return the mapper identified by the given pointer" do
       term = @test_terminology.retrieve_term(:name, :namePart)
-      expect(term.should).to eq @test_terminology.terms[:name].children[:namePart]
-      expect(term.should).to eq @test_child_term
+      expect(term).to eq @test_terminology.terms[:name].children[:namePart]
+      expect(term).to eq @test_child_term
     end
     it "should build complete terminologies" do
       expect(@test_full_terminology.retrieve_term(:name, :date)).to be_instance_of OM::XML::Term
@@ -292,7 +292,7 @@ describe "OM::XML::Terminology" do
 
   describe ".xpath_with_indexes" do
     it "should return the xpath given in the call to #accessor" do
-      @test_full_terminology.xpath_with_indexes( :title_info ).should == '//oxns:titleInfo'
+      expect(@test_full_terminology.xpath_with_indexes( :title_info )).to eq('//oxns:titleInfo')
     end
     it "should support xpath queries as argument" do
       expect(@test_full_terminology.xpath_with_indexes('//oxns:name[@type="personal"][1]/oxns:namePart')).to eq '//oxns:name[@type="personal"][1]/oxns:namePart'

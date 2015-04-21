@@ -33,14 +33,14 @@ describe "OM::XML::Validation" do
   describe "#validate" do
     it "should validate the provided document against the schema provided in class definition  -- fails if no internet connection" do
       skip "no internet connection"
-      ValidationTest.schema.should_receive(:validate).with(@sample).and_return([])
+      expect(ValidationTest.schema).to receive(:validate).with(@sample).and_return([])
       ValidationTest.validate(@sample)
     end
   end
 
   describe ".validate" do
     it "should rely on class validate method" do
-      ValidationTest.should_receive(:validate).with(@sample)
+      expect(ValidationTest).to receive(:validate).with(@sample)
       @sample.validate
     end
   end
@@ -56,7 +56,7 @@ describe "OM::XML::Validation" do
   
     it "should lazy load the schema file from the @schema_url" do
       expect(ValidationTest.instance_variable_get(:@schema_file)).to be_nil
-      ValidationTest.should_receive(:file_from_url).with(ValidationTest.schema_url).once.and_return("fake file")
+      expect(ValidationTest).to receive(:file_from_url).with(ValidationTest.schema_url).once.and_return("fake file")
       ValidationTest.schema_file
       expect(ValidationTest.instance_variable_get(:@schema_file)).to eq "fake file"
       expect(ValidationTest.schema_file).to eq "fake file"
@@ -65,7 +65,7 @@ describe "OM::XML::Validation" do
 
   describe "#file_from_url" do
     it "should retrieve a file from the provided url over HTTP" do
-      ValidationTest.should_receive(:open).with("http://google.com")
+      expect(ValidationTest).to receive(:open).with("http://google.com")
       ValidationTest.send(:file_from_url, "http://google.com")
     end
     it "should raise an error if the url is invalid" do
