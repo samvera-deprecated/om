@@ -31,13 +31,13 @@ describe "OM::XML::NamedTermProxy" do
     
   it "should proxy all extra methods to the proxied object" do
     [:xpath, :xpath_relative, :xml_builder_template].each do |method|
-      @proxied_term.should_receive(method)
+      expect(@proxied_term).to receive(method)
       @test_proxy.send(method)
     end
   end
 
   it "should proxy the term specified by the builder" do
-    @test_proxy.proxied_term.should == @test_terminology.retrieve_term(:parent, :foo, :bar)
+    expect(@test_proxy.proxied_term).to eq(@test_terminology.retrieve_term(:parent, :foo, :bar))
     expect(@test_proxy.xpath).to eq "//oxns:parent/oxns:foo/oxns:bar"
   end
 
@@ -48,7 +48,7 @@ describe "OM::XML::NamedTermProxy" do
   end
 
   it "should support NamedTermProxies that point to root terms" do
-    @test_terminology.xpath_for(:parentfoobarproxy).should == "//oxns:parent/oxns:foo/oxns:bar"
+    expect(@test_terminology.xpath_for(:parentfoobarproxy)).to eq("//oxns:parent/oxns:foo/oxns:bar")
   end
 
   it "should be usable in update_values" do

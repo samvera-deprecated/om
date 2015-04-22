@@ -34,13 +34,13 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   describe "generate_xpath" do
     it "should generate an xpath based on the given mapper and options" do
-      OM::XML::TermXpathGenerator.should_receive(:generate_absolute_xpath).with(@test_term)
+      expect(OM::XML::TermXpathGenerator).to receive(:generate_absolute_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :absolute)
 
-      OM::XML::TermXpathGenerator.should_receive(:generate_relative_xpath).with(@test_term)
+      expect(OM::XML::TermXpathGenerator).to receive(:generate_relative_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :relative)
 
-      OM::XML::TermXpathGenerator.should_receive(:generate_constrained_xpath).with(@test_term)
+      expect(OM::XML::TermXpathGenerator).to receive(:generate_constrained_xpath).with(@test_term)
       OM::XML::TermXpathGenerator.generate_xpath(@test_term, :constrained)
     end
   end
@@ -137,7 +137,7 @@ EOF
       expect(@sample_terminology.xpath_with_indexes(:name, {:family_name=>1},{})).to eq '//oxns:name/oxns:namePart[@type="family"][2]'
     end
     it "should warn about indexes on a proxy" do
-      Logger.any_instance.should_receive(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
+      expect_any_instance_of(Logger).to receive(:warn).with("You attempted to call an index value of 1 on the term \":family_name\". However \":family_name\" is a proxy so we are ignoring the index. See https://jira.duraspace.org/browse/HYDRA-643")
       expect(@sample_terminology.xpath_with_indexes({:family_name=>1})).to eq "//oxns:name/oxns:namePart[@type=\"family\"]"
     end
   end

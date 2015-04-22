@@ -43,33 +43,33 @@ describe "OM::XML::TemplateRegistry" do
     end
 
     it "should define new templates" do
-      RegistryTest.template_registry.node_types.should_not include(:zombie)
+      expect(RegistryTest.template_registry.node_types).not_to include(:zombie)
       RegistryTest.define_template :zombie do |xml,name|
         xml.monster(:wants => 'braaaaainz') do
           xml.text(name)
         end
       end
-      RegistryTest.template_registry.node_types.should include(:zombie)
+      expect(RegistryTest.template_registry.node_types).to include(:zombie)
     end
 
     it "should instantiate a detached node from a template" do
       node = RegistryTest.template_registry.instantiate(:zombie, 'Zeke')
       expectation = Nokogiri::XML('<monster wants="braaaaainz">Zeke</monster>').root
-      node.should be_equivalent_to(expectation)
+      expect(node).to be_equivalent_to(expectation)
     end
     
     it "should raise an error when trying to instantiate an unknown node_type" do
-      lambda { RegistryTest.template_registry.instantiate(:demigod, 'Hercules') }.should raise_error(NameError)
+      expect { RegistryTest.template_registry.instantiate(:demigod, 'Hercules') }.to raise_error(NameError)
     end
     
     it "should raise an exception if a missing method name doesn't match a node_type" do
-      lambda { RegistryTest.template_registry.demigod('Hercules') }.should raise_error(NameError)
+      expect { RegistryTest.template_registry.demigod('Hercules') }.to raise_error(NameError)
     end
     
     it "should undefine existing templates" do
-      RegistryTest.template_registry.node_types.should include(:zombie)
+      expect(RegistryTest.template_registry.node_types).to include(:zombie)
       RegistryTest.template_registry.undefine :zombie
-      RegistryTest.template_registry.node_types.should_not include(:zombie)
+      expect(RegistryTest.template_registry.node_types).not_to include(:zombie)
     end
     
     it "should complain if the template name isn't a symbol" do
@@ -117,26 +117,26 @@ describe "OM::XML::TemplateRegistry" do
 
     it "should add_previous_sibling" do
       return_value = @test_document.template_registry.add_previous_sibling(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
-      return_value.should == @test_document.find_by_terms(:person => 0).first
+      expect(return_value).to eq(@test_document.find_by_terms(:person => 0).first)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:before]).respecting_element_order
     end
 
     it "should after" do
       return_value = @test_document.template_registry.after(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
-      return_value.should == @test_document.find_by_terms(:person => 0).first
+      expect(return_value).to eq(@test_document.find_by_terms(:person => 0).first)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:after]).respecting_element_order
     end
 
     it "should before" do
       return_value = @test_document.template_registry.before(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
-      return_value.should == @test_document.find_by_terms(:person => 1).first
+      expect(return_value).to eq(@test_document.find_by_terms(:person => 1).first)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:before]).respecting_element_order
     end
 
     it "should replace" do
       target_node = @test_document.find_by_terms(:person => 0).first
       return_value = @test_document.template_registry.replace(target_node, :person, 'Bob', 'Builder')
-      return_value.should == @test_document.find_by_terms(:person => 0).first
+      expect(return_value).to eq(@test_document.find_by_terms(:person => 0).first)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:instead]).respecting_element_order
     end
 
@@ -150,10 +150,10 @@ describe "OM::XML::TemplateRegistry" do
     it "should yield the result if a block is given" do
       target_node = @test_document.find_by_terms(:person => 0).first
       expectation = Nokogiri::XML('<person xmlns="urn:registry-test" title="Actor">Alice</person>').root
-      @test_document.template_registry.swap(target_node, :person, 'Bob', 'Builder') { |old_node|
+      expect(@test_document.template_registry.swap(target_node, :person, 'Bob', 'Builder') { |old_node|
         expect(old_node).to be_equivalent_to(expectation)
         old_node
-      }.should be_equivalent_to(expectation)
+      }).to be_equivalent_to(expectation)
     end
   end
     

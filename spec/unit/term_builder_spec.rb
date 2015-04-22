@@ -109,21 +109,21 @@ describe "OM::XML::Term::Builder" do
         t.proxy = [:foo, :bar]
       end
       result = test_builder.build
-      result.should be_kind_of OM::XML::NamedTermProxy
+      expect(result).to be_kind_of OM::XML::NamedTermProxy
     end
     it "should set path to match name if it is empty" do
       expect(@test_builder.settings[:path]).to be_nil
       expect(@test_builder.build.path).to eq @test_builder.name.to_s
     end
     it "should work recursively, calling .build on any of its children" do
-      OM::XML::Term.any_instance.stub(:generate_xpath_queries!)
+      allow_any_instance_of(OM::XML::Term).to receive(:generate_xpath_queries!)
       built_child1 = OM::XML::Term.new("child1")
       built_child2 = OM::XML::Term.new("child2")
 
       mock1 = double("Builder1", :build => built_child1 )
       mock2 = double("Builder2", :build => built_child2 )
-      mock1.stub(:name).and_return("child1")
-      mock2.stub(:name).and_return("child2")
+      allow(mock1).to receive(:name).and_return("child1")
+      allow(mock2).to receive(:name).and_return("child2")
 
       @test_builder.children = {:mock1=>mock1, :mock2=>mock2}
       result = @test_builder.build
@@ -156,10 +156,10 @@ describe "OM::XML::Term::Builder" do
       tb = OM::XML::Term::Builder.new("mork",@test_terminology_builder).tap do |t|
         t.ref = [:characters, :aliens]
       end
-      lambda { tb.lookup_refs }.should raise_error(OM::XML::Terminology::BadPointerError,"This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \":characters\"")
+      expect { tb.lookup_refs }.to raise_error(OM::XML::Terminology::BadPointerError,"This TerminologyBuilder does not have a root TermBuilder defined that corresponds to \":characters\"")
     end
     it "should raise an error with informative error when given circular references" do
-      lambda { @pineapple.lookup_refs }.should raise_error(OM::XML::Terminology::CircularReferenceError,"Circular reference in Terminology: :pineapple => :banana => :coconut => :pineapple")
+      expect { @pineapple.lookup_refs }.to raise_error(OM::XML::Terminology::CircularReferenceError,"Circular reference in Terminology: :pineapple => :banana => :coconut => :pineapple")
     end
   end
   

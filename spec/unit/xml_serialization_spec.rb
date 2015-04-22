@@ -13,7 +13,7 @@ describe "OM::XML::Terminology.to_xml" do
   it "should call .to_xml on all of the terms" do
     options = {}
     doc = Nokogiri::XML::Document.new
-    @terminology.terms.values.each {|term| term.should_receive(:to_xml) }
+    @terminology.terms.values.each {|term| expect(term).to receive(:to_xml) }
     @terminology.to_xml(options,doc)
   end
 end
@@ -41,7 +41,7 @@ describe "OM::XML::Term.to_xml" do
   end
   it "should capture root term info" do
     xml = @terminology.root_terms.first.to_xml
-    xml.xpath("/term/is_root_term").text.should == "true"
+    expect(xml.xpath("/term/is_root_term").text).to eq("true")
     expect(@person_first_name.to_xml.xpath("/term/is_root_term")).to be_empty
   end
   it "should allow you to pass in a document to add the term to" do
@@ -50,7 +50,7 @@ describe "OM::XML::Term.to_xml" do
   end
   it "should include children" do
     children = @person.to_xml.xpath("//term[@name=\"person\"]/children/*")
-    children.length.should == 12
+    expect(children.length).to eq(12)
     children.each {|child| expect(child.name).to eq "term"}
   end
   it "should skip children if :children=>false" do
