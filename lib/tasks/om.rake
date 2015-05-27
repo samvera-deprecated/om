@@ -33,7 +33,7 @@ namespace :om do
     doc_destination = File.join(project_root, 'doc')
 
     YARD::Rake::YardocTask.new(:doc) do |yt|
-      readme_filename = 'README.textile'
+      readme_filename = 'README.md'
       #yt.options = ['--private', '--protected', '--output-dir', doc_destination, '--readme', readme_filename]
     end
   rescue LoadError

@@ -1,10 +1,10 @@
-h1. Common Patterns You'll Use with OM
+# Common Patterns You’ll Use with OM
 
-h2. Common Terminology Patterns
+## Common Terminology Patterns
 
-Let's say we have xml like this:
+Let’s say we have xml like this:
 
-<pre>
+```text/xml
 <outer outerId="hypatia:outer" type="outer type">
   <elementA>valA</elementA>
   <elementB>valB1</elementB>
@@ -23,16 +23,15 @@ Let's say we have xml like this:
     </file>
   </resource>
 </outer>
-</pre>
+```
 
-h4. element value
+#### element value
 
-We want an OM term for the value of an element. 
+We want an OM term for the value of an element.
 
 In the Datastream Model:
 
-<pre>  
-# defines the expected OM terminology for example xml
+```ruby
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
@@ -42,18 +41,19 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
     t.elC(:path => "elementC", :namespace_prefix => nil)
   end  
 end
-</pre>
+```
 
-This results in :elementA having a value of "valA" and :elB having two values of "valB1" and "valB2", and :elC having a value of "valC"
+This results in :elementA having a value of “valA” and :elB having two
+values of “valB1” and “valB2”, and :elC having a value of “valC”
 
-h4. element value given a specific attribute value
+#### Element value given a specific attribute value
 
-We want an OM term for the value of an element, but only if the element has a specific attribute value.
+We want an OM term for the value of an element, but only if the element
+has a specific attribute value.
 
 In the Datastream Model:
 
-<pre>  
-# defines the expected OM terminology for example xml
+```ruby
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
@@ -63,16 +63,17 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
     t.there(:path=>"resource", :attributes=>{:type=>"nowhere"}, :namespace_prefix => nil)
   end  
 end 
-</pre>
+```
 
-This results in :elementC having a value of "valC" and :here having a value of "123 456", and :there having a value of nil (or is it ""?)
+This results in :elementC having a value of “valC” and :here having a
+value of “123 456”, and :there having a value of nil (or is it “”?)
 
-h4. element value given absence of a specific attribute
+#### element value given absence of a specific attribute
 
-We want an OM term for an element's value, but only if the element does not have a specific attribute.
+We want an OM term for an element’s value, but only if the element does
+not have a specific attribute.
 
-<pre>  
-# defines the expected OM terminology for example xml
+```ruby
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
@@ -81,19 +82,18 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
     t.no_attrib(:path => "elementB", :attributes=>{:animal=>:none}, :namespace_prefix => nil)
   end  
 end 
-</pre>
+```
 
-This results in both :elementB and :no_attib having the single value "valB1"
+This results in both :elementB and :no\_attib having the single value
+“valB1”
 
-
-h4. attribute value
+#### attribute value
 
 We want an OM term for an attribute value
 
-<pre>  
-# defines the expected OM terminology for example xml
-class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
-  # OM (Opinionated Metadata) terminology mapping 
+```ruby
+class ExampleXMLDS < ActiveFedora::NokogiriDatastream
+  # OM (Opinionated Metadata) terminology mapping
   set_terminology do |t|
     t.root(:path => "outer", :xmlns => '', :namespace_prefix => nil)
     t.elementB {
@@ -102,17 +102,17 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
     t.alternate(:path => "elementB/@animal", :namespace_prefix => nil)
     t.another(:proxy=>[:elementB, :my_attr_])
     t.animal_attrib(:path => {:attribute=>"animal"}, :namespace_prefix => nil)
-  end  
+  end
 end
-</pre>
+```
 
-This results in :my_attr, :alternate and :another all having the single value of "vole", and :animal_attrib having the values "vole" and "seagull"
+This results in :my\_attr, :alternate and :another all having the single
+value of “vole”, and :animal\_attrib having the values “vole” and
+“seagull”
 
+#### an example with :proxy and :ref
 
-h4. an example with :proxy and :ref
-
-<pre>  
-# defines the expected OM terminology for example xml
+```ruby
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   set_terminology do |t|
@@ -145,27 +145,25 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
     t.image_sha1(:proxy=>[:image, :file, :sha1])
   end  
 end
-</pre>
+```
 
-This results in 
-:ead_fedora_pid has value "hypatia:ead_file_asset_fixture"
-:ead_ds_label has value "my_ead.xml"
-:ead_size has value "47570"
-:ead_md5 has value"123"
-:ead_sha1 has value "456"
+This results in:
+- :ead_fedora_pid has value “hypatia:ead\_file\_asset\_fixture”
+- :ead_ds_label has value “my\_ead.xml”
+- :ead_size has value “47570”
+- :ead_md5 has value “123”
+- :ead_sha1 has value “456”
+- :image_fedora_pid has value “hypatia:coll_img_file_asset_fixture”
+- :image_ds_label has value “my_image.jpg”
+- :image_size has value “302080”
+- :image_md5 has value “789”
+- :image_sha1 has value “666”
 
-:image_fedora_pid has value "hypatia:coll_img_file_asset_fixture"
-:image_ds_label has value "my_image.jpg"
-:image_size has value "302080"
-:image_md5 has value "789"
-:image_sha1 has value "666"
+#### xpath-y stuff, also using :ref and :proxy and namespaces
 
+Let’s say we have xml like this:
 
-h4. xpath-y stuff, also using :ref and :proxy and namespaces
-
-Let's say we have xml like this:
-
-<pre>
+```text/xml
 <contentMetadata>
    <resource type="file" id="BU3A5" objectId="val2">
     <file id="BURCH1" format="BINARY">
@@ -176,14 +174,16 @@ Let's say we have xml like this:
     </file>
   </resource>
 </contentMetadata>
-</pre>
+```
 
-We want an OM term corresponding to the <file> element based on the value of the <location> element.  That is, we want to have a :content term when the value of <location> is "content" and an :html term when the value of <location> is "html".
+We want an OM term corresponding to the `<file>` element based on the
+value of the `<location>` element. That is, we want to have a :content
+term when the value of `<location>` is “content” and an :html term when
+the value of `<location>` is “html”.
 
 In the Datastream Model:
 
-<pre>  
-# defines the expected OM terminology for example xml
+```ruby
 class ExampleXMLDS < ActiveFedora::NokogiriDatastream 
   # OM (Opinionated Metadata) terminology mapping 
   t.root(:path=>"contentMetadata", :xmlns => '', :namespace_prefix => nil) 
@@ -208,47 +208,50 @@ class ExampleXMLDS < ActiveFedora::NokogiriDatastream
   t.html_filename(:proxy=>[:html, :filename])
   t.html_format(:proxy=>[:html, :format])
 end
-</pre>
+```
 
 Another example from Molly Pickral of UVa:
 
-We want to access just the author and the advisor from the XML below.  The two <name> elements must be distinguished by their <roleTerm> value, a grandchild of the <name> element.
-We want an :author term with value "Mary Pickral", and an :advisor term with value "David Jones".
+We want to access just the author and the advisor from the XML below.
+The two `<name>` elements must be distinguished by their `<roleTerm>` value,
+a grandchild of the `<name>` element.
 
-<pre>
-  <mods xmlns="http://www.loc.gov/mods/v3"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3"
-  xsi:schemaLocation="http://www.loc.gov/mods/v3
-  http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
-     <name type="personal">
-         <namePart type="given">Mary</namePart>
-         <namePart type="family">Pickral</namePart>
-         <affiliation>University of Virginia</affiliation>
-         <namePart>mpc3c</namePart>
-         <affiliation>University of Virginia Library</affiliation>
-         <role>
-             <roleTerm authority="marcrelator" type="code">aut</roleTerm>
-             <roleTerm authority="marcrelator" type="text">author</roleTerm>
-         </role>
-     </name>
-    <name type="personal">
-      <namePart>der5y</namePart>
-      <namePart type="given">David</namePart>
-      <namePart type="family">Jones</namePart>
-      <affiliation>University of Virginia</affiliation>
-      <affiliation>Architectural History Dept.</affiliation>
-      <role>
-           <roleTerm authority="marcrelator" type="code">ths</roleTerm>
-           <roleTerm authority="marcrelator" type="text">advisor</roleTerm>
-      </role>
-    </name>
-  </mods>
-</pre>
+We want an :author term with value “Mary Pickral”, and an :advisor term
+with value “David Jones”.
+      
+```text/xml
+<mods xmlns="http://www.loc.gov/mods/v3"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3"
+xsi:schemaLocation="http://www.loc.gov/mods/v3
+http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
+ <name type="personal">
+     <namePart type="given">Mary</namePart>
+     <namePart type="family">Pickral</namePart>
+     <affiliation>University of Virginia</affiliation>
+     <namePart>mpc3c</namePart>
+     <affiliation>University of Virginia Library</affiliation>
+     <role>
+         <roleTerm authority="marcrelator" type="code">aut</roleTerm>
+         <roleTerm authority="marcrelator" type="text">author</roleTerm>
+     </role>
+ </name>
+<name type="personal">
+  <namePart>der5y</namePart>
+  <namePart type="given">David</namePart>
+  <namePart type="family">Jones</namePart>
+  <affiliation>University of Virginia</affiliation>
+  <affiliation>Architectural History Dept.</affiliation>
+  <role>
+       <roleTerm authority="marcrelator" type="code">ths</roleTerm>
+       <roleTerm authority="marcrelator" type="text">advisor</roleTerm>
+  </role>
+</name>
+</mods>
+```
 
 In the Datastream Model:
 
-<pre>  
-# defines the expected OM terminology for mods thesis example xml
+```ruby
 class ModsThesis < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3"))
@@ -269,20 +272,24 @@ class ModsThesis < ActiveFedora::NokogiriDatastream
     t.advisor_family(:proxy=>[:advisor, :family])
   end
 end
-</pre>
+```
 
-This isn't quite what the doctor ordered, but :author_given and :author_family can be used to get the author name;  similarly for advisor.
-
-
+This isn’t quite what the doctor ordered, but :author\_given and
+:author\_family can be used to get the author name; similarly for
+advisor.
 
 And a variant on the previous example using namespace prefixes.
 
-We want to access just the creator and the repository from the XML below.  The two <name> elements must be distinguished by their <roleTerm> value, a grandchild of the <name> element.
-We want a :creator term with value "David Small", and a :repository term with value "Graphic Novel Repository".
+We want to access just the creator and the repository from the XML
+below. The two `<name>` elements must be distinguished by their `<roleTerm>`
+value, a grandchild of the `<name>` element.
+
+We want a :creator term with value “David Small”, and a :repository term
+with value “Graphic Novel Repository”.
 
 Our xml:
 
-<pre>
+```text/xml
 <mods:mods xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd">
   
   <mods:name type="personal">
@@ -298,12 +305,11 @@ Our xml:
     </mods:role>
   </mods:name>
 </mods:mods>
-</pre>
+```
 
 In the Datastream model:
 
-<pre>
-# defines the expected OM terminology for mods name example xml
+```ruby
 class ModsName < ActiveFedora::NokogiriDatastream
   t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", :namespace_prefix => "mods")
 
@@ -326,37 +332,41 @@ class ModsName < ActiveFedora::NokogiriDatastream
   t.corporate(:proxy=>[:corporate_full, :name_part])
   t.repository(:ref=>:corporate, :path=>'name[mods:role/mods:roleTerm="repository"]', :xmlns=>"http://www.loc.gov/mods/v3", :namespace_prefix => "mods")
 end
-</pre>
+```
 
-This terminology not only gives the :creator and :repository values as desired, but also has :person and :corporate terms for more generic <name> xml.  The :person_full and :corporate_full values include the value of the <roleTerm> field, which is undesirable for display, if not the index.
+This terminology not only gives the :creator and :repository values as
+desired, but also has :person and :corporate terms for more generic
+`<name>` xml. The `:person_full` and `:corporate_full` values include the
+value of the `<roleTerm>` field, which is undesirable for display, if not
+the index.
 
+### Arguments that can be used in the terminology
 
-h3. Arguments that can be used in the terminology
+e.g. :path, :default\_content\_path, :namespace\_prefix …
 
-e.g. :path, :default_content_path, :namespace_prefix ...
+ok if this is a link to the rdoc that describes ALL of these with
 
-ok if this is a link to the rdoc that describes ALL of these with 
+### Reserved method names (ie. id\_, root\_)
 
+Like Nokogiri …
 
-h3. Reserved method names (ie. id_, root_)
+### Namespaces
+- oxns
+- document namespaces & node namespaces
+- *no namespace* (suppressing oxns in xpath queries)
 
-Like Nokogiri ...
+### :ref and :proxy Terms
 
-h3. Namespaces
-oxns
-document namespaces & node namespaces
-_no namespace_ (suppressing oxns in xpath queries)
+If needed (as a differentiator) you can use the root element as a member
+of the proxy address:
 
-h3. :ref and :proxy Terms
-
-If needed (as a differentiator) you can use the root element as a member of the proxy address:
-<pre>
-    t.root(:path=>"mods")
-    t.titleInfo {
-      t.title
-    } 
-    This produces a relative xpath: (e.g. //titleInfo/title)
-    t.title(:proxy=>[:titleInfo, :title])
-    This produces an absolute query (e.g. /mods/titleInfo/title)
-    t.title(:proxy=>[:mods, :titleInfo, :title])
-</pre>
+```ruby
+t.root(:path=>"mods")
+t.titleInfo {
+  t.title
+} 
+This produces a relative xpath: (e.g. //titleInfo/title)
+t.title(:proxy=>[:titleInfo, :title])
+This produces an absolute query (e.g. /mods/titleInfo/title)
+t.title(:proxy=>[:mods, :titleInfo, :title])
+```
