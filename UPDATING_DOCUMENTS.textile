@@ -1,3 +1,0 @@
-h3. Updating, Inserting & Deleting Elements ("TermValueOperators":http://ruby-doc.org/gems/docs/o/om-1.8.0/OM/XML/TermValueOperators.html)
-
-h3. Inserting entire hierarchies of Elements

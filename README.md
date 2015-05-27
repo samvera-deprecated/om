@@ -12,7 +12,7 @@ OM "terms" are ruby symbols you define (in the terminology) that map specific XM
 ## Tutorials & Reference
 
 * [Tame Your XML with OM](https://github.com/projecthydra/om/wiki/Tame-your-XML-with-OM)
-* [Common OM Patterns](https://github.com/projecthydra/om/blob/master/COMMON_OM_PATTERNS.textile)
+* [Common OM Patterns](https://github.com/projecthydra/om/blob/master/COMMON_OM_PATTERNS.md)
 
 ### Solrizing Documents
 

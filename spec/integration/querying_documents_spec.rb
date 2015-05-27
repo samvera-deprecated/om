@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Rspec tests for QUERYING_DOCUMENTS.textile" do
+describe "Rspec tests for QUERYING_DOCUMENTS.md" do
 
   before(:all) do
     @xml_file = "mods_articles/hydrangea_article1.xml"
