@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Matt Zumwalt", "Justin Coyne"]
   s.email       = %q{matt.zumwalt@yourmediashelf.com justin.coyne@mediashelf.com}
   s.homepage    = %q{http://github.com/projecthydra/om}
+  s.license     = 'APACHE2'
   s.summary     = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.}
   s.description = %q{OM (Opinionated Metadata): A library to help you tame sprawling XML schemas like MODS.  Wraps Nokogiri documents in objects with miscellaneous helper methods for doing things like retrieve generated xpath queries or look up properties based on a simplified DSL}
 
