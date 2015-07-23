@@ -53,39 +53,39 @@ EOF
 end
 
   it "should handle single-element terms correctly" do
-    subject.elementA.should == ["valA"]
+    expect(subject.elementA).to eq(["valA"])
   end
 
   it "should handle term paths" do
-    subject.elC.should == ["valC"]
+    expect(subject.elC).to eq(["valC"])
   end
 
   it "should handle multiple-element, terms with paths correctly" do
-    subject.elB.should == ["valB1", "valB2"]
+    expect(subject.elB).to eq(["valB1", "valB2"])
   end
 
   it "should handle terms that require specific attributes" do
-    subject.elementC.should == ["valC"]
+    expect(subject.elementC).to eq(["valC"])
   end
 
   it "should handle" do
-    subject.here.length.should == 1
-    subject.here.first.split(/\W/).should include('123', '456')
+    expect(subject.here.length).to eq(1)
+    expect(subject.here.first.split(/\W/)).to include('123', '456')
   end
 
   it "should handle missing terms" do
-    subject.there.should be_empty
+    expect(subject.there).to be_empty
   end
 
   it "should handle element  value given the absence of a specific attribute" do
-    subject.elementD.should == ["valD1"]
-    subject.no_attrib.should == ["valB1"]
+    expect(subject.elementD).to eq(["valD1"])
+    expect(subject.no_attrib).to eq(["valB1"])
   end
 
   it "should handle OM terms for an attribute value" do
-    subject.elementB.my_attr.should == ["vole"]
-    subject.alternate.should == ["vole"]
-    subject.another.should == ["vole"]
-    subject.animal_attrib.should include("vole", "seagull")
+    expect(subject.elementB.my_attr).to eq(["vole"])
+    expect(subject.alternate).to eq(["vole"])
+    expect(subject.another).to eq(["vole"])
+    expect(subject.animal_attrib).to include("vole", "seagull")
   end
 end

@@ -30,19 +30,19 @@ EOF
     end
     describe "reading  values" do
       it "should deserialize date" do
-        subject.my_date.should == [Date.parse('2012-10-30')]
+        expect(subject.my_date).to eq([Date.parse('2012-10-30')])
       end
       it "should deserialize ints" do
-        subject.my_int.should == [7]
+        expect(subject.my_int).to eq([7])
       end
       it "should deserialize boolean" do
-        subject.active.should == [true]
+        expect(subject.active).to eq([true])
       end
     end
     describe "Writing to xml" do
       it "should serialize date" do
         subject.my_date = [Date.parse('2012-09-22')]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
            <my_date>2012-09-22</my_date>
            <my_int>7</my_int>
@@ -51,7 +51,7 @@ EOF
       end
       it "should serialize ints" do
         subject.my_int = [9]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
            <my_date>2012-10-30</my_date>
            <my_int>9</my_int>
@@ -60,7 +60,7 @@ EOF
       end
       it "should serialize boolean" do
         subject.active = [false]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
            <my_date>2012-10-30</my_date>
            <my_int>7</my_int>
@@ -82,19 +82,19 @@ EOF
     end
     describe "reading  values" do
       it "should deserialize date" do
-        subject.my_date.should == [nil]
+        expect(subject.my_date).to eq([nil])
       end
       it "should deserialize ints" do
-        subject.my_int.should == [nil]
+        expect(subject.my_int).to eq([nil])
       end
       it "should deserialize bools" do
-        subject.active.should == [false]
+        expect(subject.active).to eq([false])
       end
     end
     describe "Writing to xml" do
       it "should serialize date" do
         subject.my_date = [Date.parse('2012-09-22')]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
            <my_date>2012-09-22</my_date>
            <my_int></my_int>
@@ -103,7 +103,7 @@ EOF
       end
       it "should serialize ints" do
         subject.my_int = [9]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
            <my_date></my_date>
            <my_int>9</my_int>
@@ -112,7 +112,7 @@ EOF
       end
       it "should serialize booleans" do
         subject.active = [true]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
            <my_date></my_date>
            <my_int></my_int>
@@ -124,7 +124,7 @@ EOF
         subject.my_int = [nil]
         subject.my_date = [nil]
         subject.active = [nil]
-        subject.to_xml.should be_equivalent_to '<?xml version="1.0"?>
+        expect(subject.to_xml).to be_equivalent_to '<?xml version="1.0"?>
          <outer outerId="hypatia:outer" type="outer type">
          </outer>'
       end

@@ -1,80 +1,79 @@
 require 'spec_helper'
 
 describe "OM::XML::Container" do
-  
+
   before(:all) do
     class ContainerTest
       include OM::XML::Container
     end
   end
-  
+
   subject {
     ContainerTest.from_xml("<foo><bar>1</bar></foo>")
   }
 
   it "should add .ng_xml accessor" do
-    subject.should respond_to(:ng_xml)
-    subject.should respond_to(:ng_xml=)    
+    expect(subject).to respond_to(:ng_xml)
+    expect(subject).to respond_to(:ng_xml=)
   end
 
   it "should initialize" do
-    ContainerTest.new.ng_xml.should be_a_kind_of Nokogiri::XML::Document
+    expect(ContainerTest.new.ng_xml).to be_a_kind_of Nokogiri::XML::Document
   end
-  
+
   describe "new" do
     it "should populate ng_xml with an instance of Nokogiri::XML::Document" do
-      subject.ng_xml.class.should == Nokogiri::XML::Document
+      expect(subject.ng_xml.class).to eq(Nokogiri::XML::Document)
     end
   end
 
   describe "#from_xml" do
     it "should accept a String, parse it and store it in .ng_xml" do
-      Nokogiri::XML::Document.expects(:parse).returns("parsed xml")
+      expect(Nokogiri::XML::Document).to receive(:parse).and_return("parsed xml")
       container1 = ContainerTest.from_xml("<foo><bar>1</bar></foo>")
-      container1.ng_xml.should == "parsed xml"
+      expect(container1.ng_xml).to eq("parsed xml")
     end
     it "should accept a File, parse it and store it in .ng_xml" do
       file = fixture(File.join("mods_articles", "hydrangea_article1.xml"))
-      Nokogiri::XML::Document.expects(:parse).returns("parsed xml")
+      expect(Nokogiri::XML::Document).to receive(:parse).and_return("parsed xml")
       container1 = ContainerTest.from_xml(file)
-      container1.ng_xml.should == "parsed xml"
+      expect(container1.ng_xml).to eq("parsed xml")
     end
     it "should accept Nokogiri nodes as input and leave them as-is" do
       parsed_xml = Nokogiri::XML::Document.parse("<foo><bar>1</bar></foo>")
       container1 = ContainerTest.from_xml(parsed_xml)
-      container1.ng_xml.should == parsed_xml
+      expect(container1.ng_xml).to eq(parsed_xml)
     end
   end
-  
+
   describe ".to_xml" do
     it  "should call .ng_xml.to_xml" do
-      subject.ng_xml.expects(:to_xml).returns("ng xml")
-      subject.to_xml.should == "ng xml"
+      expect(subject.ng_xml).to receive(:to_xml).and_return("ng xml")
+      expect(subject.to_xml).to eq("ng xml")
     end
-    
+
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (mocked test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
-      mock_new_node = mock("new node")
-      doc.root.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
+      mock_new_node = double("new node")
+      expect(doc.root).to receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
       result = subject.to_xml(doc)
     end
-    
+
     it 'should accept an optional Nokogiri::XML Document as an argument and insert its fields into that (functional test)' do
       doc = Nokogiri::XML::Document.parse("<test_xml/>")
-      subject.to_xml(doc).should == "<?xml version=\"1.0\"?>\n<test_xml>\n  <foo>\n    <bar>1</bar>\n  </foo>\n</test_xml>\n"
+      expect(subject.to_xml(doc)).to eq("<?xml version=\"1.0\"?>\n<test_xml>\n  <foo>\n    <bar>1</bar>\n  </foo>\n</test_xml>\n")
     end
-    
+
     it 'should add to root of Nokogiri::XML::Documents, but add directly to the elements if a Nokogiri::XML::Node is passed in' do
-      mock_new_node = mock("new node")
-      mock_new_node.stubs(:to_xml).returns("foo")
-      
+      mock_new_node = double("new node")
+      allow(mock_new_node).to receive(:to_xml).and_return("foo")
       doc = Nokogiri::XML::Document.parse("<test_document/>")
-      el = Nokogiri::XML::Node.new("test_element", Nokogiri::XML::Document.new)
-      doc.root.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
-      el.expects(:add_child).with(subject.ng_xml.root).returns(mock_new_node)
-      subject.to_xml(doc).should 
+      el  = Nokogiri::XML::Node.new("test_element", Nokogiri::XML::Document.new)
+      expect(doc.root).to receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
+      expect(el).to receive(:add_child).with(subject.ng_xml.root).and_return(mock_new_node)
+      subject.to_xml(doc)
       subject.to_xml(el)
     end
   end
-  
+
 end

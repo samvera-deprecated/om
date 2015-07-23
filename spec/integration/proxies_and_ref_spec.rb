@@ -59,21 +59,21 @@ end
 
   describe "image" do
     it "should have the right proxy terms" do
-      subject.ead_fedora_pid.should include "hypatia:ead_file_asset_fixture"
-      subject.ead_ds_label.should include "my_ead.xml"
-      subject.ead_size.should include "47570"
-      subject.ead_md5.should include "123"
-      subject.ead_sha1.should include "456"
+      expect(subject.ead_fedora_pid).to include "hypatia:ead_file_asset_fixture"
+      expect(subject.ead_ds_label).to include "my_ead.xml"
+      expect(subject.ead_size).to include "47570"
+      expect(subject.ead_md5).to include "123"
+      expect(subject.ead_sha1).to include "456"
     end
   end
 
   describe "ead" do
     it "should have the right proxy terms" do
-      subject.image_fedora_pid.should include "hypatia:coll_img_file_asset_fixture"
-      subject.image_ds_label.should include "my_image.jpg"
-      subject.image_size.should include "302080"
-      subject.image_md5.should include "789"
-      subject.image_sha1.should include "666"
+      expect(subject.image_fedora_pid).to include "hypatia:coll_img_file_asset_fixture"
+      expect(subject.image_ds_label).to include "my_image.jpg"
+      expect(subject.image_size).to include "302080"
+      expect(subject.image_md5).to include "789"
+      expect(subject.image_sha1).to include "666"
     end
 
   end
