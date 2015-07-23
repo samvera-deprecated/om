@@ -56,16 +56,14 @@ class OM::XML::Term
           trail = ""
           nodes_visited.each_with_index do |node, z|
             trail << node.name.inspect
-            unless z == nodes_visited.length-1
-              trail << " => "
-            end
+            trail << " => " unless z == nodes_visited.length-1
           end
           raise OM::XML::Terminology::CircularReferenceError, "Circular reference in Terminology: #{trail}"
         end
         result << target
         result.concat( target.lookup_refs(nodes_visited << self) )
       end
-      return result
+      result
     end
 
     # If a :ref value has been set, looks up the target of that ref and merges the target's settings & children with the current builder's settings & children
@@ -81,7 +79,7 @@ class OM::XML::Term
         @settings[:path] = name_of_last_ref.to_s
       end
       @settings.delete :ref
-      return self
+      self
     end
 
     # Returns a new Hash that merges +downstream_hash+ with +upstream_hash+
@@ -96,7 +94,7 @@ class OM::XML::Term
           up.delete(setting_name)
         end
       end
-      return up.merge(dn)
+      up.merge(dn)
     end
 
     # Builds a new OM::XML::Term based on the Builder object's current settings
@@ -121,31 +119,29 @@ class OM::XML::Term
         term.generate_xpath_queries!
       end
 
-      return term
+      term
     end
 
     # :data_type accessor has been deprecated in favor of :type
     # Any value set for :data_type will get set for :type instead
     def data_type value
       @settings[:type] = value
-      return self
+      self
     end
     deprecation_deprecate :data_type
 
     # We have to add this method so it will play nice with ruby 1.8.7
     def type value
       @settings[:type] = value
-      return self
+      self
     end
 
 
     # Any unknown method calls will add an entry to the settings hash and return the current object
     def method_missing method, *args, &block
-      if args.length == 1
-        args = args.first
-      end
+      args = args.first if args.length == 1
       @settings[method] = args
-      return self
+      self
     end
   end
 
@@ -197,9 +193,9 @@ class OM::XML::Term
   # @param name [Symbol] the name to refer to this term by
   # @param opts [Hash]
   # @options opts [Array]  :index_as a list of indexing hints provided to to_solr
-  # @options opts [String] :path partial xpath that points to the node.  
-  # @options opts [Hash]   :attributes xml attributes to match in the selector 
-  # @options opts [String] :namespace_prefix xml namespace for this node 
+  # @options opts [String] :path partial xpath that points to the node.
+  # @options opts [Hash]   :attributes xml attributes to match in the selector
+  # @options opts [String] :namespace_prefix xml namespace for this node
   # @options opts [Symbol] :type one of :string, :date, :integer. Defaults to :string
   def initialize(name, opts={}, terminology=nil)
     opts = {:ancestors=>[], :children=>{}}.merge(opts)
@@ -211,15 +207,11 @@ class OM::XML::Term
 
     unless terminology.nil?
       if opts[:namespace_prefix].nil?
-        unless terminology.namespaces["xmlns"].nil?
-          @namespace_prefix = "oxns"
-        end
+        @namespace_prefix = "oxns" unless terminology.namespaces["xmlns"].nil?
       end
     end
     @name = name
-    if @path.nil? || @path.empty?
-      @path = name.to_s
-    end
+    @path = name.to_s if @path.nil? || @path.empty?
   end
 
 
@@ -237,7 +229,7 @@ class OM::XML::Term
       end
       new_values
   end
-  
+
   # @param val [String,Date,Integer]
   def serialize (val)
     case type
@@ -245,7 +237,7 @@ class OM::XML::Term
       val.to_s
     when :boolean
       val.to_s
-    else 
+    else
       val
     end
   end
@@ -255,14 +247,14 @@ class OM::XML::Term
   def deserialize(val)
     case type
     when :date
-      #TODO use present?
+      # TODO use present?
       val.map { |v| !v.empty? ? Date.parse(v) : nil}
     when :integer
-      #TODO use blank?
+      # TODO use blank?
       val.map { |v| v.empty? ? nil : v.to_i}
     when :boolean
       val.map { |v| v == 'true' }
-    else 
+    else
       val
     end
   end
@@ -287,7 +279,7 @@ class OM::XML::Term
       new_mapper.add_child(child)
     end
 
-    return new_mapper
+    new_mapper
   end
 
   ##
@@ -312,7 +304,7 @@ class OM::XML::Term
         return nil
       end
     end
-    return target
+    target
   end
 
   def is_root_term?
@@ -336,7 +328,7 @@ class OM::XML::Term
     else
       node_options = ["\':::builder_new_value:::\'"]
     end
-    if !self.attributes.nil?
+    unless self.attributes.nil?
       self.attributes.merge(extra_attributes).each_pair do |k,v|
         node_options << "\'#{k}\'=>\'#{v}\'" unless v == :none
       end
@@ -346,7 +338,7 @@ class OM::XML::Term
     if builder_method.include?(":")
       builder_ref = "xml['#{self.path[0..path.index(":")-1]}']"
       builder_method = self.path[path.index(":")+1..-1]
-    elsif !self.namespace_prefix.nil? and self.namespace_prefix != 'oxns'
+    elsif !self.namespace_prefix.nil? && self.namespace_prefix != 'oxns'
       builder_ref = "xml['#{self.namespace_prefix}']"
     elsif self.path.kind_of?(Hash) && self.path[:attribute]
       builder_method = "@#{self.path[:attribute]}"
@@ -355,7 +347,7 @@ class OM::XML::Term
       builder_method += "_"
     end
     template = "#{builder_ref}.#{builder_method}( #{OM::XML.delimited_list(node_options)} )" + node_child_template
-    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
+    template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }
   end
 
   # Generates absolute, relative, and constrained xpaths for the term, setting xpath, xpath_relative, and xpath_constrained accordingly.
@@ -365,7 +357,7 @@ class OM::XML::Term
     self.xpath_constrained = OM::XML::TermXpathGenerator.generate_constrained_xpath(self)
     self.xpath_relative = OM::XML::TermXpathGenerator.generate_relative_xpath(self)
     self.children.each_value {|child| child.generate_xpath_queries! }
-    return self
+    self
   end
 
   # Return an XML representation of the Term
@@ -380,9 +372,7 @@ class OM::XML::Term
   def to_xml(options={}, document=Nokogiri::XML::Document.new)
     builder = Nokogiri::XML::Builder.with(document) do |xml|
       xml.term(:name=>name) {
-        if is_root_term?
-          xml.is_root_term("true")
-        end
+        xml.is_root_term("true") if is_root_term?
         xml.path path
         xml.namespace_prefix namespace_prefix
         unless attributes.nil? || attributes.empty?
@@ -393,15 +383,11 @@ class OM::XML::Term
           }
         end
         xml.index_as {
-          unless index_as.nil?
-            index_as.each  { |index_type| xml.index_type }
-          end
+          index_as.each  { |index_type| xml.index_type } unless index_as.nil?
         }
         xml.required required
         xml.data_type type
-        unless variant_of.nil?
-          xml.variant_of variant_of
-        end
+        xml.variant_of variant_of unless variant_of.nil?
         unless default_content_path.nil?
           xml.default_content_path default_content_path
         end
@@ -410,16 +396,14 @@ class OM::XML::Term
           xml.absolute xpath
           xml.constrained xpath_constrained
         }
-        if options.fetch(:children, true)
-          xml.children
-        end
+        xml.children if options.fetch(:children, true)
       }
     end
     doc = builder.doc
     if options.fetch(:children, true)
       children.values.each {|child| child.to_xml(options, doc.xpath("//term[@name=\"#{name}\"]/children").first)}
     end
-    return doc
+    doc
   end
 
   # private :update_xpath_values

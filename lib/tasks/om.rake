@@ -6,20 +6,18 @@ end
 
 
 desc "Execute specs with coverage"
-task :coverage do 
+task :coverage do
   # Put spec opts in a file named .rspec in root
   ruby_engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
   ENV['COVERAGE'] = 'true' unless ruby_engine == 'jruby'
-
-
   Rake::Task['om:rspec'].invoke
 end
 
-namespace :om do    
+namespace :om do
 
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:rspec) do |spec|
-    if ENV['COVERAGE'] and RUBY_VERSION =~ /^1.8/
+    if ENV['COVERAGE'] && RUBY_VERSION =~ /^1.8/
       spec.rcov = true
       spec.rcov_opts = %w{-I../../app -I../../lib --exclude spec\/*,gems\/*,ruby\/* --aggregate coverage.data}
     end
@@ -35,7 +33,7 @@ namespace :om do
     YARD::Rake::YardocTask.new(:doc) do |yt|
       readme_filename = 'README.textile'
       textile_docs = []
-      Dir[File.join(project_root, "*.textile")].each_with_index do |f, index| 
+      Dir[File.join(project_root, "*.textile")].each_with_index do |f, index|
         unless f.include?("/#{readme_filename}") # Skip readme, which is already built by the --readme option
           textile_docs << '-'
           textile_docs << f

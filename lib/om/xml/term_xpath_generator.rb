@@ -1,27 +1,27 @@
 require 'loggable'
 module OM::XML::TermXpathGenerator
   include Loggable
-  
+
   # Generate relative xpath for a term
   # @param [OM::XML::Term] term that you want to generate relative xpath for
   #
   # In most cases, the resulting xpath will be the Term's path with the appropriate namespace appended to it.
-  # If the Term specifies any attributes, 
+  # If the Term specifies any attributes,
   # Special Case: attribute Terms
-  # If the Term's path is set to {:attribute=>attr_name}, the resulting xpath will points to a node attribute named attr_name 
+  # If the Term's path is set to {:attribute=>attr_name}, the resulting xpath will points to a node attribute named attr_name
   # ie. a path fo {:attribute=>"lang"} will result in a relative xpath of "@lang"
   # Special Case: xpath functions
   # If the Term's path variable is text(), it will be treated as an xpath function (no namespace) and turned into "text()[normalize-space(.)]"
   def self.generate_relative_xpath(term)
     template = ""
     predicates = []
-    
+
     if term.namespace_prefix.nil?
       complete_prefix = ""
     else
       complete_prefix = term.namespace_prefix + ":"
     end
-    
+
     if term.path.kind_of?(Hash)
       if term.path.has_key?(:attribute)
         base_path = "@"+term.path[:attribute]
@@ -32,14 +32,12 @@ module OM::XML::TermXpathGenerator
       if term.path == "text()"
         base_path = "#{term.path}[normalize-space(.)]"
       else
-        unless term.namespace_prefix.nil?
-          template << complete_prefix
-        end
+        template << complete_prefix unless term.namespace_prefix.nil?
         base_path = term.path
       end
     end
     template << base_path
-    
+
     unless term.attributes.nil?
       term.attributes.each_pair do |attr_name, attr_value|
         if attr_value == :none
@@ -49,14 +47,14 @@ module OM::XML::TermXpathGenerator
         end
       end
     end
-    
-    unless predicates.empty? 
+
+    unless predicates.empty?
       template << "["+ delimited_list(predicates, " and ")+"]"
     end
-    
-    return template
+
+    template
   end
-  
+
   # Generate absolute xpath for a Term
   # @param [OM::XML::Term] term that you want to generate absolute xpath for
   #
@@ -69,36 +67,36 @@ module OM::XML::TermXpathGenerator
       return term.parent.xpath_absolute + "/" + relative
     end
   end
-  
+
   def self.generate_constrained_xpath(term)
     if term.namespace_prefix.nil?
       complete_prefix = ""
     else
       complete_prefix = term.namespace_prefix + ":"
     end
-    
+
     absolute = generate_absolute_xpath(term)
     constraint_predicates = []
-    
+
     arguments_for_contains_function = []
 
-    if !term.default_content_path.nil?
+    unless term.default_content_path.nil?
       arguments_for_contains_function << "#{complete_prefix}#{term.default_content_path}"
     end
-      
+
     # If no subelements have been specified to search within, set contains function to search within the current node
     if arguments_for_contains_function.empty?
       arguments_for_contains_function << "."
     end
-    
+
     arguments_for_contains_function << "\":::constraint_value:::\""
-  
+
     contains_function = "contains(#{delimited_list(arguments_for_contains_function)})"
 
     template = add_predicate(absolute, contains_function)
-    return template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }.gsub('"', '\"')
+    template.gsub( /:::(.*?):::/ ) { '#{'+$1+'}' }.gsub('"', '\"')
   end
-  
+
   # Generate an xpath of the chosen +type+ for the given Term.
   # @param [OM::XML::Term] term that you want to generate relative xpath for
   # @param [Symbol] the type of xpath to generate, :relative, :abolute, or :constrained
@@ -112,9 +110,9 @@ module OM::XML::TermXpathGenerator
       self.generate_constrained_xpath(term)
     end
   end
-  
+
   # Use the given +terminology+ to generate an xpath with (optional) node indexes for each of the term pointers.
-  # Ex.  OM::XML::TermXpathGenerator.xpath_with_indexes(my_terminology, {:conference=>0}, {:role=>1}, :text ) 
+  # Ex.  OM::XML::TermXpathGenerator.xpath_with_indexes(my_terminology, {:conference=>0}, {:role=>1}, :text )
   #      will yield an xpath similar to this: '//oxns:name[@type="conference"][1]/oxns:role[2]/oxns:roleTerm[@type="text"]'
   # @param [OM::XML::Terminology] terminology to generate xpath based on
   # @param [String -- OM term pointer] pointers identifying the node to generate xpath for
@@ -127,30 +125,28 @@ module OM::XML::TermXpathGenerator
         return root_term.xpath
       end
     end
-    
+
     query_constraints = nil
-    
+
     if pointers.length > 1 && pointers.last.kind_of?(Hash)
       constraints = pointers.pop
-      unless constraints.empty?
-        query_constraints = constraints
-      end 
+      query_constraints = constraints unless constraints.empty?
     end
 
     if pointers.length == 1 && pointers.first.instance_of?(String)
       return xpath_query = pointers.first
     end
-      
+
     # if pointers.first.kind_of?(String)
     #   return pointers.first
     # end
-    
+
     keys = []
     xpath = "//"
 
     pointers = OM.destringify(pointers)
     pointers.each_with_index do |pointer, pointer_index|
-      
+
       if pointer.kind_of?(Hash)
         k = pointer.keys.first
         index = pointer[k]
@@ -158,13 +154,13 @@ module OM::XML::TermXpathGenerator
         k = pointer
         index = nil
       end
-      
+
       keys << k
-      
-      term = terminology.retrieve_term(*keys)  
+
+      term = terminology.retrieve_term(*keys)
       # Return nil if there is no term to work with
       return if term.nil?
-      
+
       # If we've encountered a NamedTermProxy, insert path sections corresponding to each entry in its proxy_pointer (rather than just the final term that it points to).
       # TODO Looks like this only works if the last key is a NamedTermProxy, what if we cross proxies on the way there?
       if term.kind_of? OM::XML::NamedTermProxy
@@ -187,22 +183,20 @@ module OM::XML::TermXpathGenerator
             raise "There's a problem with the #{term.name} OM::XML::NamedTermProxy, whose proxy pointer is #{term.proxy_pointer}.  The #{proxy_pointer} pointer is returning #{proxy_term.inspect}"
           end
         end
-      else  
+      else
         relative_path = term.xpath_relative
-      
+
         unless index.nil?
           relative_path = add_node_index_predicate(relative_path, index)
         end
       end
-      
-      if pointer_index > 0
-        relative_path = "/"+relative_path
-      end
-      xpath << relative_path 
+
+      relative_path = "/"+relative_path if pointer_index > 0
+      xpath << relative_path
     end
-      
-    final_term = terminology.retrieve_term(*keys) 
-    
+
+    final_term = terminology.retrieve_term(*keys)
+
     if query_constraints.kind_of?(Hash)
       contains_functions = []
       query_constraints.each_pair do |k,v|
@@ -213,20 +207,20 @@ module OM::XML::TermXpathGenerator
         end
         contains_functions << "contains(#{constraint_path}, \"#{v}\")"
       end
-      
+
       xpath = add_predicate(xpath, delimited_list(contains_functions, " and ") )
     end
-    
-    return xpath
+
+    xpath
   end
-  
+
   # @see OM::XML.delimited_list
   def self.delimited_list(*args)
     OM::XML.delimited_list(*args)
   end
-  
+
   # Adds xpath xpath node index predicate to the end of your xpath query
-  # Example: 
+  # Example:
   # add_node_index_predicate("//oxns:titleInfo",0)
   #   => "//oxns:titleInfo[1]"
   #
@@ -236,9 +230,9 @@ module OM::XML::TermXpathGenerator
     modified_query = xpath_query.dup
     modified_query << "[#{array_index_value + 1}]"
   end
-  
+
   # Adds xpath:position() method call to the end of your xpath query
-  # Examples: 
+  # Examples:
   #
   # add_position_predicate("//oxns:titleInfo",0)
   # => "//oxns:titleInfo[position()=1]"
@@ -249,7 +243,7 @@ module OM::XML::TermXpathGenerator
     position_function = "position()=#{array_index_value + 1}"
     self.add_predicate(xpath_query, position_function)
   end
-  
+
   def self.add_predicate(xpath_query, predicate)
     modified_query = xpath_query.dup
     # if xpath_query.include?("]")
@@ -258,7 +252,7 @@ module OM::XML::TermXpathGenerator
     else
       modified_query << "[#{predicate}]"
     end
-    return modified_query
+    modified_query
   end
 
 end

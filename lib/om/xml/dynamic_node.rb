@@ -3,8 +3,8 @@ module OM
     #
     # Provides a natural syntax for using OM Terminologies to access values from xml Documents
     #
-    # *Note*: All of these examples assume that @article is an instance of OM::Samples::ModsArticle.  Look at that file to see the Terminology. 
-    # 
+    # *Note*: All of these examples assume that @article is an instance of OM::Samples::ModsArticle.  Look at that file to see the Terminology.
+    #
     # @example Return an array of the value(s) "start page" node(s) from the second issue node within the first journal node
     #   # Using DynamicNode syntax:
     #   @article.journal(0).issue(1).pages.start
@@ -30,7 +30,7 @@ module OM
       instance_methods.each { |m| undef_method m unless m.to_s =~ /^(?:nil\?|send|object_id|to_a)$|^__|^respond_to|proxy_/ }
 
       attr_accessor :key, :index, :parent, :addressed_node, :term
-      def initialize(key, index, document, term, parent=nil)  ##TODO a real term object in here would make it easier to lookup
+      def initialize(key, index, document, term, parent=nil)  # #TODO a real term object in here would make it easier to lookup
         self.key = key
         self.index = index
         @document = document
@@ -47,7 +47,7 @@ module OM
           child =  term_child_by_name(term.nil? ? parent.term : term, name)
           if child
             OM::XML::DynamicNode.new(name, args.first, @document, child, self)
-          else 
+          else
             val.send(name, *args, &block)
           end
         end
@@ -85,13 +85,13 @@ module OM
 
       def term_child_by_name(term, name)
         if (term.kind_of? NamedTermProxy)
-           @document.class.terminology.retrieve_node(*(term.proxy_pointer.dup << name)) 
+           @document.class.terminology.retrieve_node(*(term.proxy_pointer.dup << name))
         else
           term.retrieve_term(name)
         end
       end
 
-      def val 
+      def val
         query = xpath
         trim_text = !query.index("text()").nil?
         val = @document.find_by_xpath(query).collect {|node| (trim_text ? node.text.strip : node.text) }
@@ -101,13 +101,13 @@ module OM
       def nodeset
         query = xpath
         trim_text = !query.index("text()").nil?
-        return @document.find_by_xpath(query)
+        @document.find_by_xpath(query)
       end
 
       def delete
         nodeset.delete
       end
-      
+
       def inspect
         val.inspect
       end
@@ -126,7 +126,7 @@ module OM
         else ### A pointer
           parent.nil? ? [key] : parent.to_pointer << key
         end
-      end 
+      end
 
       def xpath
         if parent.nil?
@@ -135,7 +135,7 @@ module OM
           chain = retrieve_addressed_node( )
           '//' + chain.map { |n| n.xpath}.join('/')
         end
-        
+
       end
 
 
@@ -147,15 +147,13 @@ module OM
           self.pointer = pointer
         end
       end
-     
+
       ##
       # This is very similar to Terminology#retrieve_term, however it expands proxy paths out into their cannonical paths
       def retrieve_addressed_node()
          chain = []
-            
-         if parent
-           chain += parent.retrieve_addressed_node()
-         end
+
+         chain += parent.retrieve_addressed_node() if parent
          if (self.index)
            ### This is an index
            node = AddressedNode.new(key, term.xpath_relative, self)
@@ -166,12 +164,12 @@ module OM
             first = proxy.shift
             p = @document.class.terminology.retrieve_node(*first)
             chain << AddressedNode.new(p, p.xpath_relative, self)
-            while !proxy.empty?
+            until proxy.empty?
               first = proxy.shift
               p = p.retrieve_term(first)
               chain << AddressedNode.new(p, p.xpath_relative, self)
             end
-         else 
+         else
            chain << AddressedNode.new(key, term.xpath_relative, self)
          end
          chain

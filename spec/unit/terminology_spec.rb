@@ -149,7 +149,7 @@ describe "OM::XML::Terminology" do
     end
 
     describe "treating attributes as properties" do
-      it "should build correct xpath" do    
+      it "should build correct xpath" do
         language_term = @test_full_terminology.retrieve_term(:title_info, :language)
         expect(language_term.xpath).to eq('//oxns:titleInfo/@lang')
         expect(language_term.xpath_relative).to eq('@lang')

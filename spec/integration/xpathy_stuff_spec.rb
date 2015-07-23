@@ -8,7 +8,7 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
         include OM::XML::Document
 
         set_terminology do |t|
-          t.root(:path=>"contentMetadata", :xmlns => '', :namespace_prefix => nil) 
+          t.root(:path=>"contentMetadata", :xmlns => '', :namespace_prefix => nil)
 
           t.resource(:namespace_prefix => nil) {
             t.file(:ref=>[:file], :namespace_prefix => nil)
@@ -63,7 +63,7 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
 
   describe "an example from MODS" do
     before(:all) do
-      class ModsXpathyStuffTerminology 
+      class ModsXpathyStuffTerminology
         include OM::XML::Document
 
         set_terminology do |t|
@@ -136,7 +136,7 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
   describe "more MODS examples, with a given namespace prefix?" do
 
     before(:all) do
-      class ModsXpathyStuffTerminology 
+      class ModsXpathyStuffTerminology
         include OM::XML::Document
 
         set_terminology do |t|
@@ -153,7 +153,7 @@ describe "an example of xpath-y stuff, also using :proxy and :ref and namespaces
             t.role_term_text(:path=>"roleTerm", :attributes=>{:type=>"text"})
           }
 
-          t.person_full(:ref=>:name, :attributes=>{:type=>"personal"}) 
+          t.person_full(:ref=>:name, :attributes=>{:type=>"personal"})
           t.person(:proxy=>[:person_full, :name_part])
           t.creator(:ref=>:person, :path=>'name[mods:role/mods:roleTerm="creator"]', :xmlns=>"http://www.loc.gov/mods/v3", :namespace_prefix => "mods")
 

@@ -100,7 +100,7 @@ describe "calling set_terminology more than once" do
         end
       end
 
-      class LocalReentrantTerminology 
+      class LocalReentrantTerminology
         include OM::XML::Document
         use_terminology(ReentrantTerminology)
         extend_terminology do |t|

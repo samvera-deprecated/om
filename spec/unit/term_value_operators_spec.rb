@@ -104,7 +104,7 @@ describe "OM::XML::TermValueOperators" do
       expect(@article.find_by_terms({:journal=>0}, {:issue=>1}, :pages).length).to eq(1)
       expect(@article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).length).to eq(1)
       expect(@article.find_by_terms({:journal=>0}, {:issue=>1}, :pages, :start).first.text).to eq("434")
-      #Last argument is a filter, we must explicitly pass no filter
+      # Last argument is a filter, we must explicitly pass no filter
       expect(@article.class.terminology.xpath_with_indexes(:subject, {:topic=>1}, {})).to eq('//oxns:subject/oxns:topic[2]')
       expect(@article.find_by_terms(:subject, {:topic => 1}, {}).text).to eq("TOPIC 2")
 	  end

@@ -13,7 +13,7 @@ task :default => :spec
 
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
-  version = Om::VERSION 
+  version = Om::VERSION
 
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "om #{version}"

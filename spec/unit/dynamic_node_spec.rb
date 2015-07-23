@@ -83,7 +83,7 @@ describe "OM::XML::DynamicNode" do
       end
 
       it "should find elements two deep" do
-        #TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
+        # TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
         expect(@article.name.name_content.val).to eq(["Describes a person"])
         expect(@article.name.name_content).to eq(["Describes a person"])
         expect(@article.name.name_content(0)).to eq(["Describes a person"])

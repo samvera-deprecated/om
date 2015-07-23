@@ -1,7 +1,7 @@
 class OM::Samples::ModsArticle
-    
+
     include OM::XML::Document
-    
+
     set_terminology do |t|
       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", :schema=>"http://www.loc.gov/standards/mods/v3/mods-3-2.xsd", "xmlns:foo"=>"http://my.custom.namespace")
 
@@ -11,17 +11,17 @@ class OM::Samples::ModsArticle
           t.main_title_lang(:path=>{:attribute=> "xml:lang"})
         }
         t.french_title(:ref=>[:title_info,:main_title], :attributes=>{"xml:lang"=>"fre"})
-        
+
         t.language(:index_as=>[:facetable],:path=>{:attribute=>"lang"})
-      } 
+      }
       t.language{
         t.lang_code(:index_as=>[:facetable], :path=>"languageTerm", :attributes=>{:type=>"code"})
       }
-      t.abstract   
+      t.abstract
       t.subject {
         t.topic(:index_as=>[:facetable])
-      }      
-      t.topic_tag(:proxy=>[:subject, :topic])    
+      }
+      t.topic_tag(:proxy=>[:subject, :topic])
       # t.topic_tag(:index_as=>[:facetable],:path=>"subject", :default_content_path=>"topic")
       # This is a mods:name.  The underscore is purely to avoid namespace conflicts.
       t.name_ {
@@ -40,7 +40,7 @@ class OM::Samples::ModsArticle
         t.computing_id
         t.name_content(:path=>"text()")
       }
-      # lookup :person, :first_name        
+      # lookup :person, :first_name
       t.person(:ref=>:name, :attributes=>{:type=>"personal"}, :index_as=>[:facetable])
       t.department(:proxy=>[:person,:description],:index_as=>[:facetable])
       t.organization(:ref=>:name, :attributes=>{:type=>"corporate"}, :index_as=>[:facetable])
@@ -78,7 +78,7 @@ class OM::Samples::ModsArticle
       t.title(:proxy=>[:title_info, :main_title])
       t.journal_title(:proxy=>[:journal, :title_info, :main_title])
     end
-    
+
     # Changes from OM::Properties implementation
     # renamed family_name => last_name
     # start_page & end_page now accessible as [:journal, :issue, :pages, :start] (etc.)

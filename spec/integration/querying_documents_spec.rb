@@ -12,13 +12,13 @@ describe "Rspec tests for QUERYING_DOCUMENTS.textile" do
   end
 
   it "xpath_for()" do
-    expect(@term.xpath_for(:name)).to eq( 
+    expect(@term.xpath_for(:name)).to eq(
       '//oxns:name'
     )
-    expect(@term.xpath_for(:person)).to eq( 
+    expect(@term.xpath_for(:person)).to eq(
       '//oxns:name[@type="personal"]'
     )
-    expect(@term.xpath_for(:organization)).to eq( 
+    expect(@term.xpath_for(:organization)).to eq(
       '//oxns:name[@type="corporate"]'
     )
     expect(@term.xpath_for(:person, :first_name)).to eq(

@@ -22,7 +22,7 @@ describe "OM::XML::TemplateRegistry" do
 
     end
   end
-  
+
   after(:all) do
     Object.send(:remove_const, :RegistryTest)
   end
@@ -35,7 +35,7 @@ describe "OM::XML::TemplateRegistry" do
       :instead => %{<people xmlns="urn:registry-test"><person title="Builder">Bob</person></people>}
     }
   end
-  
+
   describe "template definitions" do
     it "should contain predefined templates" do
       expect(RegistryTest.template_registry.node_types).to include(:person)
@@ -57,35 +57,35 @@ describe "OM::XML::TemplateRegistry" do
       expectation = Nokogiri::XML('<monster wants="braaaaainz">Zeke</monster>').root
       expect(node).to be_equivalent_to(expectation)
     end
-    
+
     it "should raise an error when trying to instantiate an unknown node_type" do
       expect { RegistryTest.template_registry.instantiate(:demigod, 'Hercules') }.to raise_error(NameError)
     end
-    
+
     it "should raise an exception if a missing method name doesn't match a node_type" do
       expect { RegistryTest.template_registry.demigod('Hercules') }.to raise_error(NameError)
     end
-    
+
     it "should undefine existing templates" do
       expect(RegistryTest.template_registry.node_types).to include(:zombie)
       RegistryTest.template_registry.undefine :zombie
       expect(RegistryTest.template_registry.node_types).not_to include(:zombie)
     end
-    
+
     it "should complain if the template name isn't a symbol" do
       expect { RegistryTest.template_registry.define("die!") { |xml| xml.this_never_happened } }.to raise_error(TypeError)
     end
-    
+
     it "should report on whether a given template is defined" do
       expect(RegistryTest.template_registry.has_node_type?(:person)).to eq(true)
       expect(RegistryTest.template_registry.has_node_type?(:zombie)).to eq(false)
     end
-    
+
     it "should include defined node_types as method names for introspection" do
       expect(RegistryTest.template_registry.methods).to include('person')
     end
   end
-  
+
   describe "template-based document manipulations" do
     it "should accept a Nokogiri::XML::Node as target" do
       @test_document.template_registry.after(@test_document.ng_xml.root.elements.first, :person, 'Bob', 'Builder')
@@ -96,19 +96,19 @@ describe "OM::XML::TemplateRegistry" do
       @test_document.template_registry.after(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
       expect(@test_document.ng_xml.root.elements.length).to eq(2)
     end
-    
+
     it "should instantiate a detached node from a template using the template name as a method" do
       node = RegistryTest.template_registry.person('Odin', 'All-Father')
       expectation = Nokogiri::XML('<person title="All-Father">Odin</person>').root
       expect(node).to be_equivalent_to(expectation)
     end
-    
+
     it "should add_child" do
       return_value = @test_document.template_registry.add_child(@test_document.ng_xml.root, :person, 'Bob', 'Builder')
       expect(return_value).to eq(@test_document.find_by_terms(:person => 1).first)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:after]).respecting_element_order
     end
-    
+
     it "should add_next_sibling" do
       return_value = @test_document.template_registry.add_next_sibling(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
       expect(return_value).to eq(@test_document.find_by_terms(:person => 1).first)
@@ -146,7 +146,7 @@ describe "OM::XML::TemplateRegistry" do
       expect(return_value).to eq(target_node)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:instead]).respecting_element_order
     end
-    
+
     it "should yield the result if a block is given" do
       target_node = @test_document.find_by_terms(:person => 0).first
       expectation = Nokogiri::XML('<person xmlns="urn:registry-test" title="Actor">Alice</person>').root
@@ -156,7 +156,7 @@ describe "OM::XML::TemplateRegistry" do
       }).to be_equivalent_to(expectation)
     end
   end
-    
+
   describe "document-based document manipulations" do
     it "should accept a Nokogiri::XML::Node as target" do
       @test_document.after_node(@test_document.ng_xml.root.elements.first, :person, 'Bob', 'Builder')
@@ -167,12 +167,12 @@ describe "OM::XML::TemplateRegistry" do
       @test_document.after_node(@test_document.find_by_terms(:person => 0), :person, 'Bob', 'Builder')
       expect(@test_document.ng_xml.root.elements.length).to eq(2)
     end
-    
+
     it "should accept a term-pointer array as target" do
       @test_document.after_node([:person => 0], :person, 'Bob', 'Builder')
       expect(@test_document.ng_xml.root.elements.length).to eq(2)
     end
-    
+
     it "should instantiate a detached node from a template" do
       node = @test_document.template(:person, 'Odin', 'All-Father')
       expectation = Nokogiri::XML('<person title="All-Father">Odin</person>').root
@@ -184,7 +184,7 @@ describe "OM::XML::TemplateRegistry" do
       expect(return_value).to eq(@test_document.find_by_terms(:person => 1).first)
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:after]).respecting_element_order
     end
-    
+
     it "should add_next_sibling_node" do
       return_value = @test_document.add_next_sibling_node([:person => 0], :person, 'Bob', 'Builder')
       expect(return_value).to eq(@test_document.find_by_terms(:person => 1).first)
@@ -223,5 +223,5 @@ describe "OM::XML::TemplateRegistry" do
       expect(@test_document.ng_xml).to be_equivalent_to(@expectations[:instead]).respecting_element_order
     end
   end
-  
+
 end

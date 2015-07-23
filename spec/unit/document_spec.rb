@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "OM::XML::Document" do
 
   before(:all) do
-    #ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
+    # ModsHelpers.name_("Beethoven, Ludwig van", :date=>"1770-1827", :role=>"creator")
     class DocumentTest
 
       include OM::XML::Document

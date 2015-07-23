@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe "OM::XML::NodeGenerator" do
-  
-  
+
+
   before(:each) do
     @test_mods_term = OM::XML::Term.new(:mods)
     @test_volume_term = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
   end
-  
+
   describe '#generate' do
     it "should use the corresponding builder template(s) to generate the node" do
       expect(OM::XML::NodeGenerator.generate(@test_mods_term, "foo").root.to_xml).to eq("<mods>foo</mods>")
@@ -22,5 +22,5 @@ describe "OM::XML::NodeGenerator" do
       expect(OM::XML::NodeGenerator.generate(@test_mods_term, "foo").class).to eq(Nokogiri::XML::Document)
     end
   end
-  
+
 end

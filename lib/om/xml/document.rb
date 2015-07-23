@@ -35,7 +35,7 @@ module OM::XML::Document
       self.terminology_builder.extend_terminology(&block)
       rebuild_terminology!
     end
-    
+
     # (Explicitly) inherit terminology from upstream classes
     def use_terminology klass
       self.terminology_builder = klass.terminology_builder.dup
@@ -69,9 +69,7 @@ module OM::XML::Document
   end
 
   def ng_xml_will_change!
-    if self.respond_to?(:dirty=)
-      self.dirty = true
-    end
+    self.dirty = true if self.respond_to?(:dirty=)
 
     # throw away older version.
     changed_attributes['ng_xml'] = nil
@@ -196,9 +194,7 @@ module OM::XML::Document
 
   private
   def manipulate_node(method, target, *args, &block)
-    if target.is_a?(Array)
-      target = self.find_by_terms(*target)
-    end
+    target = self.find_by_terms(*target) if target.is_a?(Array)
     raise "You must call define_template before calling #{method}" if template_registry.nil?
     ng_xml_will_change!
     template_registry.send(method, target, *args, &block)

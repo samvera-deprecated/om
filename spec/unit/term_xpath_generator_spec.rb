@@ -115,7 +115,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 
   it "should support mappers with default_content_path" do
     skip "need to implement mapper_set first"
-    #@test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
+    # @test_term_with_default_path = OM::XML::Term.new(:volume, :path=>"detail", :attributes=>{:type=>"volume"}, :default_content_path=>"number")
     expect(OM::XML::TermXpathGenerator.generate_relative_xpath(@test_term_with_default_path)).to eq('oxns:detail[@type="volume"]')
     expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_term_with_default_path)).to eq('//oxns:detail[@type="volume"]')
     expect(OM::XML::TermXpathGenerator.generate_constrained_xpath(@test_term_with_default_path)).to eq('//oxns:detail[contains(oxns:number[@type="volume"], "#{constraint_value}")]'.gsub('"', '\"'))

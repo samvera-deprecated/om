@@ -3,12 +3,12 @@ require "logger"
 
 class OM::XML::ParentNodeNotFoundError < RuntimeError; end
 module OM::XML::TermValueOperators
-  
+
   # Retrieves all of the nodes from the current document that match +term_pointer+ and returns an array of their values
   def term_values(*term_pointer)
     result = []
     xpath = self.class.terminology.xpath_with_indexes(*term_pointer)
-    #if value is on line by itself sometimes does not trim leading and trailing whitespace for a text node so will detect and fix it
+    # if value is on line by itself sometimes does not trim leading and trailing whitespace for a text node so will detect and fix it
     trim_text = !xpath.nil? && !xpath.index("text()").nil?
     find_by_terms(*term_pointer).each {|node| result << (trim_text ? node.text.strip : node.text) }
 
@@ -20,61 +20,59 @@ module OM::XML::TermValueOperators
       term.deserialize(result)
     end
   end
-  
+
   # alias for term_values
   def property_values(*lookup_args)
     term_values(*lookup_args)
   end
-  
-  # 
+
+  #
   # example term values hash: {[{":person"=>"0"}, "role", "text"]=>{"0"=>"role1", "1"=>"role2", "2"=>"role3"}, [{:person=>1}, :family_name]=>"Andronicus", [{"person"=>"1"},:given_name]=>["Titus"],[{:person=>1},:role,:text]=>["otherrole1","otherrole2"] }
   def update_values(params={})
-    # remove any terms from params that this datastream doesn't recognize    
-    
-    params.delete_if do |term_pointer,new_values| 
+    # remove any terms from params that this datastream doesn't recognize
+
+    params.delete_if do |term_pointer,new_values|
       if term_pointer.kind_of?(String)
         true
       else
         !self.class.terminology.has_term?(*OM.destringify(term_pointer))
       end
     end
-    
+
     result = params.dup
-    
+
     params.each_pair do |term_pointer,new_values|
       pointer = OM.destringify(term_pointer)
       template_pointer = OM.pointers_to_flat_array(pointer,false)
       hn = OM::XML::Terminology.term_hierarchical_name(*pointer)
-      
+
       term = self.class.terminology.retrieve_term( *OM.pointers_to_flat_array(pointer,false) )
 
       # Sanitize new_values to always be a hash with indexes
       new_values = term.sanitize_new_values(new_values)
-      
+
       # Populate the response hash appropriately, using hierarchical names for terms as keys rather than the given pointers.
       result.delete(term_pointer)
       result[hn] = new_values.dup
-      
+
       # Skip any submitted values if the new value matches the current values
       current_values = term_values(*pointer)
       new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
         z = new_values[y]
-        if current_values[y.to_i]==z and y.to_i > -1
-          new_values.delete(y)
-        end
-      end 
-      
+        new_values.delete(y) if current_values[y.to_i]==z && y.to_i > -1
+      end
+
       # Fill out the pointer completely if the final term is a NamedTermProxy
       if term.kind_of? OM::XML::NamedTermProxy
         pointer.pop
         pointer = pointer.concat(term.proxy_pointer)
       end
-      
+
       xpath = self.class.terminology.xpath_with_indexes(*pointer)
       parent_pointer = pointer.dup
       parent_pointer.pop
       parent_xpath = self.class.terminology.xpath_with_indexes(*parent_pointer)
-      
+
       # If the value doesn't exist yet, append it.  Otherwise, update the existing value.
       new_values.keys.sort { |a,b| a.to_i <=> b.to_i }.each do |y|
         z = new_values[y]
@@ -89,18 +87,18 @@ module OM::XML::TermValueOperators
         end
       end
     end
-    return result
+    result
   end
-  
+
   def term_values_append(opts={})
     parent_select = Array( opts[:parent_select] )
     parent_index = opts[:parent_index]
     template = opts[:template]
-    new_values = Array( opts[:values] )  
-    
+    new_values = Array( opts[:values] )
+
     parent_nodeset = find_by_terms(*parent_select)
     parent_node = node_from_set(parent_nodeset, parent_index)
-    
+
     if parent_node.nil?
       if parent_select.empty?
         parent_node = ng_xml.root
@@ -110,12 +108,12 @@ module OM::XML::TermValueOperators
     end
 
     insert_from_template(parent_node, new_values, template)
-    
-    return parent_node
-    
+
+    parent_node
+
   end
 
-  # Insert xml containing +new_values+ into +parent_node+.  Generate the xml based on +template+ 
+  # Insert xml containing +new_values+ into +parent_node+.  Generate the xml based on +template+
   # @param [Nokogiri::XML::Node] parent_node to insert new xml into
   # @param [Array] new_values to build the xml around
   # @param [Array -- (OM term pointer array) OR String -- (like what you would pass into Nokogiri::XML::Builder.new)] template for building the new xml.  Use the syntax that Nokogiri::XML::Builder uses.
@@ -133,23 +131,23 @@ module OM::XML::TermValueOperators
       template = self.class.terminology.xml_builder_template( *template_args )
     end
 
-    #if there is an xpath element pointing to text() need to change to just 'text' so it references the text method for the parent node
+    # if there is an xpath element pointing to text() need to change to just 'text' so it references the text method for the parent node
     template.gsub!(/text\(\)/, 'text')
-    
+
     builder = Nokogiri::XML::Builder.with(parent_node) do |xml|
       new_values.each do |builder_new_value|
         builder_new_value = builder_new_value.gsub(/'/, "\\\\'") # escape any apostrophes in the new value
         if matchdata = /xml\.@(\w+)/.match(template)
           parent_node.set_attribute(matchdata[1], builder_new_value)
-        else 
+        else
           builder_arg = eval('"'+ template + '"') # this inserts builder_new_value into the builder template
           eval(builder_arg)
         end
       end
     end
-    return parent_node
+    parent_node
   end
-  
+
   # Creates necesary ancestor nodes to support inserting a new term value where the ancestor node(s) don't exist yet.
   # Corrects node indexes in the pointer array to correspond to the ancestors that it creates.
   # Returns a two-value array with the 'parent' node and a corrected pointer array
@@ -159,20 +157,18 @@ module OM::XML::TermValueOperators
     parent_select = Array(parent_select)
     parent_nodeset = find_by_terms(*parent_select)
     starting_point = node_from_set(parent_nodeset, parent_index)
-    if starting_point.nil? 
-      starting_point = [] 
-    end
+    starting_point = [] if starting_point.nil?
     to_build = []
-    until !starting_point.empty?
+    while starting_point.empty?
       to_build = [parent_select.pop] + to_build
       starting_point = find_by_terms(*parent_select)
-      if starting_point.empty? && parent_select.empty? 
+      if starting_point.empty? && parent_select.empty?
         raise OM::XML::TemplateMissingException, "Cannot insert nodes into the document because it is empty.  Try defining self.xml_template on the #{self.class} class."
       end
     end
-    to_build.each do |term_pointer|      
+    to_build.each do |term_pointer|
       parent_select << term_pointer
-      
+
       # If pointers in parent_select don't match with the indexes of built ancestors, correct the hash
       if find_by_terms(*parent_select+[{}]).length == 0
         if parent_select.last.kind_of?(Hash)
@@ -198,13 +194,13 @@ module OM::XML::TermValueOperators
     if parent_index > starting_point.length
       parent_index = starting_point.length - 1
     end
-    return node_from_set(starting_point, parent_index)
+    node_from_set(starting_point, parent_index)
   end
-  
+
   def term_value_update(node_select,node_index,new_value,opts={})
     ng_xml_will_change!
     # template = opts.fetch(:template,nil)
-    
+
     node = find_by_terms_and_value(*node_select)[node_index]
     if delete_on_update?(node, new_value)
       node.remove
@@ -216,23 +212,23 @@ module OM::XML::TermValueOperators
   def delete_on_update?(node, new_value)
     new_value == "" || new_value == :delete
   end
-  
+
   # def term_value_set(term_ref, query_opts, node_index, new_value)
   # end
-  
+
   def term_value_delete(opts={})
     ng_xml_will_change!
     parent_select = Array( opts[:parent_select] )
     parent_index = opts[:parent_index]
     child_index = opts[:child_index]
     xpath_select = opts[:select]
-    
+
     if !xpath_select.nil?
       node = find_by_terms_and_value(xpath_select).first
     else
       # parent_nodeset = find_by_terms_and_value(parent_select, parent_select)
       parent_nodeset = find_by_terms_and_value(*parent_select)
-      
+
       if parent_index.nil?
         node = node_from_set(parent_nodeset, child_index)
       else
@@ -241,24 +237,24 @@ module OM::XML::TermValueOperators
         node = node_from_set(parent.xpath("*"), child_index)
       end
     end
-    
+
     node.remove
   end
-   
-  
+
+
   # Allows you to provide an array index _or_ a symbol representing the function to call on the nodeset in order to retrieve the node.
   def node_from_set(nodeset, index)
     if index.kind_of?(Integer)
       node = nodeset[index]
-    elsif index.kind_of?(Symbol) && nodeset.respond_to?(index) 
+    elsif index.kind_of?(Symbol) && nodeset.respond_to?(index)
       node = nodeset.send(index)
     else
       raise "Could not retrieve node using index #{index}."
     end
-    
-    return node
+
+    node
   end
-  
+
   private :node_from_set
-  
+
 end

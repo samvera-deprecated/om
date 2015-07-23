@@ -47,9 +47,7 @@ class OM::XML::Terminology
       @schema = opts.fetch(:schema,nil)
       opts.select {|k,v| k.to_s.include?("xmlns")}.each do |ns_pair|
         @namespaces[ns_pair.first.to_s] = ns_pair.last
-        if ns_pair.first.to_s == "xmlns"
-          @namespaces["oxns"] = ns_pair.last
-        end
+        @namespaces["oxns"] = ns_pair.last if ns_pair.first.to_s == "xmlns"
       end
       root_term_builder = OM::XML::Term::Builder.new(opts.fetch(:path,:root).to_s.sub(/[_!]$/, '')).is_root_term(true)
       term_opts = opts.dup
@@ -57,7 +55,7 @@ class OM::XML::Terminology
       root_term_builder.settings.merge!(term_opts)
       @term_builders[root_term_builder.name] = root_term_builder
 
-      return root_term_builder
+      root_term_builder
     end
 
     # Returns an array of Terms that have been marked as "root" terms
@@ -99,7 +97,7 @@ class OM::XML::Terminology
           raise OM::XML::Terminology::BadPointerError, "You attempted to retrieve a TermBuilder using this pointer: #{args.inspect} but no TermBuilder exists at that location. Everything is fine until \"#{arg.inspect}\", which doesn't exist."
         end
       end
-      return current_term
+      current_term
     end
 
     # Add additional terms into this terminology
@@ -137,12 +135,12 @@ class OM::XML::Terminology
 
   # Returns true if the current terminology has a term defined at the location indicated by +pointers+ array
   def has_term?(*pointers)
-    begin
+
       retrieve_term(*OM.pointers_to_flat_array(pointers, false))
       return true
     rescue
       return false
-    end
+
   end
 
   # Returns the Term corresponding to the given _pointer_.
@@ -160,7 +158,7 @@ class OM::XML::Terminology
         end
       end
     end
-    return current_term
+    current_term
   end
 
   def retrieve_node_subsequent(args, context)
@@ -240,7 +238,7 @@ class OM::XML::Terminology
     end
 
     term = retrieve_term(*term_pointers)
-    return term.xml_builder_template(extra_opts)
+    term.xml_builder_template(extra_opts)
   end
 
   # Returns an array of Terms that have been marked as "root" terms
@@ -274,7 +272,7 @@ class OM::XML::Terminology
     end
     document = builder.doc
     terms.values.each {|term| term.to_xml(options,document.xpath("//terms").first)}
-    return document
+    document
   end
 
   def self.term_generic_name(*pointers)
