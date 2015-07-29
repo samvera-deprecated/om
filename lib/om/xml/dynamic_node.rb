@@ -38,33 +38,23 @@ module OM
         self.parent = parent
       end
 
-      def method_missing (name, *args, &block)
-        if /=$/.match(name.to_s)
-          new_update_node(name, args)
-        elsif args.length > 1
-          new_update_node_with_index(name, args)
-        else
-          child =  term_child_by_name(term.nil? ? parent.term : term, name)
-          if child
-            OM::XML::DynamicNode.new(name, args.first, @document, child, self)
-          else
-            val.send(name, *args, &block)
-          end
-        end
+      # In practice, method_missing will respond 4 different ways:
+      # (1) ALL assignment operations are accepted/attempted as new nodes,
+      # (2) ANY operation with multiple arguments is accepted/attempted as a new node (w/ index),
+      # (3) With an auto-constructed sub DynamicNode object,
+      # (4) By handing off to val.  This is the only route that will return NoMethodError.
+      #
+      # Here we don't have args, so we cannot handle cases 2 and 3.  But we can at least do 1 and 4.
+      def respond_to_missing?(name, include_private = false)
+        /=$/.match(name.to_s) || val.respond_to?(name, include_private) || super
       end
 
-      def new_update_node(name, args)
-        modified_name = name.to_s.chop.to_sym
-        child = term.retrieve_term(modified_name)
-        node = OM::XML::DynamicNode.new(modified_name, nil, @document, child, self)
-        node.val=args
-      end
-
-      def new_update_node_with_index(name, args)
-        index = args.shift
-        child = term.retrieve_term(name)
-        node = OM::XML::DynamicNode.new(name, index, @document, child, self)
-        node.val=args
+      def method_missing(name, *args, &block)
+        return new_update_node(name.to_s.chop.to_sym, nil, args) if /=$/.match(name.to_s)
+        return new_update_node(name, args.shift, args) if args.length > 1
+        child = term_child_by_name(term.nil? ? parent.term : term, name)
+        return OM::XML::DynamicNode.new(name, args.first, @document, child, self) if child
+        val.send(name, *args, &block)
       end
 
       def val=(args)
@@ -79,15 +69,6 @@ module OM
           else
             @document.term_value_update(xpath, y.to_i, z)
           end
-        end
-      end
-
-
-      def term_child_by_name(term, name)
-        if (term.kind_of? NamedTermProxy)
-           @document.class.terminology.retrieve_node(*(term.proxy_pointer.dup << name))
-        else
-          term.retrieve_term(name)
         end
       end
 
@@ -135,9 +116,7 @@ module OM
           chain = retrieve_addressed_node( )
           '//' + chain.map { |n| n.xpath}.join('/')
         end
-
       end
-
 
       class AddressedNode
         attr_accessor :xpath, :key, :pointer
@@ -152,7 +131,6 @@ module OM
       # This is very similar to Terminology#retrieve_term, however it expands proxy paths out into their cannonical paths
       def retrieve_addressed_node()
          chain = []
-
          chain += parent.retrieve_addressed_node() if parent
          if (self.index)
            ### This is an index
@@ -175,6 +153,25 @@ module OM
          chain
       end
 
+      private
+
+      # Only to be called by method_missing, hence the NoMethodError.
+      # We know term.sanitize_new_values would fail in .val= if we pass a nil term.
+      def new_update_node(name, index, args)
+        child = term.retrieve_term(name)
+        raise NoMethodError, "undefined method `#{name}' in OM::XML::DynamicNode for #{self}:#{self.class}" if child.nil?
+        node = OM::XML::DynamicNode.new(name, index, @document, child, self)
+        node.val = args
+      end
+
+      # Only to be called by method_missing
+      def term_child_by_name(term, name)
+        if (term.kind_of? NamedTermProxy)
+          @document.class.terminology.retrieve_node(*(term.proxy_pointer.dup << name))
+        else
+          term.retrieve_term(name)
+        end
+      end
 
     end
   end

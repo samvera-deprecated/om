@@ -68,7 +68,6 @@ describe "OM::XML::DynamicNode" do
         expect(arr).to eq(["FAMILY NAME", "Gautama"])
       end
 
-
       describe "setting attributes" do
         it "when they exist" do
           @article.title_info(0).main_title.main_title_lang = "ger"
@@ -79,18 +78,30 @@ describe "OM::XML::DynamicNode" do
           title.language = "rus"
           expect(@article.title_info(0).language).to eq(["rus"])
         end
-
       end
 
       it "should find elements two deep" do
         # TODO reimplement so that method_missing with name is only called once.  Create a new method for name.
         expect(@article.name.name_content.val).to eq(["Describes a person"])
-        expect(@article.name.name_content).to eq(["Describes a person"])
-        expect(@article.name.name_content(0)).to eq(["Describes a person"])
+        expect(@article.name.name_content    ).to eq(["Describes a person"])
+        expect(@article.name.name_content(0) ).to eq(["Describes a person"])
       end
 
-      it "should not find elements that don't  exist" do
-        expect {@article.name.hedgehog}.to raise_exception NoMethodError
+      it 'should offer some awareness for respond_to?' do
+        expect(@article.name.name_content.include?('Describes a person')).to be_truthy
+        expect(@article.name.name_content.respond_to?(:include?)).to be_truthy
+        expect(@article.name.name_content).to include('Describes a person')
+      end
+
+      it "should not find elements that don't exist" do
+        expect{@article.name.hedgehog     }.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.hedgehog = 5 }.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.hedgehog(5)  }.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.hedgehog(5,1)}.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.name_content.hedgehog         }.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.name_content.hedgehog = 'foo' }.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.name_content.hedgehog(1)      }.to raise_exception NoMethodError, /hedgehog/
+        expect{@article.name.name_content.hedgehog(1,'foo')}.to raise_exception NoMethodError, /hedgehog/
       end
 
       it "should allow you to call methods on the return value" do
