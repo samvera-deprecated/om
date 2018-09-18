@@ -69,7 +69,7 @@ describe "OM::XML::TermXpathGeneratorSpec" do
     end
     it "should prepend the xpath for any parent nodes" do
       mock_parent_mapper = double("Term", :xpath_absolute=>'//name[@type="conference"]/role')
-      @test_role_text.stub(:parent => mock_parent_mapper)
+      allow(@test_role_text).to receive(:parent).and_return(mock_parent_mapper)
       expect(OM::XML::TermXpathGenerator.generate_absolute_xpath(@test_role_text)).to eq '//name[@type="conference"]/role/roleTerm[@type="text"]'
     end
   end
@@ -112,14 +112,14 @@ describe "OM::XML::TermXpathGeneratorSpec" do
 EOF
       generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
                                                     :person, {:first_name=>"Tim", :family_name=>"Berners"} )
-      expect(ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3")).to be_empty 
+      expect(ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3")).to be_empty
       generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
                                                     :person, {:first_name=>"Frank", :family_name=>"Berners-Lee"} )
-      expect(ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3")).to be_empty 
+      expect(ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3")).to be_empty
 
       generated_xpath = OM::XML::TermXpathGenerator.generate_xpath_with_indexes( @sample_terminology,
                                                      :person, {:first_name=>"Tim", :family_name=>"Howard"} )
-      expect(ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3")).to be_empty 
+      expect(ng.xpath(generated_xpath, 'oxns' => "http://www.loc.gov/mods/v3")).to be_empty
 
     end
     it "should support xpath queries as argument" do

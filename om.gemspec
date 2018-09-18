@@ -15,15 +15,17 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version     = '>= 1.9.3'
 
+  s.add_dependency 'activemodel', '~> 4.2'
   s.add_dependency 'activesupport'
-  s.add_dependency 'activemodel'
-  s.add_dependency 'solrizer', '~> 3.3'
   s.add_dependency('nokogiri', ">= 1.4.2")
-  s.add_development_dependency "rspec", "~> 2.0"
-  s.add_development_dependency "rake"
-  s.add_development_dependency "yard"
+  s.add_dependency 'solrizer', '~> 3.3'
   s.add_development_dependency "awesome_print"
+  s.add_development_dependency 'coveralls'
   s.add_development_dependency "equivalent-xml", ">= 0.2.4"
+  s.add_development_dependency "pry-byebug"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "rspec", "~> 3.8"
+  s.add_development_dependency "yard"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

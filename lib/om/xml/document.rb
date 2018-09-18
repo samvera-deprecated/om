@@ -59,7 +59,7 @@ module OM::XML::Document
       self.terminology_builder.extend_terminology(&block)
       rebuild_terminology!
     end
-    
+
     # (Explicitly) inherit terminology from upstream classes
     def use_terminology klass
       self.terminology_builder = klass.terminology_builder.dup
@@ -84,9 +84,17 @@ module OM::XML::Document
 
   attr_accessor :ox_namespaces
 
+  # This ensures that the stored XML is deleted
+  # @see ActiveModel::Dirty#attribute_will_change!
+  # @see ActiveModel::Dirty#attribute_will_change!
   def ng_xml_will_change!
     # throw away older version.
-    changed_attributes['ng_xml'] = nil
+    # This clears both @attributes_changed_by_setter and @mutations_from_database
+    clear_attribute_changes [:ng_xml]
+    # This clears the cached changes
+    @cached_changed_attributes[:ng_xml] = nil if defined? @cached_changed_attributes
+
+    attribute_will_change!(:ng_xml)
   end
 
   def ng_xml_changed?
@@ -97,12 +105,12 @@ module OM::XML::Document
     if matches = /([^=]+)=$/.match(method_name.to_s)
       name = matches[1].to_sym
     end
-    
+
     name ||= method_name
-    
+
     begin
       term = self.class.terminology.retrieve_term(name)
-      
+
       if /=$/.match(method_name.to_s)
         node = OM::XML::DynamicNode.new(name, nil, self, term)
         return node.val=args
