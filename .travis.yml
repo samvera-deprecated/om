@@ -2,9 +2,8 @@ rvm:
   - 2.1.10
   - 2.2.5
   - 2.3.1
-gemfile:
-  - gemfiles/gemfile.rails3
-  - gemfiles/gemfile.rails4
+  - 2.4.4
 env:
   global:
     - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+    - COVERAGE=true

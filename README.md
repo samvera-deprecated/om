@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/projecthydra/om.png?branch=master)](https://travis-ci.org/projecthydra/om)
 [![Gem Version](https://badge.fury.io/rb/om.png)](http://badge.fury.io/rb/om)
+[![Coverage Status](https://coveralls.io/repos/github/samvera/om/badge.svg?branch=master)](https://coveralls.io/github/samvera/om?branch=master)
 
 # om (Opinionated Metadata)
 
@@ -21,7 +22,7 @@ That process is documented in the [solrizer README](https://github.com/projecthy
 
 ## OM in the Wild
 
-We have a page on the Hydra wiki with a list of OM Terminologies in active use: 
+We have a page on the Hydra wiki with a list of OM Terminologies in active use:
 [OM Terminologies in the Wild](https://wiki.duraspace.org/display/hydra/OM+Terminologies+in+the+Wild)
 
 ## Acknowledgments

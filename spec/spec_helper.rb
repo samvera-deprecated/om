@@ -1,20 +1,37 @@
-if ENV['COVERAGE'] and RUBY_VERSION =~ /^1.9/
-  require 'simplecov'
-  require 'simplecov-rcov'
+require 'equivalent-xml/rspec_matchers'
+require 'logger'
+require 'om'
+require 'pry-byebug'
+require 'rspec'
+require 'samples'
 
-  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
-  SimpleCov.start
+def coverage_needed?
+  ENV['COVERAGE'] || ENV['TRAVIS']
 end
 
-require 'om'
-require 'rspec'
-require 'equivalent-xml/rspec_matchers'
-require 'samples'
-require 'logger'
+if coverage_needed?
+  require 'simplecov'
+  require 'coveralls'
+  SimpleCov.root(File.expand_path('../..', __FILE__))
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
+    [
+      SimpleCov::Formatter::HTMLFormatter,
+      Coveralls::SimpleCov::Formatter
+    ]
+  )
+  SimpleCov.start('rails') do
+    add_filter '/devel'
+    add_filter '/lib/om/version.rb'
+    add_filter '/lib/tasks'
+    add_filter '/spec'
+  end
+end
 
 OM.logger = Logger.new(STDERR)
 
 RSpec.configure do |config|
+  config.full_backtrace = true if ENV['TRAVIS']
+  #config.fixture_path = File.expand_path("../fixtures", __FILE__)
 end
 
 def fixture(file)
