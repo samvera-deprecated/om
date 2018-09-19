@@ -1,8 +1,12 @@
-[![Build Status](https://travis-ci.org/projecthydra/om.png?branch=master)](https://travis-ci.org/projecthydra/om)
-[![Gem Version](https://badge.fury.io/rb/om.png)](http://badge.fury.io/rb/om)
+# om (Opinionated Metadata)
+
+[![Version](https://badge.fury.io/rb/om.png)](http://badge.fury.io/rb/om)
+[![Build Status](https://travis-ci.org/samvera/om.png?branch=master)](https://travis-ci.org/samvera/om)
 [![Coverage Status](https://coveralls.io/repos/github/samvera/om/badge.svg?branch=master)](https://coveralls.io/github/samvera/om?branch=master)
 
-# om (Opinionated Metadata)
+Jump In: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samvera.org/)
+
+# What is om?
 
 A library to help you tame sprawling XML schemas like MODS.
 
@@ -10,26 +14,28 @@ OM allows you to define a "terminology" to ease translation between XML and ruby
 
 OM "terms" are ruby symbols you define (in the terminology) that map specific XML content into ruby object attributes.
 
+## Product Owner & Maintenance
+ **om** is a Core Component of the Samvera community. The documentation for
+what this means can be found
+[here](http://samvera.github.io/core_components.html#requirements-for-a-core-component).
+ ### Product Owner
+ [Jon Cameron](https://github.com/joncameron)
+
 ## Tutorials & Reference
 
-* [Tame Your XML with OM](https://github.com/projecthydra/om/wiki/Tame-your-XML-with-OM)
-* [Common OM Patterns](https://github.com/projecthydra/om/blob/master/COMMON_OM_PATTERNS.md)
+* [Tame Your XML with OM](https://github.com/samvera/om/wiki/Tame-your-XML-with-OM)
+* [Common OM Patterns](https://github.com/samvera/om/blob/master/COMMON_OM_PATTERNS.md)
 
 ### Solrizing Documents
 
 The solrizer gem provides support for indexing XML documents into Solr based on OM Terminologies.  
-That process is documented in the [solrizer README](https://github.com/projecthydra/solrizer)
-
-## OM in the Wild
-
-We have a page on the Hydra wiki with a list of OM Terminologies in active use:
-[OM Terminologies in the Wild](https://wiki.duraspace.org/display/hydra/OM+Terminologies+in+the+Wild)
+That process is documented in the [solrizer README](https://github.com/samvera/solrizer)
 
 ## Acknowledgments
 
 ### Creator
 
-Matt Zumwalt ([MediaShelf](http://yourmediashelf.com))
+Matt Zumwalt (MediaShelf)
 
 ### Thanks To
 
