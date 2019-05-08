@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry-byebug"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", "~> 3.8"
+  s.add_development_dependency "rspec_junit_formatter"
   s.add_development_dependency "yard"
 
   s.files         = `git ls-files`.split("\n")
