@@ -1,7 +1,7 @@
 # om (Opinionated Metadata)
 
 [![Version](https://badge.fury.io/rb/om.png)](http://badge.fury.io/rb/om)
-[![Build Status](https://travis-ci.org/samvera/om.png?branch=master)](https://travis-ci.org/samvera/om)
+[![CircleCI](https://circleci.com/gh/samvera/om.svg?style=svg)](https://circleci.com/gh/samvera/om)
 [![Coverage Status](https://coveralls.io/repos/github/samvera/om/badge.svg?branch=master)](https://coveralls.io/github/samvera/om?branch=master)
 
 Jump In: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samvera.org/)
