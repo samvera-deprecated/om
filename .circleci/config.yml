@@ -22,19 +22,12 @@ jobs:
       RAILS_VERSION: << parameters.rails_version >>
       NOKOGIRI_USE_SYSTEM_LIBRARIES: true
     steps:
-      - attach_workspace:
-          at: ~/
       - samvera/cached_checkout
       - samvera/bundle_for_gem:
           ruby_version: << parameters.ruby_version >>
           bundler_version: << parameters.bundler_version >>
           project: om
       - samvera/parallel_rspec
-      - persist_to_workspace:
-          root: ~/
-          paths:
-          - project/*
-          - project/**/*
 workflows:
   version: 2
   ci:
