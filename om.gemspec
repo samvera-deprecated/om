@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version     = '>= 1.9.3'
 
-  s.add_dependency 'activemodel', '~> 4.2'
+  s.add_dependency 'activemodel', '~> 5.1'
   s.add_dependency 'activesupport'
   s.add_dependency('nokogiri', ">= 1.4.2")
   s.add_dependency 'solrizer', '~> 3.3'
