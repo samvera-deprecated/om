@@ -1,3 +1,14 @@
+### 3.1.2 (14 August 2019)
+- 2019-08-14: Ensures that Rails 6.x releases are supported [@jcoyne]
+- 2019-08-02: Corrected the syntax for the CircleCI configuration [@botimer]
+- 2019-05-28: Updated CircleCI to test against Rails release 5.1.7 and Ruby releases 2.6.3, 2.5.5, and 2.4.6 [@jrgriffiniii]
+- 2019-05-08: Deprecated Travis CI for CircleCI for continuous integration testing [@jrgriffiniii]
+- 2018-09-19: Updated documentation for compliance with the Core Component Maintenance Working Group templates [@jrgriffiniii]
+- 2018-09-19: Integrated Coveralls [@jrgriffiniii]
+- 2016-10-27: Removed Travis CI notifications to IRC [@mjgiarlo]
+- 2015-05-26: Converted documentation to Markdown [@atz]
+- 2015-04-21: Convert specs to RSpec 2.99.2 syntax with Transpec [@atz]
+- 2015-03-10: Changed RSpec assertions from .should() to the newer, preferred expect().to() [@nodanaonlyzuul]
 - 2014-09-11: Use HTTPS URLs for RubyGems [Michael Slone]
 
 ### 3.1.0 (17 Jul 2014)
