@@ -1,3 +1,10 @@
+## Note: This project has been deprecated and is no longer being maintained.
+The functionality previously provided by `om` has been gradually removed from
+Samvera Gems (with the most recent being the changes introduced into [hydra-works](https://github.com/samvera/hydra-works)
+in https://github.com/samvera/hydra-works/pull/354).  As such, the community has
+generally shifted away from approaches involving the usage of this Gem to
+provide an object-oriented API to XML Documents.
+
 # om (Opinionated Metadata)
 
 [![Version](https://badge.fury.io/rb/om.png)](http://badge.fury.io/rb/om)
